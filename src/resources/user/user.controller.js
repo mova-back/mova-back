@@ -13,7 +13,7 @@ const {
   isRefreshTokenExpired
 } = require('../../utils/security/jwt');
 const { isComparePassword } = require('../../utils/security/hash');
-const { getRetrievedBearerTokenFromRequest } = require('../../utils/security/http');
+const { getBearerTokenFromRequest } = require('../../utils/security/http');
 
 const registerUser = catchErrors(async (req, res) => {
   const { username: reqUsername, password: reqPassword, email: reqEmail } = req.body;
@@ -75,7 +75,7 @@ const loginUser = catchErrors(async (req, res) => {
 // eslint-disable-next-line no-unused-vars
 const getUser = catchErrors(async (req, res) => {
   // TODO , I suppose that code is found below need wrap to function because it will be use with all request
-  const token = getRetrievedBearerTokenFromRequest(req);
+  const token = getBearerTokenFromRequest(req);
 
   const userId = getJwtValueByKey(token, 'id');
 
@@ -114,6 +114,11 @@ const updateToken = catchErrors(async (req, res) => {
     throw new Unauthorized('Refresh Token has expired');
   }
 
+  // dead-token logic for security
+  if (reqRefreshToken.used || reqRefreshToken.invalidated) {
+    throw new Unauthorized('Refresh Token has been used or invalidated');
+  }
+
   reqRefreshToken.used = true;
   await refreshTokenModel.save(reqRefreshToken);
 
@@ -124,9 +129,28 @@ const updateToken = catchErrors(async (req, res) => {
   return res.status(200).json({ ...result, ...token });
 });
 
+const logout = catchErrors(async (req, res) => {
+  const accessToken = getBearerTokenFromRequest(req);
+  if (isValidToken(accessToken)) {
+    throw new Unauthorized('Unauthorized');
+  }
+
+  const jwtId = getJwtValueByKey(accessToken, 'jti');
+  const refreshToken = await refreshTokenModel.findJwtId(jwtId);
+  if (!refreshToken) {
+    throw new Unauthorized('Refresh Token does not exist');
+  }
+
+  refreshToken.invalidated = true;
+  await refreshTokenModel.save(refreshToken);
+
+  return res.status(200).json({ message: 'Logout successfully' });
+});
+
 module.exports = {
   registerUser,
   loginUser,
   getUser,
-  updateToken
+  updateToken,
+  logout
 };

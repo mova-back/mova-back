@@ -9,7 +9,12 @@ const save = async (newRefreshToken) => {
   await refreshToken.save();
 };
 
+const findJwtId = async (JwtId) => {
+  return RefreshToken.findOne(JwtId).exec();
+};
+
 module.exports = {
   findId,
-  save
+  save,
+  findJwtId
 };
