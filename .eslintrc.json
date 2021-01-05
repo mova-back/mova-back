@@ -1,0 +1,30 @@
+{
+  "env": {
+    "browser": true,
+    "node": true,
+    "jasmine": true,
+    "es6": true,
+    "jest": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2018
+  },
+  "extends": [
+    "airbnb-base",
+    "eslint:recommended",
+    "plugin:node/recommended",
+    "plugin:prettier/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings"
+  ],
+  "plugins": ["prettier", "import"],
+  "rules": {
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ],
+    "camelcase": "off"
+  }
+}
