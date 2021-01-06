@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
@@ -5,6 +6,7 @@ const userSchema = new mongoose.Schema(
   {
     username: { type: String, required: true, unique: true, trim: true },
     email: { type: String, required: true, unique: true, trim: true, lowercase: true },
+    bio: { type: String, required: false },
     password: { type: String, required: true },
 
     // TODO we rly need to create Data ? MongoDB create date stump auto
@@ -16,7 +18,6 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// eslint-disable-next-line func-names
 userSchema.pre('save', async function (next) {
   const user = this;
 
@@ -33,9 +34,14 @@ userSchema.pre('save', async function (next) {
   }
 });
 
+userSchema.pre('findOneAndUpdate', async function () {
+  // eslint-disable-next-line no-underscore-dangle
+  this._update.password = await bcrypt.hash(this._update.password, 10);
+});
+
 userSchema.statics.toResponse = (user) => {
-  const { id, username, email, createdAt, updatedAt, accessToken } = user;
-  return { id, username, email, createdAt, updatedAt, accessToken };
+  const { id, username, email, createdAt, updatedAt, accessToken, bio } = user;
+  return { id, username, email, createdAt, updatedAt, accessToken, bio };
 };
 
 const User = mongoose.model('users', userSchema);
