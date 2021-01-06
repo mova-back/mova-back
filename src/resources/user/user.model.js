@@ -16,9 +16,14 @@ const registerUser = async (data) => {
   return User.create(data);
 };
 
+const findAndUpdate = async (id, data) => {
+  return User.findOneAndUpdate({ _id: id }, data, { new: true });
+};
+
 module.exports = {
   findUserName,
   findEmail,
   registerUser,
-  findId
+  findId,
+  findAndUpdate
 };
