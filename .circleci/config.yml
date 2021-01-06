@@ -12,8 +12,13 @@
 #     jobs:
 #       - welcome/run
 orbs:
-  heroku: circleci/heroku@0.0.10
+  heroku: circleci/heroku@x.y
+version: 2.1
 workflows:
   heroku_deploy:
     jobs:
-      - heroku/deploy-via-git
+      - heroku/deploy-via-git:
+          post-steps:
+            - run: your-database-migration-command
+          pre-steps:
+            - run: command-that-run-before-deploying
