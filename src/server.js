@@ -26,7 +26,8 @@ const connectDb = () => {
   });
   return mongoose.connect(MONGO_DB_CONNECTION_URL, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useFindAndModify: false
   });
 };
 
