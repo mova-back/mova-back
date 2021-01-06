@@ -12,7 +12,7 @@
 #     jobs:
 #       - welcome/run
 orbs:
-  heroku: circleci/heroku@x.y
+  heroku: circleci/heroku@1.2.3
 version: 2.1
 workflows:
   heroku_deploy:
