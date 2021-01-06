@@ -124,9 +124,29 @@ const updateToken = catchErrors(async (req, res) => {
   return res.status(200).json({ ...result, ...token });
 });
 
+const updateUser = catchErrors(async (req, res) => {
+  const token = getRetrievedBearerTokenFromRequest(req);
+
+  const userId = getJwtValueByKey(token, 'id');
+
+  const { password } = req.body;
+
+  const user = await userModel.findId(userId);
+
+  const isMatch = await isComparePassword(password, user.password);
+  if (!isMatch) {
+    throw new BadRequest('Password is incorrect!');
+  }
+
+  const result = await userModel.findAndUpdate(userId, req.body);
+
+  return res.status(200).json(User.toResponse(result));
+});
+
 module.exports = {
   registerUser,
   loginUser,
   getUser,
-  updateToken
+  updateToken,
+  updateUser
 };
