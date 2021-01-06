@@ -46,18 +46,14 @@ const registerUser = catchErrors(async (req, res) => {
 });
 
 const loginUser = catchErrors(async (req, res) => {
-  const { username: reqUsername, password: reqPassword, email: reqEmail } = req.body;
+  const { password: reqPassword, email: reqEmail } = req.body;
 
-  // TODO Authentication for email or username ??????????????
   const email = await userModel.findEmail(reqEmail.toLowerCase());
   if (!email) {
     throw new UnprocessableEntity('Authentication failed, email not found');
   }
 
-  const user = await userModel.findUserName(reqUsername);
-  if (!user) {
-    throw new UnprocessableEntity('Authentication failed, user not found');
-  }
+  const user = await userModel.findEmail(reqEmail);
 
   // check if the password is valid
   const isMatch = await isComparePassword(reqPassword, user.password);
@@ -124,9 +120,33 @@ const updateToken = catchErrors(async (req, res) => {
   return res.status(200).json({ ...result, ...token });
 });
 
+const changePassword = catchErrors(async (req, res) => {
+  const token = getRetrievedBearerTokenFromRequest(req);
+
+  const userId = getJwtValueByKey(token, 'id');
+
+  const { old_password, new_password1, new_password2 } = req.body;
+
+  const user = await userModel.findId(userId);
+
+  const isMatch = await isComparePassword(old_password, user.password);
+  if (!isMatch) {
+    throw new BadRequest('Old password is incorrect!');
+  }
+
+  if (new_password1 !== new_password2) {
+    throw new BadRequest('new_password1 does not match new_password2!');
+  }
+
+  userModel.findAndUpdate(userId, { password: new_password1 });
+
+  return res.status(200).json({ message: 'User password has been changed successfully!' });
+});
+
 module.exports = {
   registerUser,
   loginUser,
   getUser,
-  updateToken
+  updateToken,
+  changePassword
 };
