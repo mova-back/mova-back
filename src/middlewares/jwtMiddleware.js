@@ -5,8 +5,11 @@ const { Unauthorized } = require('../error');
 const auth = (req, resp, next) => {
   const token = getBearerTokenFromRequest(req);
 
-  if (!isValidToken(token)) {
+  const data = isValidToken(token);
+  if (!data) {
     throw new Unauthorized('JWT is not valid');
+  } else {
+    req.userId = data.userId;
   }
 
   next();
