@@ -6,6 +6,19 @@ const auth = (req, resp, next) => {
   const token = getBearerTokenFromRequest(req);
 
   const data = isValidToken(token);
+  if (!data || !data.emailVerified) {
+    throw new Unauthorized('JWT is not valid');
+  } else {
+    req.userId = data.userId;
+  }
+
+  next();
+};
+
+const authWhilePending = (req, resp, next) => {
+  const token = getBearerTokenFromRequest(req);
+
+  const data = isValidToken(token);
   if (!data) {
     throw new Unauthorized('JWT is not valid');
   } else {
@@ -16,5 +29,6 @@ const auth = (req, resp, next) => {
 };
 
 module.exports = {
-  auth
+  auth,
+  authWhilePending
 };

@@ -6,7 +6,7 @@ const profileSchema = new mongoose.Schema(
     user_id: { type: String },
     follows: []
   },
-  { versionKey: false }
+  { timestamps: true }
 );
 
 profileSchema.statics.toResponse = (profile) => {

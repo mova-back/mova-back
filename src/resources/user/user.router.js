@@ -12,5 +12,9 @@ router
 router.route('/user/login').post(userController.loginUser);
 router.route('/user/refresh').post(userController.updateToken);
 router.route('/user/logout').post(userController.logout);
+router
+  .route('/user/send-user-verification-email')
+  .post(userController.sendVerifyEmail, jwtMiddleware.authWhilePending);
+router.route('/user/verify_email:userId/:secretCode').post(userController.verifyEmail);
 
 module.exports = router;
