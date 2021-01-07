@@ -248,6 +248,46 @@ const verifyEmail = catchErrors(async (req, res) => {
   const result = User.toResponse(user);
   return res.status(200).json(result);
 });
+
+// #route:  POST /user/send-password-reset-email
+// #desc:   Reset password of user
+// #access: Public
+const resetPasswordByEmail = catchErrors(async (req, res) => {
+  const { email: reqEmail } = req.body;
+
+  if (!reqEmail) {
+    throw new BadRequest('Please provide your registered email address!');
+  }
+
+  const user = await userModel.findEmail(reqEmail);
+  if (!user) {
+    throw new NotFound('User does not exist');
+  }
+
+  const secretCode = cryptoRandomString({
+    length: 6
+  });
+
+  const newCode = new Code({
+    code: secretCode,
+    email: reqEmail
+  });
+  await codeModel.save(newCode);
+
+  const data = {
+    from: `YOUR NAME <${EMAIL_USERNAME}>`,
+    to: reqEmail,
+    subject: 'Your Password Reset Code for YOUR APP',
+    text: `Please use the following code within the next 10 minutes to reset your password on YOUR APP: ${secretCode}`,
+    html: `<p>Please use the following code within the next 10 minutes to reset your password on YOUR APP: <strong>${secretCode}</strong></p>`
+  };
+  await emailService.sendMail(data);
+
+  return res
+    .status(200)
+    .json({ message: 'The reset password link was sent to your registered email address.' });
+});
+
 module.exports = {
   registerUser,
   loginUser,
@@ -255,5 +295,6 @@ module.exports = {
   updateToken,
   logout,
   sendVerifyEmail,
-  verifyEmail
+  verifyEmail,
+  resetPasswordByEmail
 };
