@@ -12,7 +12,7 @@ const Profile = require('../profile/profile.schema');
 const RefreshToken = require('../refreshToken/refreshToken.schema');
 
 const { NotFound, UnprocessableEntity, BadRequest, Unauthorized } = require('../../error');
-const { PRE_UR } = require('../../constants');
+const { UR } = require('../../constants');
 
 const { catchErrors } = require('../../middlewares/errorMiddleware');
 const {
@@ -255,7 +255,7 @@ const verifyEmail = catchErrors(async (req, res) => {
   // Это поле удалено , потому что появились роли
   // const verifyStatus = true;
   // await codeModel.updateVerifyStatus(user.email, verifyStatus);
-  await Profile.updateOne({ userId: user.id }, { role: PRE_UR }).exec();
+  await Profile.updateOne({ userId: user.id }, { role: UR }).exec();
   await codeModel.deleteMatches(user.email);
 
   const result = User.toResponse(user);
