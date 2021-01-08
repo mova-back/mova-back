@@ -32,7 +32,7 @@ app.use('/', (req, res, next) => {
 
 app.use('/api', userRouter);
 app.use('/api/profiles', profileRouter);
-app.use('/api/word', wordRouter);
+app.use('/api/dictionary', wordRouter);
 app.use(errorMiddleware);
 app.use(errorLoggerMiddleware);
 

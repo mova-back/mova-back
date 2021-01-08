@@ -10,4 +10,7 @@ router
   .put(wordController.updateWord)
   .delete(wordController.deleteWord);
 
+router.route('/word/:id/like').put(wordController.likeWord);
+router.route('/word/:id/dislike').put(wordController.dislikeWord);
+
 module.exports = router;
