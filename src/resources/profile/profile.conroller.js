@@ -49,7 +49,9 @@ const promoteToModerator = catchErrors(async (req, res) => {
     throw new NotFound('User does not exist');
   }
 
-  const profile = await Profile.updateOne({ userId: user.id }, { role: MR }).exec();
+  // const profile = Profile.findOne({},{})
+
+  const profile = await Profile.findOneAndUpdate({ userId: user.id }, { role: MR }).exec();
 
   // throw already a moderator
   res.status(200).json(profile);
