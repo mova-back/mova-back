@@ -1,12 +1,14 @@
 const mongoose = require('mongoose');
 
+const { PRE_UR } = require('../../constants');
+
 const profileSchema = new mongoose.Schema(
   {
-    role: { type: String, default: 'USER_ROLE' },
-    user_id: { type: String },
+    role: { type: String, default: PRE_UR },
+    userId: { type: String },
     follows: []
   },
-  { versionKey: false }
+  { timestamps: true }
 );
 
 profileSchema.statics.toResponse = (profile) => {
