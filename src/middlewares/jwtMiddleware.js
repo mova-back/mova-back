@@ -2,33 +2,18 @@ const { getBearerTokenFromRequest } = require('../utils/security/http');
 const { isValidToken } = require('../utils/security/jwt');
 const { Unauthorized } = require('../error');
 
-const auth = (req, resp, next) => {
+const authByRole = (role) => (req, resp, next) => {
   const token = getBearerTokenFromRequest(req);
 
   const data = isValidToken(token);
-  if (!data || !data.emailVerified) {
-    throw new Unauthorized('JWT is not valid');
-  } else {
+  if (data.role === role) {
     req.userId = data.userId;
-  }
-
-  next();
-};
-
-const authWhilePending = (req, resp, next) => {
-  const token = getBearerTokenFromRequest(req);
-
-  const data = isValidToken(token);
-  if (!data) {
-    throw new Unauthorized('JWT is not valid');
+    next();
   } else {
-    req.userId = data.userId;
+    throw new Unauthorized('JWT is not valid');
   }
-
-  next();
 };
 
 module.exports = {
-  auth,
-  authWhilePending
+  authByRole
 };

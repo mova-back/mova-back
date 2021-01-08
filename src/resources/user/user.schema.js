@@ -7,8 +7,9 @@ const userSchema = new Schema(
   {
     username: { type: String, required: true, unique: true, trim: true },
     email: { type: String, required: true, unique: true, trim: true, lowercase: true },
-    password: { type: String, required: true },
-    emailVerified: { type: Boolean, default: false }
+    password: { type: String, required: true }
+    // emailVerified: { type: Boolean, default: false }
+    // это поле не нужно, для этого есть роль PRE_UR
   },
   { timestamps: true }
 );

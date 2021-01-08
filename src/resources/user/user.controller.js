@@ -1,15 +1,18 @@
 const cryptoRandomString = require('crypto-random-string');
 const userModel = require('./user.model');
 const codeModel = require('../secretCode/secretCode.model');
+const profileModel = require('../profile/profile.model');
 const refreshTokenModel = require('../refreshToken/refreshToken.model');
 const emailService = require('../../utils/nodemailer');
 const { EMAIL_USERNAME } = require('../../config/index');
 
 const User = require('./user.schema');
 const Code = require('../secretCode/secretCode.schema');
+const Profile = require('../profile/profile.schema');
 const RefreshToken = require('../refreshToken/refreshToken.schema');
 
 const { NotFound, UnprocessableEntity, BadRequest, Unauthorized } = require('../../error');
+const { PRE_UR } = require('../../constants');
 
 const { catchErrors } = require('../../middlewares/errorMiddleware');
 const {
@@ -39,13 +42,20 @@ const registerUser = catchErrors(async (req, res) => {
     throw new UnprocessableEntity('Email already registered');
   }
 
-  // TODO : optimization
-  // const username = await userModel.findUserName(reqUsername);
-  // if (username) {
-  //   throw new UnprocessableEntity('User already registered');
-  // }
+  const username = await userModel.findUserName(reqUsername);
+  if (username) {
+    throw new UnprocessableEntity('User already registered');
+  }
 
   const newUser = await userModel.registerUser(req.body);
+
+  // create profile
+
+  const profile = new Profile({
+    userId: newUser._id
+  });
+  await profileModel.save(profile);
+
   // create token
   const token = await generateAccessTokenAndRefreshToken(newUser);
 
@@ -54,6 +64,7 @@ const registerUser = catchErrors(async (req, res) => {
     length: 6
   });
 
+  // create email verification code
   const newCode = new Code({
     code: secretCode,
     email: newUser.email
@@ -241,8 +252,10 @@ const verifyEmail = catchErrors(async (req, res) => {
     throw new Unauthorized('Unauthorized');
   }
 
-  const verifyStatus = true;
-  await codeModel.updateVerifyStatus(user.email, verifyStatus);
+  // Это поле удалено , потому что появились роли
+  // const verifyStatus = true;
+  // await codeModel.updateVerifyStatus(user.email, verifyStatus);
+  await Profile.updateOne({ userId: user.id }, { role: PRE_UR }).exec();
   await codeModel.deleteMatches(user.email);
 
   const result = User.toResponse(user);

@@ -1,44 +1,60 @@
-const profileModel = require('./profile.model');
+const userModel = require('../user/user.model');
 
-const getUserByUsername = async (username) => profileModel.getUserByUsername(username);
+const Profile = require('./profile.schema');
 
-const getProfileById = async (userId) => profileModel.getProfileById(userId);
+const { catchErrors } = require('../../middlewares/errorMiddleware');
+const { NotFound } = require('../../error');
 
-const addFollower = async (id, data) => {
-  const { username } = data;
+const { MR } = require('../../constants');
 
-  if (!username) {
-    return null;
+// const getUserByUsername = async (username) => profileModel.getUserByUsername(username);
+//
+// const getProfileById = async (userId) => profileModel.getProfileById(userId);
+//
+// const addFollower = async (id, data) => {
+//   const { username } = data;
+//
+//   if (!username) {
+//     return null;
+//   }
+//
+//   const inputUserName = await profileModel.getUserByUsername(username);
+//
+//   if (!inputUserName) {
+//     return null;
+//   }
+//
+//   return profileModel.addFollower(id, inputUserName.id);
+// };
+//
+// const deleteFollower = async (id, data) => {
+//   const { username } = data;
+//
+//   if (!username) {
+//     return null;
+//   }
+//
+//   const inputUserName = await profileModel.getUserByUsername(username);
+//
+//   if (!inputUserName) {
+//     return null;
+//   }
+//
+//   return profileModel.deleteFollower(id, inputUserName);
+// };
+
+const promoteToModerator = catchErrors(async (req, res) => {
+  const user = await userModel.findUserName(req.params.username);
+  if (!user) {
+    throw new NotFound('User does not exist');
   }
 
-  const inputUserName = await profileModel.getUserByUsername(username);
+  const profile = await Profile.updateOne({ userId: user.id }, { role: MR }).exec();
 
-  if (!inputUserName) {
-    return null;
-  }
-
-  return profileModel.addFollower(id, inputUserName.id);
-};
-
-const deleteFollower = async (id, data) => {
-  const { username } = data;
-
-  if (!username) {
-    return null;
-  }
-
-  const inputUserName = await profileModel.getUserByUsername(username);
-
-  if (!inputUserName) {
-    return null;
-  }
-
-  return profileModel.deleteFollower(id, inputUserName);
-};
+  // throw already a moderator
+  res.status(200).json(profile);
+});
 
 module.exports = {
-  getUserByUsername,
-  getProfileById,
-  addFollower,
-  deleteFollower
+  promoteToModerator
 };

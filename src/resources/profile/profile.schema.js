@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const profileSchema = new mongoose.Schema(
   {
     role: { type: String, default: 'USER_ROLE' },
-    user_id: { type: String },
+    userId: { type: String },
     follows: []
   },
   { timestamps: true }
