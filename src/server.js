@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const { PORT, MONGO_DB_CONNECTION_URL } = require('./config');
+const { MDB_URL, PORT } = require('./config');
 const { processErrorLogger } = require('./middlewares/loggerMiddleware');
 const getConsoleLog = require('./utils/getConsoleLog');
 
@@ -24,7 +24,7 @@ const connectDb = () => {
   db.once('connected', () => {
     getConsoleLog('mongoose is connected');
   });
-  return mongoose.connect(MONGO_DB_CONNECTION_URL, {
+  return mongoose.connect(MDB_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false

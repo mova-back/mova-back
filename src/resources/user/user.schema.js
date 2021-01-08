@@ -2,17 +2,15 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
-const userSchema = new mongoose.Schema(
+const { Schema } = mongoose;
+
+const userSchema = new Schema(
   {
     username: { type: String, required: true, unique: true, trim: true },
     email: { type: String, required: true, unique: true, trim: true, lowercase: true },
-    password: { type: String, required: true },
-
-    // TODO we rly need to create Data ? MongoDB create date stump auto
-    // createdAt: { type: String, default: moment().subtract(24, 'hours').toDate() },
-    // updatedAt: { type: String, default: moment().subtract(24, 'hours').toDate() },
-    createdAt: { type: Date },
-    updatedAt: { type: Date }
+    password: { type: String, required: true }
+    // emailVerified: { type: Boolean, default: false }
+    // это поле не нужно, для этого есть роль PRE_UR
   },
   { timestamps: true }
 );
@@ -39,8 +37,8 @@ userSchema.pre('findOneAndUpdate', async function () {
 });
 
 userSchema.statics.toResponse = (user) => {
-  const { id, username, email, createdAt, updatedAt, accessToken } = user;
-  return { id, username, email, createdAt, updatedAt, accessToken };
+  const { id, username, email, createdAt, updatedAt, emailVerified } = user;
+  return { id, username, email, createdAt, updatedAt, emailVerified };
 };
 
 const User = mongoose.model('users', userSchema);

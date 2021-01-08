@@ -1,23 +1,17 @@
-const { config } = require('dotenv');
-
-const { parsed } = config();
-
-const {
-  PORT,
-  MODE,
-  DATA_BASE_NAME,
-  DATA_BASE_PASSWORD,
-  DATA_BASE_USERNAME,
-  MONGO_DB_CONNECTION_URL = `mongodb+srv://${DATA_BASE_USERNAME}:${DATA_BASE_PASSWORD}@cluster-mova-data-base.bnb39.mongodb.net/${DATA_BASE_NAME}?retryWrites=true&w=majority`,
-  IN_PROD = MODE !== 'prod',
-  SECRET_JWT_KEY
-} = parsed;
+require('dotenv').config();
 
 module.exports = {
-  PORT,
-  MODE,
-  DATA_BASE_NAME,
-  MONGO_DB_CONNECTION_URL,
-  IN_PROD,
-  SECRET_JWT_KEY
+  PORT: process.env.PORT,
+  MODE: process.env.MODE,
+  BASE_URL: process.env.BASE_URL,
+  MDB_URL: process.env.MDB_URL,
+  COOKIE_SESSION_SECRET: process.env.COOKIE_SESSION_SECRET,
+  JWT_SECRET: process.env.JWT_SECRET,
+  EMAIL_HOST: process.env.EMAIL_HOST,
+  EMAIL_USERNAME: process.env.EMAIL_USERNAME,
+  EMAIL_PW: process.env.EMAIL_PW,
+  EMAIL_PORT: process.env.EMAIL_PORT,
+  REFRESH__EXP: process.env.REFRESH__EXP,
+  CODE_EXP: process.env.CODE_EXP,
+  ACCESS_EXP: process.env.ACCESS_EXP
 };

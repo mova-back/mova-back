@@ -20,10 +20,15 @@ const registerUser = async (data) => {
   return User.create(data);
 };
 
+const updateVerifyStatus = async (email, verifyStatus) => {
+  await User.updateOne({ email }, { emailVerified: verifyStatus });
+};
+
 module.exports = {
   findUserName,
   findEmail,
   registerUser,
   findId,
-  findAndUpdate
+  findAndUpdate,
+  updateVerifyStatus
 };
