@@ -159,15 +159,18 @@ const feedWords = catchErrors(async (_, res) => {
   // req ?query
   const offset = 0;
   const limitPage = 20;
-  const feed = await wordSchema.find({}, null, {
-    skip: offset,
-    limit: limitPage,
-    sort: { likes: 'descending' }
-  });
+  const feed = await wordModel.sortByFilter(offset, limitPage);
+
+  if (!feed) {
+    throw new NotFound('Feed not found.');
+  }
 
   return res.status(200).json(feed.map(wordSchema.toResponse));
 });
 
+// #route:  POST /word/:id/favorite
+// #desc:   add a favorite word
+// #access: Private
 const favoriteWord = catchErrors(async (req, res) => {
   const { id } = req.params;
   const { userId } = req;
@@ -193,6 +196,9 @@ const favoriteWord = catchErrors(async (req, res) => {
   return res.status(200).json(wordSchema.toResponse(addFavorite));
 });
 
+// #route:  DELETE /word/:id/unfavorite
+// #desc:   delete a favorite word
+// #access: Private
 const unfavoriteWord = catchErrors(async (req, res) => {
   const { id } = req.params;
   const { userId } = req;
