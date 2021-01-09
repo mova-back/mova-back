@@ -5,6 +5,9 @@ const ratingModel = require('../rating/rating.model');
 const { NotFound } = require('../../error');
 const { catchErrors } = require('../../middlewares/errorMiddleware');
 
+// #route:  POST /word
+// #desc:   create a word
+// #access: Private
 const createWord = catchErrors(async (req, res) => {
   const { wordname: reqWordname, meaning: reqMeaning } = req.body;
 
@@ -20,6 +23,9 @@ const createWord = catchErrors(async (req, res) => {
   return res.status(200).json(wordSchema.toResponse(word));
 });
 
+// #route:  GET /word
+// #desc:   get words
+// #access: Private
 const getAllWords = catchErrors(async (_, res) => {
   const words = await wordModel.getAllWords();
 
@@ -30,6 +36,9 @@ const getAllWords = catchErrors(async (_, res) => {
   return res.status(200).json(words.map(wordSchema.toResponse));
 });
 
+// #route:  GET /word/:id
+// #desc:   get a word
+// #access: Private
 const getWordById = catchErrors(async (req, res) => {
   const { id } = req.params;
   const word = await wordModel.getWordById(id);
@@ -41,6 +50,9 @@ const getWordById = catchErrors(async (req, res) => {
   return res.status(200).json(wordSchema.toResponse(word));
 });
 
+// #route:  PUT /word/:id
+// #desc:   update a word
+// #access: Private
 const updateWord = catchErrors(async (req, res) => {
   const { id } = req.params;
   const word = await wordModel.updateWord(id, req.body);
@@ -53,6 +65,9 @@ const updateWord = catchErrors(async (req, res) => {
   return res.status(200).json(wordSchema.toResponse(updatedWord));
 });
 
+// #route:  DELETE /word/:id
+// #desc:   delete a word
+// #access: Private
 const deleteWord = catchErrors(async (req, res) => {
   const { id } = req.params;
   const word = await wordModel.deleteWord(id);
@@ -64,15 +79,12 @@ const deleteWord = catchErrors(async (req, res) => {
   return res.status(200).json({ message: 'Word was deleted.' });
 });
 
+// #route:  PUT /word/:id/like
+// #desc:   like a word
+// #access: Private
 const likeWord = catchErrors(async (req, res) => {
   const { id } = req.params;
-
-  /*
-  get userId from auth middleware => get Profile
-  */
-  const userId = '';
-
-  // roles
+  const { userId } = req;
 
   const profile_id = await wordModel.getWordById(userId);
 
@@ -106,15 +118,12 @@ const likeWord = catchErrors(async (req, res) => {
   return res.status(200).json(ult);
 });
 
+// #route:  PUT /word/:id/dislike
+// #desc:   like a word
+// #access: Private
 const dislikeWord = catchErrors(async (req, res) => {
   const { id } = req.params;
-
-  /*
-  get userId from auth middleware => get Profile
-  */
-  const userId = '';
-
-  // roles
+  const { userId } = req;
 
   const profile_id = await wordModel.getWordById(userId);
 
