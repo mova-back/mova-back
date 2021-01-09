@@ -185,9 +185,12 @@ const updateToken = catchErrors(async (req, res) => {
     throw new Unauthorized('Refresh Token has been used or invalidated');
   }
 
-  reqRefreshToken.used = true;
-  const refreshToken = new RefreshToken(reqRefreshToken);
-  await refreshTokenModel.save(refreshToken);
+  // reqRefreshToken.used = true;
+  // const refreshToken = new RefreshToken(reqRefreshToken);
+  // await refreshTokenModel.save(refreshToken);
+
+  // TODO kill token
+  await refreshTokenModel.deleteRefreshToken(reqRefreshToken);
 
   // retrieve refreshToken and accessToken
   const token = await generateAccessTokenAndRefreshToken(user);

@@ -5,7 +5,7 @@ info:
   version: 1.0.0
 
 servers:
-  - url: /api/
+  - url: /api
 
 components:
   schemas:
@@ -120,7 +120,7 @@ paths:
                   $ref: '#/components/schemas/User'
         401:
           description: Bad Request (User with the id was not found / Authorization Header is not set / JWT is not valid )
-  user/login:
+  /user/login:
     post:
       tags:
         - User
@@ -163,7 +163,7 @@ paths:
         402:
           description: Bad Request(Wrong password)
         #register token errors
-  user/refresh:
+  /user/refresh:
     post:
       tags:
         - User
@@ -201,7 +201,7 @@ paths:
           description: Not Found(Authentication failed, email not found / Authentication failed, user not found)
         402:
           description: Bad Request(Wrong password)
-  user/logout:
+  /user/logout:
     post:
       tags:
         - User
@@ -230,7 +230,7 @@ paths:
           description: NotFound (User with the id was not found)
         401:
           description: Bad Request (User with the id was not found / Authorization Header is not set / JWT is not valid)
-  user/verify_email/:userId/:secretCode:
+  /user/verify_email/:userId/:secretCode:
     parameters:
       - name: userId
         in: path
@@ -256,7 +256,7 @@ paths:
                 $ref: '#/components/schemas/User'
         401:
           description:  Unauthorized (Secret Code does not exist, Unauthorized)
-  user/send-password-reset-email:
+  /user/send-password-reset-email:
     get:
       tags:
         - User
