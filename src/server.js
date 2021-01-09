@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const { MDB_URL, PORT } = require('./config');
+const { PORT, MDB_URL } = require('./config');
 const { processErrorLogger } = require('./middlewares/loggerMiddleware');
 const getConsoleLog = require('./utils/getConsoleLog');
 

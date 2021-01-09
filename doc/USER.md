@@ -216,6 +216,8 @@ output: User
 
 ```
 '/api/user/send-user-verification-email' method: POST
+
+my case: GET
 ```
 
 ## RESET PASSWORD
