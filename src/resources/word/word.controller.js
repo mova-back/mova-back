@@ -1,6 +1,7 @@
 const wordModel = require('./word.model');
 const wordSchema = require('./word.schema');
 const ratingModel = require('../rating/rating.model');
+const profileModel = require('../profile/profile.model');
 
 const { NotFound } = require('../../error');
 const { catchErrors } = require('../../middlewares/errorMiddleware');
@@ -86,7 +87,7 @@ const likeWord = catchErrors(async (req, res) => {
   const { id } = req.params;
   const { userId } = req;
 
-  const profile_id = await wordModel.getWordById(userId);
+  const profile_id = await profileModel.findProfileByUserId(userId);
 
   if (!profile_id) {
     throw new NotFound('Profile not found.');
@@ -125,7 +126,7 @@ const dislikeWord = catchErrors(async (req, res) => {
   const { id } = req.params;
   const { userId } = req;
 
-  const profile_id = await wordModel.getWordById(userId);
+  const profile_id = await profileModel.findProfileByUserId(userId);
 
   if (!profile_id) {
     throw new NotFound('Profile not found.');
@@ -157,6 +158,22 @@ const dislikeWord = catchErrors(async (req, res) => {
   return res.status(200).json(false);
 });
 
+// #route:  GET /feed
+// #desc:   get feed
+// #access: Private
+const feedWords = catchErrors(async (_, res) => {
+  // req ?query
+  const offset = 0;
+  const limitPage = 20;
+  const feed = await wordSchema.find({}, null, {
+    skip: offset,
+    limit: limitPage,
+    sort: { likes: 'descending' }
+  });
+
+  return res.status(200).json(feed.map(wordSchema.toResponse));
+});
+
 module.exports = {
   createWord,
   getAllWords,
@@ -164,5 +181,6 @@ module.exports = {
   updateWord,
   deleteWord,
   likeWord,
-  dislikeWord
+  dislikeWord,
+  feedWords
 };

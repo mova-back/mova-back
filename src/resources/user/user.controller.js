@@ -183,6 +183,7 @@ const updateUser = catchErrors(async (req, res) => {
   const result = await userModel.findAndUpdate(req.userId, req.body);
 
   return res.status(200).json(User.toResponse(result));
+});
 
 const changePassword = catchErrors(async (req, res) => {
   const { userId } = req;
