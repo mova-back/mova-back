@@ -1,4 +1,5 @@
 const userModel = require('../user/user.model');
+const profileModel = require('./profile.model');
 
 const Profile = require('./profile.schema');
 
@@ -7,41 +8,60 @@ const { NotFound } = require('../../error');
 
 const { MR } = require('../../constants');
 
-// const getUserByUsername = async (username) => profileModel.getUserByUsername(username);
-//
-// const getProfileById = async (userId) => profileModel.getProfileById(userId);
-//
-// const addFollower = async (id, data) => {
-//   const { username } = data;
-//
-//   if (!username) {
-//     return null;
-//   }
-//
-//   const inputUserName = await profileModel.getUserByUsername(username);
-//
-//   if (!inputUserName) {
-//     return null;
-//   }
-//
-//   return profileModel.addFollower(id, inputUserName.id);
-// };
-//
-// const deleteFollower = async (id, data) => {
-//   const { username } = data;
-//
-//   if (!username) {
-//     return null;
-//   }
-//
-//   const inputUserName = await profileModel.getUserByUsername(username);
-//
-//   if (!inputUserName) {
-//     return null;
-//   }
-//
-//   return profileModel.deleteFollower(id, inputUserName);
-// };
+const followUser = catchErrors(async (req, res) => {
+  const user = await userModel.findUserName(req.params.username);
+  if (!user) {
+    throw new NotFound('User does not exist');
+  }
+
+  const profile = profileModel.findProfileByUserId(user.id);
+  // Наличие user гарантирует профайл, will be del( test throw )
+  if (!profile) {
+    throw new NotFound('Profile does not exist');
+  }
+
+  const currentProfile = profileModel.addFollower(req.userId, profile.id);
+  // Наличие user гарантирует профайл, will be del( test throw )
+  if (!currentProfile) {
+    throw new NotFound('Profile does not exist');
+  }
+
+  const result = Profile.toResponse(currentProfile);
+  return res.status(200).json(result);
+});
+
+const unFollowUser = catchErrors(async (req, res) => {
+  const user = await userModel.findUserName(req.params.username);
+  if (!user) {
+    throw new NotFound('User does not exist');
+  }
+
+  const profile = profileModel.findProfileByUserId(user.id);
+  // Наличие user гарантирует профайл, will be del( test throw )
+  if (!profile) {
+    throw new NotFound('Profile does not exist');
+  }
+
+  const currentProfile = profileModel.deleteFollower(req.userId, profile.id);
+  // Наличие user гарантирует профайл, will be del( test throw )
+  if (!currentProfile) {
+    throw new NotFound('Profile does not exist');
+  }
+
+  const result = Profile.toResponse(currentProfile);
+  return res.status(200).json(result);
+});
+
+const getProfile = catchErrors(async (req, res) => {
+  const user = await userModel.findUserName(req.params.username);
+  if (!user) {
+    throw new NotFound('User does not exist');
+  }
+
+  const profile = profileModel.findProfileByUserId(user.id);
+  const result = Profile.toResponse(profile);
+  return res.status(200).json(result);
+});
 
 const promoteToModerator = catchErrors(async (req, res) => {
   const user = await userModel.findUserName(req.params.username);
@@ -49,12 +69,17 @@ const promoteToModerator = catchErrors(async (req, res) => {
     throw new NotFound('User does not exist');
   }
 
-  const profile = await Profile.updateOne({ userId: user.id }, { role: MR }).exec();
+  const profile = profileModel.updateRole(user.id, MR);
 
-  // throw already a moderator
-  res.status(200).json(profile);
+  // throw already a moderator? or with front-end
+
+  const result = Profile.toResponse(profile);
+  return res.status(200).json(result);
 });
 
 module.exports = {
-  promoteToModerator
+  promoteToModerator,
+  getProfile,
+  followUser,
+  unFollowUser
 };

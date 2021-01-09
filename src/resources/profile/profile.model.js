@@ -1,32 +1,38 @@
-// const userSchema = require('../user/user.schema');
-const profileSchema = require('./profile.schema');
-
-// const getUserByUsername = async (username) => {
-//   return userSchema.findOne({ username: username.toString() }).exec();
-// };
-//
-// const addFollower = async (id, inputUserNameID) => {
-//   return profileSchema.updateOne({ user_id: id }, { follows: inputUserNameID });
-// };
-//
-// const deleteFollower = async (id, inputUserNameID) => {
-//   return profileSchema.findOne({ user_id: id }, async (err, profile) => {
-//     const newFollows = profile.follows.filter((userID) => userID === inputUserNameID);
-//
-//     // How we will catch error if userid doesnt have in follows array ??!
-//     return profileSchema.updateOne({ user_id: id }, { follows: newFollows });
-//   });
-// };
+const Profile = require('./profile.schema');
 
 const save = async (profile) => {
   return profile.save();
 };
 
 const findProfileByUserId = async (id) => {
-  return profileSchema.findOne({ userId: id }).exec();
+  return Profile.findOne({ userId: id }).exec();
+};
+
+const updateRole = async (id, inputRole) => {
+  return Profile.findOneAndUpdate({ userId: id }, { role: inputRole }, { new: true }).exec();
+};
+
+const addFollower = async (id, profileId) => {
+  return Profile.findOneAndUpdate(
+    { userId: id },
+    { follows: [...profileId] },
+    { new: true }
+  ).exec();
+};
+
+const deleteFollower = async (id, profileId) => {
+  return Profile.findOne({ userId: id }, async (err, profile) => {
+    const newFollows = profile.follows.filter((followerId) => followerId !== profileId);
+
+    // How we will catch error if userid doesnt have in follows array ??!
+    return Profile.updateOne({ user_id: id }, { follows: newFollows });
+  });
 };
 
 module.exports = {
   save,
-  findProfileByUserId
+  findProfileByUserId,
+  updateRole,
+  addFollower,
+  deleteFollower
 };
