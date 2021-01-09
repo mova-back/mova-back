@@ -4,7 +4,8 @@ module.exports = {
   PORT: process.env.PORT,
   MODE: process.env.MODE,
   BASE_URL: process.env.BASE_URL,
-  MDB_URL: process.env.MDB_URL,
+  MDB_URL:
+    'mongodb+srv://admin:G8G2Bfs5cBepEdr@cluster-mova-data-base.bnb39.mongodb.net/mova-data-base-user?retryWrites=true&w=majority',
   COOKIE_SESSION_SECRET: process.env.COOKIE_SESSION_SECRET,
   JWT_SECRET: process.env.JWT_SECRET,
   EMAIL_HOST: process.env.EMAIL_HOST,
