@@ -12,8 +12,13 @@ const findJwtId = async (JwtId) => {
   return RefreshToken.findOne(JwtId).exec();
 };
 
+const deleteRefreshToken = async (id) => {
+  return RefreshToken.findByIdAndDelete(id);
+};
+
 module.exports = {
   findId,
   save,
-  findJwtId
+  findJwtId,
+  deleteRefreshToken
 };
