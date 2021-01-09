@@ -30,6 +30,14 @@ app.use('/', (req, res, next) => {
   next();
 });
 
+app.use('/api/test', (req, res, next) => {
+  if (req.method === 'GET') {
+    res.status(200).json({ message: "It's Alive!" });
+    return;
+  }
+  next();
+});
+
 app.use('/api', userRouter);
 app.use('/api/profiles', profileRouter);
 app.use('/api/word', wordRouter);

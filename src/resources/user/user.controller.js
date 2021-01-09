@@ -111,7 +111,7 @@ const registerUser = catchErrors(async (req, res) => {
 // #desc:   login a user
 // #access: Public
 const loginUser = catchErrors(async (req, res) => {
-  const { username: reqUsername, password: reqPassword, email: reqEmail } = req.body;
+  const { password: reqPassword, email: reqEmail } = req.body;
 
   const email = await userModel.findEmail(reqEmail.toLowerCase());
   if (!email) {
@@ -197,6 +197,42 @@ const updateToken = catchErrors(async (req, res) => {
 
   const result = User.toResponse(user);
   return res.status(200).json({ ...result, ...token });
+});
+
+const updateUser = catchErrors(async (req, res) => {
+  const { password } = req.body;
+
+  const user = await userModel.findId(req.userId);
+
+  const isMatch = await isComparePassword(password, user.password);
+  if (!isMatch) {
+    throw new BadRequest('Password is incorrect!');
+  }
+
+  const result = await userModel.findAndUpdate(req.userId, req.body);
+
+  return res.status(200).json(User.toResponse(result));
+});
+
+const changePassword = catchErrors(async (req, res) => {
+  const { userId } = req;
+
+  const { old_password, new_password1, new_password2 } = req.body;
+
+  const user = await userModel.findId(req.userId);
+
+  const isMatch = await isComparePassword(old_password, user.password);
+  if (!isMatch) {
+    throw new BadRequest('Old password is incorrect!');
+  }
+
+  if (new_password1 !== new_password2) {
+    throw new BadRequest('new_password1 does not match new_password2!');
+  }
+
+  userModel.findAndUpdate(userId, { password: new_password1 });
+
+  return res.status(200).json({ message: 'User password has been changed successfully!' });
 });
 
 // #route:  POST /user/logout
@@ -332,6 +368,8 @@ module.exports = {
   loginUser,
   getUser,
   updateToken,
+  updateUser,
+  changePassword,
   logout,
   sendVerifyEmail,
   verifyEmail,
