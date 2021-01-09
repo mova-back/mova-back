@@ -170,6 +170,20 @@ const updateToken = catchErrors(async (req, res) => {
   return res.status(200).json({ ...result, ...token });
 });
 
+const updateUser = catchErrors(async (req, res) => {
+  const { password } = req.body;
+
+  const user = await userModel.findId(req.userId);
+
+  const isMatch = await isComparePassword(password, user.password);
+  if (!isMatch) {
+    throw new BadRequest('Password is incorrect!');
+  }
+
+  const result = await userModel.findAndUpdate(req.userId, req.body);
+
+  return res.status(200).json(User.toResponse(result));
+
 const changePassword = catchErrors(async (req, res) => {
   const { userId } = req;
 
@@ -323,6 +337,7 @@ module.exports = {
   loginUser,
   getUser,
   updateToken,
+  updateUser,
   changePassword,
   logout,
   sendVerifyEmail,

@@ -8,8 +8,9 @@ const { PRE_UR, UR, MR, AR } = require('../../constants');
 
 router
   .route('/user')
+  .get(jwtMiddleware.authByRole([PRE_UR, UR, MR, AR]), userController.getUser)
   .post(userController.registerUser)
-  .get(jwtMiddleware.authByRole([PRE_UR, UR, MR, AR]), userController.getUser);
+  .put(jwtMiddleware.authByRole([UR, MR, AR]), userController.updateUser, jwtMiddleware.auth);
 router.route('/user/login').post(userController.loginUser);
 router.route('/user/refresh').post(userController.updateToken);
 router
