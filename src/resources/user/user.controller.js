@@ -1,15 +1,18 @@
 const cryptoRandomString = require('crypto-random-string');
 const userModel = require('./user.model');
 const codeModel = require('../secretCode/secretCode.model');
+const profileModel = require('../profile/profile.model');
 const refreshTokenModel = require('../refreshToken/refreshToken.model');
 const emailService = require('../../utils/nodemailer');
 const { EMAIL_USERNAME } = require('../../config/index');
 
 const User = require('./user.schema');
 const Code = require('../secretCode/secretCode.schema');
+const Profile = require('../profile/profile.schema');
 const RefreshToken = require('../refreshToken/refreshToken.schema');
 
 const { NotFound, UnprocessableEntity, BadRequest, Unauthorized } = require('../../error');
+const { UR } = require('../../constants');
 
 const { catchErrors } = require('../../middlewares/errorMiddleware');
 const {
@@ -39,13 +42,20 @@ const registerUser = catchErrors(async (req, res) => {
     throw new UnprocessableEntity('Email already registered');
   }
 
-  // TODO : optimization
-  // const username = await userModel.findUserName(reqUsername);
-  // if (username) {
-  //   throw new UnprocessableEntity('User already registered');
-  // }
+  const username = await userModel.findUserName(reqUsername);
+  if (username) {
+    throw new UnprocessableEntity('User already registered');
+  }
 
   const newUser = await userModel.registerUser(req.body);
+
+  // create profile
+
+  const profile = new Profile({
+    userId: newUser._id
+  });
+  await profileModel.save(profile);
+
   // create token
   const token = await generateAccessTokenAndRefreshToken(newUser);
 
@@ -54,6 +64,7 @@ const registerUser = catchErrors(async (req, res) => {
     length: 6
   });
 
+  // create email verification code
   const newCode = new Code({
     code: secretCode,
     email: newUser.email
@@ -77,18 +88,14 @@ const registerUser = catchErrors(async (req, res) => {
 // #desc:   login a user
 // #access: Public
 const loginUser = catchErrors(async (req, res) => {
-  const { username: reqUsername, password: reqPassword, email: reqEmail } = req.body;
+  const { password: reqPassword, email: reqEmail } = req.body;
 
-  // TODO Authentication for email or username ??????????????
   const email = await userModel.findEmail(reqEmail.toLowerCase());
   if (!email) {
     throw new UnprocessableEntity('Authentication failed, email not found');
   }
 
-  const user = await userModel.findUserName(reqUsername);
-  if (!user) {
-    throw new UnprocessableEntity('Authentication failed, user not found');
-  }
+  const user = await userModel.findEmail(reqEmail);
 
   // check if the password is valid
   const isMatch = await isComparePassword(reqPassword, user.password);
@@ -161,6 +168,41 @@ const updateToken = catchErrors(async (req, res) => {
 
   const result = User.toResponse(user);
   return res.status(200).json({ ...result, ...token });
+});
+
+const updateUser = catchErrors(async (req, res) => {
+  const { password } = req.body;
+
+  const user = await userModel.findId(req.userId);
+
+  const isMatch = await isComparePassword(password, user.password);
+  if (!isMatch) {
+    throw new BadRequest('Password is incorrect!');
+  }
+
+  const result = await userModel.findAndUpdate(req.userId, req.body);
+
+  return res.status(200).json(User.toResponse(result));
+
+const changePassword = catchErrors(async (req, res) => {
+  const { userId } = req;
+
+  const { old_password, new_password1, new_password2 } = req.body;
+
+  const user = await userModel.findId(req.userId);
+
+  const isMatch = await isComparePassword(old_password, user.password);
+  if (!isMatch) {
+    throw new BadRequest('Old password is incorrect!');
+  }
+
+  if (new_password1 !== new_password2) {
+    throw new BadRequest('new_password1 does not match new_password2!');
+  }
+
+  userModel.findAndUpdate(userId, { password: new_password1 });
+
+  return res.status(200).json({ message: 'User password has been changed successfully!' });
 });
 
 // #route:  POST /user/logout
@@ -241,8 +283,10 @@ const verifyEmail = catchErrors(async (req, res) => {
     throw new Unauthorized('Unauthorized');
   }
 
-  const verifyStatus = true;
-  await codeModel.updateVerifyStatus(user.email, verifyStatus);
+  // Это поле удалено , потому что появились роли
+  // const verifyStatus = true;
+  // await codeModel.updateVerifyStatus(user.email, verifyStatus);
+  await Profile.updateOne({ userId: user.id }, { role: UR }).exec();
   await codeModel.deleteMatches(user.email);
 
   const result = User.toResponse(user);
@@ -293,6 +337,8 @@ module.exports = {
   loginUser,
   getUser,
   updateToken,
+  updateUser,
+  changePassword,
   logout,
   sendVerifyEmail,
   verifyEmail,

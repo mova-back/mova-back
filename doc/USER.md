@@ -142,7 +142,7 @@ output with errors:
 input: updated fields User {
     'email': 'meh@mo.mo',
     'bio': 'I\'m a simple man',
-    'password': 'hmm'
+    'username': 'hmm'
 }
 
 headers={

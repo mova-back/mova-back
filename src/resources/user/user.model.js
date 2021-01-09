@@ -12,8 +12,16 @@ const findId = async (id) => {
   return User.findOne({ _id: id }).exec();
 };
 
+const findAndUpdate = async (id, data) => {
+  return User.findOneAndUpdate({ _id: id }, data);
+};
+
 const registerUser = async (data) => {
   return User.create(data);
+};
+
+const findAndUpdate = async (id, data) => {
+  return User.findOneAndUpdate({ _id: id }, data, { new: true });
 };
 
 const updateVerifyStatus = async (email, verifyStatus) => {
@@ -25,5 +33,6 @@ module.exports = {
   findEmail,
   registerUser,
   findId,
+  findAndUpdate,
   updateVerifyStatus
 };

@@ -3,6 +3,9 @@ const { v4: uuid } = require('uuid');
 
 const RefreshToken = require('../../resources/refreshToken/refreshToken.schema');
 
+const refreshTokenModel = require('../../resources/refreshToken/refreshToken.model');
+const profileModel = require('../../resources/profile/profile.model');
+
 const { JWT_SECRET, ACCESS_EXP } = require('../../config');
 
 const generateAccessTokenAndRefreshTokenForUser = async (user, jwtId) => {
@@ -11,13 +14,20 @@ const generateAccessTokenAndRefreshTokenForUser = async (user, jwtId) => {
   refreshToken.userId = user.id;
   refreshToken.jwtId = jwtId;
 
-  await refreshToken.save();
+  await refreshTokenModel.save(refreshToken);
   return refreshToken.id;
 };
 
+const getProfileRoleByUserId = async (id) => {
+  return profileModel.findProfileByUserId(id);
+};
+
 const generateAccessTokenAndRefreshToken = async (user) => {
+  const profile = await getProfileRoleByUserId(user.id);
+
   const payload = {
-    userId: user.id
+    userId: user.id,
+    role: profile.role
   };
 
   const jwtId = uuid();
