@@ -12,8 +12,8 @@ const profileSchema = new mongoose.Schema(
 );
 
 profileSchema.statics.toResponse = (profile) => {
-  const { role, user_id, follows } = profile;
-  return { role, user_id, follows };
+  const { role, userId, follows } = profile;
+  return { role, userId, follows };
 };
 
 const Profile = mongoose.model('profiles', profileSchema);
