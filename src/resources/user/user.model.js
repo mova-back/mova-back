@@ -20,10 +20,15 @@ const findAndUpdate = async (id, data) => {
   return User.findOneAndUpdate({ _id: id }, data, { new: true });
 };
 
+const updateVerifyStatus = async (email, verifyStatus) => {
+  await User.updateOne({ email }, { emailVerified: verifyStatus });
+};
+
 module.exports = {
   findUserName,
   findEmail,
   registerUser,
   findId,
-  findAndUpdate
+  findAndUpdate,
+  updateVerifyStatus
 };

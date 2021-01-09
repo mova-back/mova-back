@@ -2,7 +2,9 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
-const userSchema = new mongoose.Schema(
+const { Schema } = mongoose;
+
+const userSchema = new Schema(
   {
     username: { type: String, required: true, unique: true, trim: true },
     email: { type: String, required: true, unique: true, trim: true, lowercase: true },
@@ -14,6 +16,8 @@ const userSchema = new mongoose.Schema(
     // updatedAt: { type: String, default: moment().subtract(24, 'hours').toDate() },
     createdAt: { type: Date },
     updatedAt: { type: Date }
+    // emailVerified: { type: Boolean, default: false }
+    // это поле не нужно, для этого есть роль PRE_UR
   },
   { timestamps: true }
 );
@@ -40,8 +44,8 @@ userSchema.pre('findOneAndUpdate', async function () {
 });
 
 userSchema.statics.toResponse = (user) => {
-  const { id, username, email, createdAt, updatedAt, accessToken, bio } = user;
-  return { id, username, email, createdAt, updatedAt, accessToken, bio };
+  const { id, username, email, createdAt, updatedAt, accessToken, bio, emailVerified } = user;
+  return { id, username, email, createdAt, updatedAt, accessToken, bio, emailVerified };
 };
 
 const User = mongoose.model('users', userSchema);

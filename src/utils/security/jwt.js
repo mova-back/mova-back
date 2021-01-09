@@ -1,36 +1,39 @@
 const jwt = require('jsonwebtoken');
 const { v4: uuid } = require('uuid');
 
-const moment = require('moment');
 const RefreshToken = require('../../resources/refreshToken/refreshToken.schema');
 
-const { SECRET_JWT_KEY } = require('../../config');
+const refreshTokenModel = require('../../resources/refreshToken/refreshToken.model');
+const profileModel = require('../../resources/profile/profile.model');
+
+const { JWT_SECRET, ACCESS_EXP } = require('../../config');
 
 const generateAccessTokenAndRefreshTokenForUser = async (user, jwtId) => {
   const refreshToken = new RefreshToken();
 
-  // TODO we need connection by id or something (by populate) ?
   refreshToken.userId = user.id;
   refreshToken.jwtId = jwtId;
 
-  // expiry 10 days
-  refreshToken.expiryDate = moment().add(10, 'd').toDate();
-
-  await refreshToken.save();
+  await refreshTokenModel.save(refreshToken);
   return refreshToken.id;
 };
 
+const getProfileRoleByUserId = async (id) => {
+  return profileModel.findProfileByUserId(id);
+};
+
 const generateAccessTokenAndRefreshToken = async (user) => {
+  const profile = await getProfileRoleByUserId(user.id);
+
   const payload = {
-    id: user.id,
-    username: user.username,
-    email: user.email
+    userId: user.id,
+    role: profile.role
   };
 
   const jwtId = uuid();
 
-  const accessToken = jwt.sign(payload, SECRET_JWT_KEY, {
-    expiresIn: '5m',
+  const accessToken = jwt.sign(payload, JWT_SECRET, {
+    expiresIn: ACCESS_EXP,
     jwtid: jwtId, // needed for the refresh token, as a refresh token only points to one single unique token
     subject: user.id.toString()
   });
@@ -46,22 +49,25 @@ const getJwtValueByKey = (token, key) => {
 };
 
 const isValidToken = (token, ignoreExpiration) => {
-  try {
-    return jwt.verify(token, SECRET_JWT_KEY, {
-      ignoreExpiration
-    });
-  } catch (err) {
-    return false;
-  }
-};
+  // ignoreExpiration
 
-const isRefreshTokenExpired = (refreshToken) => {
-  return moment().isAfter(refreshToken.expiryDate);
+  return jwt.verify(
+    token,
+    JWT_SECRET,
+    {
+      ignoreExpiration
+    },
+    (err, user) => {
+      if (err) {
+        return false;
+      }
+      return user;
+    }
+  );
 };
 
 module.exports = {
   generateAccessTokenAndRefreshToken,
   getJwtValueByKey,
-  isValidToken,
-  isRefreshTokenExpired
+  isValidToken
 };
