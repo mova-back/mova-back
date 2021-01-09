@@ -12,15 +12,19 @@ router
   .post(userController.registerUser)
   .put(jwtMiddleware.authByRole([UR, MR, AR]), userController.updateUser);
 router.route('/user/login').post(userController.loginUser);
-router.route('/user/refresh').post(userController.updateToken);
+router
+  .route('/user/refresh')
+  .post(jwtMiddleware.authByRole([PRE_UR, UR, MR, AR]), userController.updateToken);
+router
+  .route('/user/logout')
+  .post(jwtMiddleware.authByRole([PRE_UR, UR, MR, AR]), userController.logout);
 router
   .route('/user/change-password')
   .put(jwtMiddleware.authByRole([PRE_UR, UR, MR, AR]), userController.changePassword);
-router.route('/user/logout').post(userController.logout);
 router
   .route('/user/send-user-verification-email')
-  .post(jwtMiddleware.authByRole([PRE_UR]), userController.sendVerifyEmail);
-router.route('/user/verify_email:userId/:secretCode').post(userController.verifyEmail);
-router.route('/user/send-password-reset-email').get(userController.resetPasswordByEmail);
+  .get(jwtMiddleware.authByRole([PRE_UR]), userController.sendVerifyEmail);
+router.route('/user/verify_email/:userId/:secretCode').get(userController.verifyEmail);
+router.route('/user/send-password-reset-email').post(userController.resetPasswordByEmail);
 
 module.exports = router;
