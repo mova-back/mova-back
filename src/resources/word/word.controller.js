@@ -3,7 +3,7 @@ const wordSchema = require('./word.schema');
 const ratingModel = require('../rating/rating.model');
 const profileModel = require('../profile/profile.model');
 
-const { NotFound } = require('../../error');
+const { NotFound, UnprocessableEntity } = require('../../error');
 const { catchErrors } = require('../../middlewares/errorMiddleware');
 
 // #route:  POST /word
@@ -177,7 +177,7 @@ const favoriteWord = catchErrors(async (req, res) => {
     throw new NotFound('Word not found.');
   }
   if (word.favorites.includes(userId)) {
-    return res.status(200).json({ message: 'Word was added' });
+    throw new UnprocessableEntity('Word was added');
   }
 
   const addFavorite = await wordSchema.findByIdAndUpdate(
@@ -193,6 +193,32 @@ const favoriteWord = catchErrors(async (req, res) => {
   return res.status(200).json(wordSchema.toResponse(addFavorite));
 });
 
+const unfavoriteWord = catchErrors(async (req, res) => {
+  const { id } = req.params;
+  const { userId } = req;
+  const word = await wordModel.getWordById(id);
+
+  if (!word) {
+    throw new NotFound('Word not found.');
+  }
+
+  if (!word.favorites.includes(userId)) {
+    throw new NotFound('Word was not added');
+  }
+
+  const deleteFavorite = await wordSchema.findByIdAndUpdate(
+    { _id: id },
+    {
+      $pull: { favorites: userId }
+    },
+    {
+      new: true
+    }
+  );
+
+  return res.status(200).json(wordSchema.toResponse(deleteFavorite));
+});
+
 module.exports = {
   createWord,
   getAllWords,
@@ -202,5 +228,6 @@ module.exports = {
   likeWord,
   dislikeWord,
   feedWords,
-  favoriteWord
+  favoriteWord,
+  unfavoriteWord
 };
