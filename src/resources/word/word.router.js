@@ -22,4 +22,6 @@ router
   .route('/word/:id/dislike')
   .put(jwtMiddleware.authByRole([UR, MR, AR]), wordController.dislikeWord);
 
+router.route('/word/:id/favorite').put(wordController.favoriteWord);
+
 module.exports = router;

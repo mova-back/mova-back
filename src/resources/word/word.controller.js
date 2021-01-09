@@ -93,12 +93,6 @@ const likeWord = catchErrors(async (req, res) => {
     throw new NotFound('Profile not found.');
   }
 
-  const word = await wordModel.getWordById(id);
-
-  if (!word) {
-    throw new NotFound('Word not found.');
-  }
-
   const isRating = await ratingModel.findRatingById(id, profile_id);
 
   if (!isRating) {
@@ -174,6 +168,31 @@ const feedWords = catchErrors(async (_, res) => {
   return res.status(200).json(feed.map(wordSchema.toResponse));
 });
 
+const favoriteWord = catchErrors(async (req, res) => {
+  const { id } = req.params;
+  const { userId } = req;
+  const word = await wordModel.getWordById(id);
+
+  if (!word) {
+    throw new NotFound('Word not found.');
+  }
+  if (word.favorites.includes(userId)) {
+    return res.status(200).json({ message: 'Word was added' });
+  }
+
+  const addFavorite = await wordSchema.findByIdAndUpdate(
+    { _id: id },
+    {
+      $push: { favorites: userId }
+    },
+    {
+      new: true
+    }
+  );
+
+  return res.status(200).json(wordSchema.toResponse(addFavorite));
+});
+
 module.exports = {
   createWord,
   getAllWords,
@@ -182,5 +201,6 @@ module.exports = {
   deleteWord,
   likeWord,
   dislikeWord,
-  feedWords
+  feedWords,
+  favoriteWord
 };
