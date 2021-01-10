@@ -196,7 +196,7 @@ output with errors:
 '/api/user/refresh' method: POST
 
 headers={
-'Authorization': 'Token access_token'
+  'Authorization': 'Token access_token'
 }
 
 !!! create_access_token
@@ -215,7 +215,7 @@ output: User
 ## VERIFICATION EMAIL
 
 ```
-'/api/user/send-user-verification-email' method: POST
+'/api/user/send-user-verification-email' method: GET
 ```
 
 ## RESET PASSWORD

@@ -27,12 +27,7 @@ const { getBearerTokenFromRequest } = require('../../utils/security/http');
 // #desc:   Register a user
 // #access: Public
 const registerUser = catchErrors(async (req, res) => {
-  const {
-    username: reqUsername,
-    password: reqPassword,
-    email: reqEmail,
-    repeatPassword: reqRepeatPassword
-  } = req.body;
+  const { username: reqUsername, password: reqPassword, email: reqEmail } = req.body;
 
   if (
     (!reqUsername || !reqPassword || !reqEmail) &&
@@ -41,9 +36,6 @@ const registerUser = catchErrors(async (req, res) => {
   ) {
     throw new BadRequest('Please fill all fields correctly.');
   }
-
-  if (reqPassword !== reqRepeatPassword)
-    throw new BadRequest('Repeat password does not match the password');
 
   // Password validation ???
   // if (!reqPassword.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{6,}$/)) {
@@ -115,13 +107,10 @@ const loginUser = catchErrors(async (req, res) => {
 
   const email = await userModel.findEmail(reqEmail.toLowerCase());
   if (!email) {
-    throw new NotFound('Authentication failed, email not found');
+    throw new UnprocessableEntity('Authentication failed, email not found');
   }
 
-  const user = await userModel.findUserName(reqUsername);
-  if (!user) {
-    throw new NotFound('Authentication failed, user not found');
-  }
+  const user = await userModel.findEmail(reqEmail);
 
   // check if the password is valid
   const isMatch = await isComparePassword(reqPassword, user.password);
@@ -240,7 +229,8 @@ const changePassword = catchErrors(async (req, res) => {
 // #access: Public
 const logout = catchErrors(async (req, res) => {
   const accessToken = getBearerTokenFromRequest(req);
-  if (isValidToken(accessToken)) {
+  console.log(isValidToken(accessToken));
+  if (!isValidToken(accessToken)) {
     throw new Unauthorized('Unauthorized');
   }
 
