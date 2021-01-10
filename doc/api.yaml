@@ -193,6 +193,51 @@ paths:
         402:
           description: Bad Request(Wrong password)
         #register token errors
+  /user/change-password:
+    put:
+      tags:
+        - User
+      security:
+        - bearerAuth: []
+      summary: Change password
+      description: Get new password (repeated) and change it
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                old_password:
+                  type: string
+                  description: Old password
+                new_password1:
+                  type: string
+                  description: New password
+                new_password2:
+                  type: string
+                  description: New password (repeated)
+              required:
+                - old_password
+                - new_password1
+                - new_password2
+      responses:
+        200:
+          description: Password is changed.
+          content:
+            application/json:
+              schema:
+                type: object
+                title: response example
+                properties:
+                  message:
+                    type: string
+                    description: User password has been changed successfully!
+        400:
+          description: Bad Request(Old password is incorrect! / new_password1 does not match new_password2!)    
+        401:
+          description: Bad Request (Authorization Header is not set / JWT is not valid )
   /user/refresh:
     post:
       tags:
@@ -211,7 +256,7 @@ paths:
               properties:
                 accessToken:
                   type: string
-                  description: CccessToken
+                  description: AccessToken
                 refreshToken:
                   type: string
                   description: RefreshToken
