@@ -4,6 +4,13 @@ const createWord = async (data) => word.create(data);
 
 const getAllWords = async () => word.find({});
 
+const sortByFilter = async (offset, limitPage) =>
+  word.find({}, null, {
+    skip: offset,
+    limit: limitPage,
+    sort: { likes: 'descending' }
+  });
+
 const getWordById = async (id) => word.findById(id);
 
 const updateWord = async (id, data) =>
@@ -16,5 +23,6 @@ module.exports = {
   getAllWords,
   getWordById,
   updateWord,
-  deleteWord
+  deleteWord,
+  sortByFilter
 };
