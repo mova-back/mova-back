@@ -14,13 +14,13 @@ const followUser = catchErrors(async (req, res) => {
     throw new NotFound('User does not exist');
   }
 
-  const profile = profileModel.findProfileByUserId(user.id);
+  const profile = await profileModel.findProfileByUserId(user.id);
   // Наличие user гарантирует профайл, will be del( test throw )
   if (!profile) {
     throw new NotFound('Profile does not exist');
   }
 
-  const currentProfile = profileModel.addFollower(req.userId, profile.id);
+  const currentProfile = await profileModel.addFollower(req.userId, profile.id);
   // Наличие user гарантирует профайл, will be del( test throw )
   if (!currentProfile) {
     throw new NotFound('Profile does not exist');
@@ -36,13 +36,13 @@ const unFollowUser = catchErrors(async (req, res) => {
     throw new NotFound('User does not exist');
   }
 
-  const profile = profileModel.findProfileByUserId(user.id);
+  const profile = await profileModel.findProfileByUserId(user.id);
   // Наличие user гарантирует профайл, will be del( test throw )
   if (!profile) {
     throw new NotFound('Profile does not exist');
   }
 
-  const currentProfile = profileModel.deleteFollower(req.userId, profile.id);
+  const currentProfile = await profileModel.deleteFollower(req.userId, profile.id);
   // Наличие user гарантирует профайл, will be del( test throw )
   if (!currentProfile) {
     throw new NotFound('Profile does not exist');
@@ -58,7 +58,7 @@ const getProfile = catchErrors(async (req, res) => {
     throw new NotFound('User does not exist');
   }
 
-  const profile = profileModel.findProfileByUserId(user.id);
+  const profile = await profileModel.findProfileByUserId(user.id);
   const result = Profile.toResponse(profile);
   return res.status(200).json(result);
 });
@@ -69,7 +69,7 @@ const promoteToModerator = catchErrors(async (req, res) => {
     throw new NotFound('User does not exist');
   }
 
-  const profile = profileModel.updateRole(user.id, MR);
+  const profile = await profileModel.updateRole(user.id, MR);
 
   // throw already a moderator? or with front-end
 
