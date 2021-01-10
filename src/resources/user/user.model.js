@@ -13,7 +13,7 @@ const findId = async (id) => {
 };
 
 const findAndUpdate = async (id, data) => {
-  return User.findOneAndUpdate({ _id: id }, data);
+  return User.findOneAndUpdate({ _id: id }, data, { new: true });
 };
 
 const registerUser = async (data) => {

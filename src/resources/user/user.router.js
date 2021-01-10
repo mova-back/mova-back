@@ -19,8 +19,8 @@ router
 router.route('/user/logout').post(userController.logout);
 router
   .route('/user/send-user-verification-email')
-  .post(jwtMiddleware.authByRole([PRE_UR]), userController.sendVerifyEmail);
-router.route('/user/verify_email:userId/:secretCode').post(userController.verifyEmail);
+  .get(jwtMiddleware.authByRole([PRE_UR]), userController.sendVerifyEmail);
+router.route('/user/verify_email/:userId/:secretCode').get(userController.verifyEmail);
 router.route('/user/send-password-reset-email').get(userController.resetPasswordByEmail);
 
 module.exports = router;
