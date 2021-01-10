@@ -245,11 +245,24 @@ paths:
         401:
           description:  Unauthorized (Secret Code does not exist, Unauthorized)
   /user/send-password-reset-email:
-    get:
+    post:
       tags:
         - User
       summary: Send password reset by Email
       description: Send password reset by Email code verification (front-end)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                email:
+                  type: string
+                  description: Email
+              required:
+                - email
       responses:
         204:
           description: The reset password link was sent to your registered email address..
