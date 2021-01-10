@@ -83,14 +83,10 @@ paths:
                 password:
                   type: string
                   description: The user's password
-                repeatPassword:
-                  type: string
-                  description: The user's password repeat
               required:
                 - name
                 - email
                 - password
-                - repeatPassword
       responses:
         200:
           description: The user has been registred.
@@ -134,23 +130,15 @@ paths:
               type: object
               title: example
               properties:
-                username:
-                  type: string
-                  description: Username
                 email:
                   type: string
                   description: Email
                 password:
                   type: string
                   description: Password
-                repeatPassword:
-                  type: string
-                  description: The user's password repeat
               required:
-                - user
-                - login
                 - email
-                - repeatPassword
+                - password
       responses:
         200:
           description: The user has been logined.
