@@ -34,7 +34,23 @@ const registerUser = catchErrors(async (req, res) => {
     req.body.constructor === Object &&
     Object.keys(req.body).length !== 0
   ) {
-    throw new NotFound('Unable create user.');
+    throw new BadRequest('Please fill all fields correctly.');
+  }
+
+  // Password validation ???
+  // if (!reqPassword.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{6,}$/)) {
+  //   throw new BadRequest(
+  //     'Your password must be at least 6 characters long and contain a lowercase letter, an uppercase letter, a numeric digit and a special character.'
+  //   );
+  // }
+
+  // test validation
+  if (
+    !reqEmail.match(
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
+    )
+  ) {
+    throw new BadRequest('Your email must be at correctly (with @ symbol)');
   }
 
   const email = await userModel.findEmail(reqEmail);
@@ -44,13 +60,12 @@ const registerUser = catchErrors(async (req, res) => {
 
   const username = await userModel.findUserName(reqUsername);
   if (username) {
-    throw new UnprocessableEntity('User already registered');
+    throw new UnprocessableEntity('Username already registered');
   }
 
   const newUser = await userModel.registerUser(req.body);
 
   // create profile
-
   const profile = new Profile({
     userId: newUser._id
   });
@@ -112,7 +127,7 @@ const loginUser = catchErrors(async (req, res) => {
 
 // #route:  GET /user
 // #desc:   get a user
-// #access: Private(stage 2)
+// #access: Private
 const getUser = catchErrors(async (req, res) => {
   // TODO , I suppose that code is found below need wrap to function because it will be use with all request
 
@@ -159,9 +174,12 @@ const updateToken = catchErrors(async (req, res) => {
     throw new Unauthorized('Refresh Token has been used or invalidated');
   }
 
-  reqRefreshToken.used = true;
-  const refreshToken = new RefreshToken(reqRefreshToken);
-  await refreshTokenModel.save(refreshToken);
+  // reqRefreshToken.used = true;
+  // const refreshToken = new RefreshToken(reqRefreshToken);
+  // await refreshTokenModel.save(refreshToken);
+
+  // TODO kill token
+  await refreshTokenModel.deleteRefreshToken(reqRefreshToken);
 
   // retrieve refreshToken and accessToken
   const token = await generateAccessTokenAndRefreshToken(user);
@@ -211,10 +229,12 @@ const changePassword = catchErrors(async (req, res) => {
 // #access: Public
 const logout = catchErrors(async (req, res) => {
   const accessToken = getBearerTokenFromRequest(req);
-  if (isValidToken(accessToken)) {
+  console.log(isValidToken(accessToken));
+  if (!isValidToken(accessToken)) {
     throw new Unauthorized('Unauthorized');
   }
 
+  // TODO update token
   const jwtId = getJwtValueByKey(accessToken, 'jti');
   const reqRefreshToken = await refreshTokenModel.findJwtId(jwtId);
   if (!reqRefreshToken) {
@@ -225,12 +245,12 @@ const logout = catchErrors(async (req, res) => {
   const refreshToken = new RefreshToken(reqRefreshToken);
   await refreshTokenModel.save(refreshToken);
 
-  return res.status(200).json({ message: 'Logout successfully' });
+  return res.status(204).json({ message: 'Logout successfully' });
 });
 
 // #route:  GET /user/send-user-verification-email
 // #desc:   Send activation email to registered users email address
-// #access: Private(stage 1)
+// #access: Private
 // кнопка "Адправиць яшчэ раз"
 const sendVerifyEmail = catchErrors(async (req, res) => {
   const baseUrl = `${req.protocol}://${req.get('host')}`;
@@ -263,7 +283,7 @@ const sendVerifyEmail = catchErrors(async (req, res) => {
   await emailService.sendMail(data);
 
   return res
-    .status(200)
+    .status(204)
     .json({ message: 'The activation link was sent to your registered email address.' });
 });
 
@@ -329,7 +349,7 @@ const resetPasswordByEmail = catchErrors(async (req, res) => {
   await emailService.sendMail(data);
 
   return res
-    .status(200)
+    .status(204)
     .json({ message: 'The reset password link was sent to your registered email address.' });
 });
 
