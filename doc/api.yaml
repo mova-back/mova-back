@@ -58,7 +58,6 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-
 paths:
   /user:
     post:
@@ -330,7 +329,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
         401:
-          description:  Unauthorized (Secret Code does not exist, Unauthorized)
+          description: Unauthorized (Secret Code does not exist, Unauthorized)
   /user/send-password-reset-email:
     post:
       tags:
@@ -347,7 +346,7 @@ paths:
               properties:
                 email:
                   type: string
-                  description: Email
+                  description: email
               required:
                 - email
       responses:
@@ -357,3 +356,171 @@ paths:
           description: NotFound (User with the id was not found)
         401:
           description: Bad Request (Please provide your registered email address!)
+  /profiles/:username:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Profile
+      summary: Get Profile
+      description: Get Profile ( with Authorization Bearer )
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                role:
+                  type: string
+                  description: The user's login
+                userId:
+                  type: string
+                  description: The user's email
+                follows:
+                  type: string
+                  description: The user's password
+              required:
+                - role
+                - userId
+                - follows
+      responses:
+        200:
+          description: Profile.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        404:
+          description: NotFound (User does not exist)
+  /profiles/:username/follow:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - Profile
+      summary: Follow Profile
+      description: Get Profile ( with Authorization Bearer )
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                role:
+                  type: string
+                  description: The user's login
+                userId:
+                  type: string
+                  description: The user's email
+                follows:
+                  type: string
+                  description: The user's password
+              required:
+                - role
+                - userId
+                - follows
+      responses:
+        200:
+          description: Profile.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        404:
+          description: NotFound (User does not exist)
+  /profiles/:username/unfollow:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+    delete:
+      tags:
+        - Profile
+      summary: Unfollow Profile
+      description: Get Profile ( with Authorization Bearer )
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                role:
+                  type: string
+                  description: The user's login
+                userId:
+                  type: string
+                  description: The user's email
+                follows:
+                  type: string
+                  description: The user's password
+              required:
+                - role
+                - userId
+                - follows
+      responses:
+        200:
+          description: Profile.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        404:
+          description: NotFound (User does not exist)
+  /profiles/:username/promote:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - Profile
+      summary: Promote to Moderator
+      description: Get Profile ( with Authorization Bearer )
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                role:
+                  type: string
+                  description: The user's login
+                userId:
+                  type: string
+                  description: The user's email
+                follows:
+                  type: string
+                  description: The user's password
+              required:
+                - role
+                - userId
+                - follows
+      responses:
+        200:
+          description: Profile.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        404:
+          description: NotFound (User does not exist)
