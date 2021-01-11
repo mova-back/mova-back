@@ -344,7 +344,7 @@ paths:
           description: NotFound (User with the id was not found)
         401:
           description: Bad Request (User with the id was not found / Authorization Header is not set / JWT is not valid)
-  /user/verify_email/:userId/:secretCode:
+  /user/verify_email/{userId}/{secretCode}:
     parameters:
       - name: userId
         in: path
@@ -421,7 +421,7 @@ paths:
           description: Unauthorized (Token is not valid!)
         404:
           description: NotFound (User does not exist)
-  /profiles/:username/follow:
+  /profiles/{username}/follow:
     parameters:
       - name: userId
         in: path
@@ -463,7 +463,7 @@ paths:
                 $ref: '#/components/schemas/Profile'
         404:
           description: NotFound (User does not exist)
-  /profiles/:username/unfollow:
+  /profiles/{username}/unfollow:
     parameters:
       - name: userId
         in: path
