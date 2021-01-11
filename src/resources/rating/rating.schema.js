@@ -18,14 +18,6 @@ const RatingSchema = new Schema(
       type: mongoose.Schema.ObjectId,
       ref: 'words',
       required: true
-    },
-    created_at: {
-      type: Date,
-      default: Date.now()
-    },
-    updated_at: {
-      type: Date,
-      default: Date.now()
     }
   },
   { timestamps: true }
