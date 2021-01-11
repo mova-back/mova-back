@@ -103,7 +103,7 @@ const registerUser = catchErrors(async (req, res) => {
 // #desc:   login a user
 // #access: Public
 const loginUser = catchErrors(async (req, res) => {
-  const { password: reqPassword, email: reqEmail, username: reqUsername } = req.body;
+  const { password: reqPassword, email: reqEmail } = req.body;
 
   const email = await userModel.findEmail(reqEmail.toLowerCase());
   if (!email) {
