@@ -32,6 +32,45 @@ components:
           type: array
           items:
             type: string
+    Word:
+      type: object
+      properties:
+        id:
+          type: string
+        wordname:
+          type: string
+        meaning:
+          type: string
+        author_id:
+          type: string
+        extended_description:
+          type: string
+        usages:
+          type: string
+        synonyms:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+        is_anonymous:
+          type: boolean
+        is_on_report_feed:
+          type: boolean
+        userId:
+          type: string
+        favorites:
+          type: array
+          items:
+            type: string
+        likes:
+          type: number
+        dislike:
+          type: number
     RefreshToken:
       required:
         - title
@@ -243,7 +282,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
         401:
-          description:  Unauthorized (Secret Code does not exist, Unauthorized)
+          description: Unauthorized (Secret Code does not exist, Unauthorized)
   /user/send-password-reset-email:
     post:
       tags:
@@ -270,3 +309,281 @@ paths:
           description: NotFound (User with the id was not found)
         401:
           description: Bad Request (Please provide your registered email address!)
+  /dictionary/word:
+    get:
+      tags:
+        - Word
+      security:
+        - bearerAuth: []
+      summary: get words
+      description: get words and return array of words
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Word'
+        401:
+          description: Bad Request (Words were not found)
+    post:
+      tags:
+        - Word
+      security:
+        - bearerAuth: []
+      summary: create a word
+      description: create a word and return created word
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                id:
+                  type: string
+                  description: word's id
+                wordname:
+                  type: string
+                  description: word's wordname
+                meaning:
+                  type: string
+                  description: word's meaning
+                extended_description:
+                  type: string
+                  description: word's extended description
+                usages:
+                  type: string
+                  description: word's usages
+                synonyms:
+                  type: string
+                  description: word's synonyms
+                tags:
+                  type: array
+                  description: word's tags
+                  items:
+                    type: string
+                is_anonymous:
+                  type: boolean
+                  description: is anonymous
+                is_on_report_feed:
+                  type: boolean
+                  description: is on report feed
+              required:
+                - wordname
+                - meaning
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Word'
+        400:
+          description: BadRequest (Please fill all fields correctly)
+        401:
+          description: Bad Request (User with the id was not found)
+  /dictionary/word/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Word
+      security:
+        - bearerAuth: []
+      summary: get a word
+      description: get a word and return the word
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Word'
+        401:
+          description: Bad Request (Word with the id was not found)
+    put:
+      tags:
+        - Word
+      security:
+        - bearerAuth: []
+      summary: update a word
+      description: update a word and return the updated word
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                wordname:
+                  type: string
+                  description: word's wordname
+                meaning:
+                  type: string
+                  description: word's meaning
+                extended_description:
+                  type: string
+                  description: word's extended description
+                usages:
+                  type: string
+                  description: word's usages
+                synonyms:
+                  type: string
+                  description: word's synonyms
+                tags:
+                  type: array
+                  description: word's tags
+                  items:
+                    type: string
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Word'
+        401:
+          description: Bad Request (Word with the id was not found)
+    delete:
+      tags:
+        - Word
+      security:
+        - bearerAuth: []
+      summary: delete a word
+      description: delete a word and return a message about the deleted word
+      responses:
+        200:
+          description: Successful operation
+        401:
+          description: Bad Request (Word with the id was not found)
+  /dictionary/word/{id}/like:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    put:
+      tags:
+        - Word
+      security:
+        - bearerAuth: []
+      summary: like a word
+      description: like a word and return true - liked word or changed dislike to like, otherwise false
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Word'
+        401:
+          description: Bad Request (Word with the id was not found or Profile with the id was not found)
+  /dictionary/word/{id}/dislike:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    put:
+      tags:
+        - Word
+      security:
+        - bearerAuth: []
+      summary: dislike a word
+      description: dislike a word and return true - disliked word or changed like to dislike, otherwise false
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Word'
+        401:
+          description: Bad Request (Word with the id was not found or Profile with the id was not found)
+  /dictionary/word/{id}/favorite:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - Word
+      security:
+        - bearerAuth: []
+      summary: add a favorite word
+      description: add a favorite word and return the word
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Word'
+        401:
+          description: Bad Request (Word with the id was not found or Profile with the id was not found)
+  /dictionary/word/{id}/unfavorite:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    delete:
+      tags:
+        - Word
+      security:
+        - bearerAuth: []
+      summary: delete a favorite word
+      description: delete a favorite word and return the word
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Word'
+        401:
+          description: Bad Request (Word with the id was not found or Profile with the id was not found)
+  /dictionary/feed:
+    get:
+      tags:
+        - Word
+      summary: get feed
+      description: get feed and return filtered array of words
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Word'
+        401:
+          description: Bad Request (Words were not found)
