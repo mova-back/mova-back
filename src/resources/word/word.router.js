@@ -9,7 +9,7 @@ router
   .post(jwtMiddleware.authByRole([UR, MR, AR]), wordController.createWord)
   .get(jwtMiddleware.authByRole([UR, MR, AR]), wordController.getAllWords);
 
-router.route('/feed').get(jwtMiddleware.authByRole([UR, MR, AR]), wordController.feedWords);
+router.route('/feed').get(wordController.feedWords);
 
 router
   .route('/word/:id')

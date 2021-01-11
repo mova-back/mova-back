@@ -11,6 +11,7 @@ const { catchErrors } = require('../../middlewares/errorMiddleware');
 // #access: Private
 const createWord = catchErrors(async (req, res) => {
   const { wordname: reqWordname, meaning: reqMeaning } = req.body;
+  const { userId } = req;
 
   if (
     (!reqWordname || !reqMeaning) &&
@@ -20,7 +21,7 @@ const createWord = catchErrors(async (req, res) => {
     throw new NotFound('Unable create word.');
   }
 
-  const word = await wordModel.createWord(req.body);
+  const word = await wordModel.createWord({ ...req.body, userId });
   return res.status(200).json(wordSchema.toResponse(word));
 });
 
@@ -107,10 +108,10 @@ const likeWord = catchErrors(async (req, res) => {
     return res.status(200).json(false);
   }
 
-  const ult = await ratingModel.updateRating(isRating, 'like');
-  await wordModel.updateWord({ _id: id }, { $inc: { dislikes: 1, likes: -1 } });
+  await ratingModel.updateRating(isRating, 'like');
+  await wordModel.updateWord({ _id: id }, { $inc: { dislikes: -1, likes: 1 } });
 
-  return res.status(200).json(ult);
+  return res.status(200).json(true);
 });
 
 // #route:  PUT /word/:id/dislike
@@ -147,9 +148,9 @@ const dislikeWord = catchErrors(async (req, res) => {
   }
 
   await ratingModel.updateRating(isRating, 'dislike');
-  await wordModel.updateWord({ _id: id }, { $inc: { likes: 1, dislikes: -1 } });
+  await wordModel.updateWord({ _id: id }, { $inc: { likes: -1, dislikes: 1 } });
 
-  return res.status(200).json(false);
+  return res.status(200).json(true);
 });
 
 // #route:  GET /feed
@@ -179,6 +180,7 @@ const favoriteWord = catchErrors(async (req, res) => {
   if (!word) {
     throw new NotFound('Word not found.');
   }
+
   if (word.favorites.includes(userId)) {
     throw new UnprocessableEntity('Word was added');
   }
@@ -209,7 +211,7 @@ const unfavoriteWord = catchErrors(async (req, res) => {
   }
 
   if (!word.favorites.includes(userId)) {
-    throw new NotFound('Word was not added');
+    throw new UnprocessableEntity('Word was not added');
   }
 
   const deleteFavorite = await wordSchema.findByIdAndUpdate(

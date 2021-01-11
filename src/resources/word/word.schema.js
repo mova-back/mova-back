@@ -11,7 +11,6 @@ const wordSchema = new Schema(
         unique: true
       }
     },
-    author: { type: String },
     meaning: {
       type: String,
       required: true
@@ -51,7 +50,7 @@ const wordSchema = new Schema(
       }
     ],
     userId: { type: Schema.Types.ObjectId, ref: 'profiles' },
-    favorites: { type: Schema.Types.ObjectId, ref: 'profiles' },
+    favorites: [{ type: Schema.Types.ObjectId, ref: 'profiles', default: null }],
     likes: {
       type: Number,
       default: 0
@@ -78,7 +77,7 @@ wordSchema.statics.toResponse = (word) => {
     is_on_report_feed,
     tags,
     userId,
-    favoriters,
+    favorites,
     likes,
     dislikes
   } = word;
@@ -95,7 +94,7 @@ wordSchema.statics.toResponse = (word) => {
     is_on_report_feed,
     tags,
     userId,
-    favoriters,
+    favorites,
     likes,
     dislikes
   };
