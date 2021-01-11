@@ -5,7 +5,7 @@ info:
   version: 1.0.0
 
 servers:
-  - url: /
+  - url: /api
 
 components:
   schemas:
@@ -14,76 +14,97 @@ components:
       properties:
         id:
           type: string
-        name:
+        username:
           type: string
-        login:
+        email:
           type: string
-    Board:
+        passsword:
+          type: string
+    Profile:
       properties:
         id:
           type: string
-        title:
+        role:
           type: string
-        columns:
+        userId:
+          type: string
+        follows:
           type: array
           items:
-            type: object
-            properties:
-              id:
-                type: string
-              title:
-                type: string
-              order:
-                type: integer
-    Task:
+            type: string
+    Word:
+      type: object
+      properties:
+        id:
+          type: string
+        wordname:
+          type: string
+        meaning:
+          type: string
+        author_id:
+          type: string
+        extended_description:
+          type: string
+        usages:
+          type: string
+        synonyms:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+        is_anonymous:
+          type: boolean
+        is_on_report_feed:
+          type: boolean
+        userId:
+          type: string
+        favorites:
+          type: array
+          items:
+            type: string
+        likes:
+          type: number
+        dislike:
+          type: number
+    RefreshToken:
       required:
         - title
       properties:
         id:
           type: string
-        title:
+        jwtId:
           type: string
-        order:
-          type: number
-        description:
-          type: string
+        used:
+          type: boolean
         userId:
           type: string
-  responses:
-    UnauthorizedError:
-      description: Access token is missing or invalid
+        invalidated:
+          type: boolean
+        expiryDate:
+          type: date
+    Code:
+      email:
+        type: String,
+      code:
+        type: String,
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
 
-security:
-  - bearerAuth: []
-
 paths:
-  /users:
-    get:
-      tags:
-        - Users
-      summary: Get all users
-      description: Gets all users (remove password from response)
-      responses:
-        200:
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/User"
-        401:
-          $ref: '#/components/responses/UnauthorizedError'
+  /user:
     post:
       tags:
-        - Users
-      summary: Create user
-      description: Creates a new user (remove password from response)
+        - User
+      summary: Register User
+      description: Register a new user (remove password from response) and returns a Access-token & Refresh-token
       requestBody:
         required: true
         content:
@@ -92,57 +113,269 @@ paths:
               type: object
               title: example
               properties:
-                name:
-                  type: string
-                  description: The user's name
-                login:
+                username:
                   type: string
                   description: The user's login
+                email:
+                  type: string
+                  description: The user's email
                 password:
                   type: string
                   description: The user's password
               required:
                 - name
+                - email
+                - password
       responses:
         200:
-          description: The user has been created.
+          description: The user has been registred.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                $ref: '#/components/schemas/User'
         400:
-          description: Bad request
+          description: BadRequest (Please fill all fields correctly. / Repeat password does not match the password)
+        422:
+          description: UnprocessableEntity (Email already registered / Username already registered)
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - User
+      summary: Get User
+      description: Gets user (remove password from response)
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
         401:
-          $ref: '#/components/responses/UnauthorizedError'
-  /users/{userId}:
+          description: Bad Request (User with the id was not found / Authorization Header is not set / JWT is not valid )
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - User
+      summary: Put User
+      description: Update user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                username:
+                  type: string
+                  description: The user's login
+                email:
+                  type: string
+                  description: The user's email
+                bio:
+                  type: string
+                  description: The user's bio
+                password:
+                  type: string
+                  description: The user's password
+              required:
+                - password
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        401:
+          description: Bad Request (User with the id was not found / Authorization Header is not set / JWT is not valid )
+        402:
+          description: Bad Request(Wrong password)
+  /user/login:
+    post:
+      tags:
+        - User
+      summary: Login User
+      description: Logins a user and returns (remove password from response) a Access-token & Refresh-token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                email:
+                  type: string
+                  description: Email
+                password:
+                  type: string
+                  description: Password
+              required:
+                - email
+                - password
+      responses:
+        200:
+          description: The user has been logined.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        404:
+          description: Not Found(Authentication failed, email not found / Authentication failed, user not found)
+        402:
+          description: Bad Request(Wrong password)
+        #register token errors
+  /user/change-password:
+    put:
+      tags:
+        - User
+      security:
+        - bearerAuth: []
+      summary: Change password
+      description: Get new password (repeated) and change it
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                old_password:
+                  type: string
+                  description: Old password
+                new_password1:
+                  type: string
+                  description: New password
+                new_password2:
+                  type: string
+                  description: New password (repeated)
+              required:
+                - old_password
+                - new_password1
+                - new_password2
+      responses:
+        200:
+          description: Password is changed.
+          content:
+            application/json:
+              schema:
+                type: object
+                title: response example
+                properties:
+                  message:
+                    type: string
+                    description: User password has been changed successfully!
+        400:
+          description: Bad Request(Old password is incorrect! / new_password1 does not match new_password2!)
+        401:
+          description: Bad Request (Authorization Header is not set / JWT is not valid )
+  /user/refresh:
+    post:
+      tags:
+        - User
+      security:
+        - bearerAuth: []
+      summary: Refresh Access-token & Refresh-token
+      description: Get Authorization and returns a Access-token & Refresh-token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                accessToken:
+                  type: string
+                  description: AccessToken
+                refreshToken:
+                  type: string
+                  description: RefreshToken
+              required:
+                - accessToken
+                - refreshToken
+      responses:
+        200:
+          description: The user has been logined.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        401:
+          description: Bad Request (Authorization Header is not set / JWT is not valid )
+        404:
+          description: Not Found(Authentication failed, email not found / Authentication failed, user not found)
+        402:
+          description: Bad Request(Wrong password)
+  /user/logout:
+    post:
+      tags:
+        - User
+      security:
+        - bearerAuth: []
+      summary: Logout
+      description: Logout. When somebody
+        logout User, Refresh-token will been invalided
+      responses:
+        204:
+          description: Logout successfully
+        401:
+          description: Bad Request (Authorization Header is not set / JWT is not valid / Refresh Token does not exist )
+  /user/send-user-verification-email:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - User
+      summary: Send Verification Email
+      description: Send Verification Email (remove password from response)
+      responses:
+        204:
+          description: The activation link was sent to your registered email address.
+        404:
+          description: NotFound (User with the id was not found)
+        401:
+          description: Bad Request (User with the id was not found / Authorization Header is not set / JWT is not valid)
+  /user/verify_email/:userId/:secretCode:
     parameters:
       - name: userId
         in: path
         required: true
         schema:
           type: string
+      - name: secretCode
+        in: path
+        required: true
+        schema:
+          type: string
     get:
       tags:
-        - Users
-      summary: Get user by ID
-      description: Gets a user by ID
-        e.g. “/users/123” (remove password from response)
+        - User
+      summary: Get Verification by UserId and SecretCode
+      description: Get Verification by UserId and SecretCode ( remove password from response )
       responses:
         200:
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                $ref: '#/components/schemas/User'
         401:
-          $ref: '#/components/responses/UnauthorizedError'
-        404:
-          description: User not found
-    put:
+          description: Unauthorized (Secret Code does not exist, Unauthorized)
+  /user/send-password-reset-email:
+    post:
       tags:
-        - Users
-      summary: Update a user
-      description: Updates a user by ID
+        - User
+      summary: Send password reset by Email
+      description: Send password reset by Email code verification (front-end)
       requestBody:
         required: true
         content:
@@ -151,216 +384,97 @@ paths:
               type: object
               title: example
               properties:
-                name:
+                email:
                   type: string
-                  description: The user's name
-                login:
+                  description: Email
+              required:
+                - email
+      responses:
+        204:
+          description: The reset password link was sent to your registered email address..
+        404:
+          description: NotFound (User with the id was not found)
+        401:
+          description: Bad Request (Please provide your registered email address!)
+  /profiles/{username}:
+    parameters:
+      - name: username
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Profile
+      summary: Get Profile
+      description: Get Profile ( with Authorization Bearer )
+      responses:
+        200:
+          description: Profile.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        401:
+          description: Unauthorized (Token is not valid!)
+        404:
+          description: NotFound (User does not exist)
+  /profiles/:username/follow:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - Profile
+      summary: Follow Profile
+      description: Get Profile ( with Authorization Bearer )
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                role:
                   type: string
                   description: The user's login
-                password:
+                userId:
+                  type: string
+                  description: The user's email
+                follows:
                   type: string
                   description: The user's password
               required:
-                - name
+                - role
+                - userId
+                - follows
       responses:
         200:
-          description: The user has been updated.
+          description: Profile.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
-        400:
-          description: Bad request
-        401:
-          $ref: '#/components/responses/UnauthorizedError'
-    delete:
-      tags:
-        - Users
-      summary: Delete user
-      description: Deletes user by ID. When somebody
-        DELETE User, all Tasks where User is assignee
-        should be updated to put userId=null
-      responses:
-        204:
-          description: The user has been deleted
-        401:
-          $ref: '#/components/responses/UnauthorizedError'
+                $ref: '#/components/schemas/Profile'
         404:
-          description: User not found
-  /boards:
-    get:
-      tags:
-        - Boards
-      summary: Get all boards
-      description: Returns all boards
-      responses:
-        200:
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Board"
-        401:
-          $ref: '#/components/responses/UnauthorizedError'
-    post:
-      tags:
-        - Boards
-      summary: Create board
-      description: Creates a new board
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              title: example
-              properties:
-                title:
-                  type: string
-                  description: The board's name
-                columns:
-                  type: array
-                  description: The board's column list
-                  items:
-                    type: object
-                    properties:
-                      title:
-                        type: string
-                      order:
-                        type: integer
-                  required:
-                    - title
-                    - order
-              required:
-                - title
-                - columns
-      responses:
-        200:
-          description: The board has been created.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Board"
-        400:
-          description: Bad request
-        401:
-          $ref: '#/components/responses/UnauthorizedError'
-  /boards/{boardId}:
+          description: NotFound (User does not exist)
+  /profiles/:username/unfollow:
     parameters:
-      - name: boardId
+      - name: userId
         in: path
         required: true
         schema:
           type: string
-    get:
-      tags:
-        - Boards
-      summary: Get board by id
-      description: Gets the Board by ID (e.g. “/boards/123”)
-      responses:
-        200:
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Board"
-        401:
-          $ref: '#/components/responses/UnauthorizedError'
-        404:
-          description: Board not found
-    put:
-      tags:
-        - Boards
-      summary: Update board
-      description: Updates a Board by ID
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              title: example
-              properties:
-                title:
-                  type: string
-                  description: The board's name
-                columns:
-                  type: array
-                  description: The board's column list
-                  items:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                        description: column's id
-                      title:
-                        type: string
-                        description: column's title
-                      order:
-                        type: integer
-                  required:
-                    - title
-                    - order
-              required:
-                - title
-                - columns
-      responses:
-        200:
-          description: The board has been updated.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Board"
-        400:
-          description: Bad request
-        401:
-          $ref: '#/components/responses/UnauthorizedError'
     delete:
       tags:
-        - Boards
-      summary: Delete board
-      description: Deletes a Board by ID.
-        When somebody DELETE Board,
-        all its Tasks should be deleted as well
-      responses:
-        204:
-          description: The board has been deleted
-        401:
-          $ref: '#/components/responses/UnauthorizedError'
-        404:
-          description: Board not found
-  /boards/{boardId}/tasks:
-    parameters:
-      - name: boardId
-        in: path
-        required: true
-        schema:
-          type: string
-    get:
-      tags:
-        - Tasks
-      summary: Get Tasks by boardId
-      description: Gets tasks by the Board ID
-        (e.g. “/board/1/tasks”)
-      responses:
-        200:
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Task"
-        401:
-          $ref: '#/components/responses/UnauthorizedError'
-
-    post:
-      tags:
-        - Tasks
-      summary: Create new task
-      description: Creates a new task
+        - Profile
+      summary: Unfollow Profile
+      description: Get Profile ( with Authorization Bearer )
       requestBody:
         required: true
         content:
@@ -369,133 +483,161 @@ paths:
               type: object
               title: example
               properties:
-                title:
+                role:
                   type: string
-                  description: The task's title
-                order:
-                  type: integer
-                  description: The task's order
-                description:
-                  type: string
+                  description: The user's login
                 userId:
                   type: string
-                  description: The task's Assignee
-                boardId:
+                  description: The user's email
+                follows:
                   type: string
-                  description: Board ID
-                columnId:
-                  type: string
-                  description: Column ID
+                  description: The user's password
               required:
-                - title
-                - order
-                - boardId
-                - columnId
+                - role
+                - userId
+                - follows
       responses:
         200:
-          description: The task has been created.
+          description: Profile.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Task"
-        400:
-          description: Bad request
-        401:
-          $ref: '#/components/responses/UnauthorizedError'
-  /boards/{boardId}/tasks/{taskId}:
+                $ref: '#/components/schemas/Profile'
+        404:
+          description: NotFound (User does not exist)
+  /profiles/{username}/promote:
     parameters:
-      - name: boardId
+      - name: username
         in: path
         required: true
         schema:
           type: string
-      - name: taskId
-        in: path
-        required: true
-        schema:
-          type: string
-    get:
-      tags:
-        - Tasks
-      summary: Get Task by boardId and taskId
-      description: Gets the Task by the Board's and task ID
-        (e.g. “/board/1/tasks/123”)
-      responses:
-        200:
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Task"
-        401:
-          $ref: '#/components/responses/UnauthorizedError'
     put:
-      tags:
-        - Tasks
-      summary: Update Task
-      description: Updates the Task by ID
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              title: example
-              properties:
-                title:
-                  type: string
-                  description: The task's title
-                order:
-                  type: integer
-                  description: The task's order
-                description:
-                  type: string
-                userId:
-                  type: string
-                  description: The task's Assignee
-                boardId:
-                  type: string
-                  description: Board ID
-                columnId:
-                  type: string
-                  description: Column ID
-              required:
-                - order
-                - boardId
-                - columnId
-      responses:
-        200:
-          description: The task has been updated.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Task"
-        400:
-          description: Bad request
-        401:
-          $ref: '#/components/responses/UnauthorizedError'
-        404:
-          description: Task not found
-    delete:
-      tags:
-        - Tasks
-      summary: Delete Task
-      description: Deletes Task by ID.
-      responses:
-        204:
-          description: The task has been deleted
-        401:
-          $ref: '#/components/responses/UnauthorizedError'
-        404:
-          description: Task not found
-  /login:
-    post:
-      tags:
-        - Login
       security:
-        []
-      summary: Login
-      description: Logins a user and returns a JWT-token
+        - bearerAuth: []
+      tags:
+        - Profile
+      summary: Promote to Moderator
+      description: Get Profile ( with Authorization Bearer )
+      responses:
+        200:
+          description: Profile.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        404:
+          description: NotFound (User does not exist)
+  /dictionary/word:
+    get:
+      tags:
+        - Word
+      security:
+        - bearerAuth: []
+      summary: get words
+      description: get words and return array of words
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Word'
+        401:
+          description: Bad Request (Words were not found)
+    post:
+      tags:
+        - Word
+      security:
+        - bearerAuth: []
+      summary: create a word
+      description: create a word and return created word
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                id:
+                  type: string
+                  description: word's id
+                wordname:
+                  type: string
+                  description: word's wordname
+                meaning:
+                  type: string
+                  description: word's meaning
+                extended_description:
+                  type: string
+                  description: word's extended description
+                usages:
+                  type: string
+                  description: word's usages
+                synonyms:
+                  type: string
+                  description: word's synonyms
+                tags:
+                  type: array
+                  description: word's tags
+                  items:
+                    type: string
+                is_anonymous:
+                  type: boolean
+                  description: is anonymous
+                is_on_report_feed:
+                  type: boolean
+                  description: is on report feed
+              required:
+                - wordname
+                - meaning
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Word'
+        400:
+          description: BadRequest (Please fill all fields correctly)
+        401:
+          description: Bad Request (User with the id was not found)
+  /dictionary/word/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Word
+      security:
+        - bearerAuth: []
+      summary: get a word
+      description: get a word and return the word
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Word'
+        401:
+          description: Bad Request (Word with the id was not found)
+    put:
+      tags:
+        - Word
+      security:
+        - bearerAuth: []
+      summary: update a word
+      description: update a word and return the updated word
       requestBody:
         required: true
         content:
@@ -504,22 +646,163 @@ paths:
               type: object
               title: example
               properties:
-                login:
+                wordname:
                   type: string
-                  description: Username
-                password:
+                  description: word's wordname
+                meaning:
                   type: string
-                  description: Password
-              required:
-                - user
-                - login
+                  description: word's meaning
+                extended_description:
+                  type: string
+                  description: word's extended description
+                usages:
+                  type: string
+                  description: word's usages
+                synonyms:
+                  type: string
+                  description: word's synonyms
+                tags:
+                  type: array
+                  description: word's tags
+                  items:
+                    type: string
       responses:
         200:
-          description: Successful login.
+          description: Successful operation
           content:
             application/json:
               schema:
-                type: string
-                description: JWT Token
-        403:
-          description: Incorrect login or password
+                type: object
+                items:
+                  $ref: '#/components/schemas/Word'
+        401:
+          description: Bad Request (Word with the id was not found)
+    delete:
+      tags:
+        - Word
+      security:
+        - bearerAuth: []
+      summary: delete a word
+      description: delete a word and return a message about the deleted word
+      responses:
+        200:
+          description: Successful operation
+        401:
+          description: Bad Request (Word with the id was not found)
+  /dictionary/word/{id}/like:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    put:
+      tags:
+        - Word
+      security:
+        - bearerAuth: []
+      summary: like a word
+      description: like a word and return true - liked word or changed dislike to like, otherwise false
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Word'
+        401:
+          description: Bad Request (Word with the id was not found or Profile with the id was not found)
+  /dictionary/word/{id}/dislike:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    put:
+      tags:
+        - Word
+      security:
+        - bearerAuth: []
+      summary: dislike a word
+      description: dislike a word and return true - disliked word or changed like to dislike, otherwise false
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Word'
+        401:
+          description: Bad Request (Word with the id was not found or Profile with the id was not found)
+  /dictionary/word/{id}/favorite:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - Word
+      security:
+        - bearerAuth: []
+      summary: add a favorite word
+      description: add a favorite word and return the word
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Word'
+        401:
+          description: Bad Request (Word with the id was not found or Profile with the id was not found)
+  /dictionary/word/{id}/unfavorite:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    delete:
+      tags:
+        - Word
+      security:
+        - bearerAuth: []
+      summary: delete a favorite word
+      description: delete a favorite word and return the word
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Word'
+        401:
+          description: Bad Request (Word with the id was not found or Profile with the id was not found)
+  /dictionary/feed:
+    get:
+      tags:
+        - Word
+      summary: get feed
+      description: get feed and return filtered array of words
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Word'
+        401:
+          description: Bad Request (Words were not found)

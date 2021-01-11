@@ -4,7 +4,7 @@
 type Word = {
   id: ID!
   wordname: String!
-  author_id: reference
+  wordname: reference
   meaning: String!
   extended_description: String
   usages: String

@@ -26,7 +26,8 @@ const connectDb = () => {
   });
   return mongoose.connect(MDB_URL, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useFindAndModify: false
   });
 };
 
