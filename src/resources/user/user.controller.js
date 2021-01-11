@@ -229,7 +229,6 @@ const changePassword = catchErrors(async (req, res) => {
 // #access: Public
 const logout = catchErrors(async (req, res) => {
   const accessToken = getBearerTokenFromRequest(req);
-  console.log(isValidToken(accessToken));
   if (!isValidToken(accessToken)) {
     throw new Unauthorized('Unauthorized');
   }

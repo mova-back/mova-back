@@ -4,7 +4,9 @@ const profileModel = require('./profile.model');
 const Profile = require('./profile.schema');
 
 const { catchErrors } = require('../../middlewares/errorMiddleware');
-const { NotFound } = require('../../error');
+const { NotFound, Unauthorized } = require('../../error');
+const { getBearerTokenFromRequest } = require('../../utils/security/http');
+const { isValidToken } = require('../../utils/security/jwt');
 
 const { MR } = require('../../constants');
 
@@ -53,6 +55,10 @@ const unFollowUser = catchErrors(async (req, res) => {
 });
 
 const getProfile = catchErrors(async (req, res) => {
+  const accessToken = getBearerTokenFromRequest(req);
+  if (!isValidToken(accessToken)) {
+    throw new Unauthorized('Token is not valid!');
+  }
   const user = await userModel.findUserName(req.params.username);
   if (!user) {
     throw new NotFound('User does not exist');

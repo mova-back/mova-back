@@ -2,7 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 
-const profileController = require('./profile.conroller');
+const profileController = require('./profile.controller');
 const { authByRole } = require('../../middlewares/jwtMiddleware');
 const { UR, AR, MR } = require('../../constants');
 
@@ -11,6 +11,6 @@ router.route('/:username/follow').post(authByRole([UR, MR, AR]), profileControll
 router
   .route('/:username/unfollow')
   .delete(authByRole([UR, MR, AR]), profileController.unFollowUser);
-router.route('/:username/promote').post(authByRole([AR]), profileController.promoteToModerator);
+router.route('/:username/promote').put(authByRole([AR]), profileController.promoteToModerator);
 
 module.exports = router;

@@ -356,39 +356,20 @@ paths:
           description: NotFound (User with the id was not found)
         401:
           description: Bad Request (Please provide your registered email address!)
-  /profiles/:username:
+  /profiles/{username}:
     parameters:
-      - name: userId
+      - name: username
         in: path
         required: true
         schema:
           type: string
     get:
+      security:
+        - bearerAuth: []
       tags:
         - Profile
       summary: Get Profile
       description: Get Profile ( with Authorization Bearer )
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              title: example
-              properties:
-                role:
-                  type: string
-                  description: The user's login
-                userId:
-                  type: string
-                  description: The user's email
-                follows:
-                  type: string
-                  description: The user's password
-              required:
-                - role
-                - userId
-                - follows
       responses:
         200:
           description: Profile.
@@ -396,6 +377,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Profile'
+        401:
+          description: Unauthorized (Token is not valid!)
         404:
           description: NotFound (User does not exist)
   /profiles/:username/follow:
@@ -482,39 +465,20 @@ paths:
                 $ref: '#/components/schemas/Profile'
         404:
           description: NotFound (User does not exist)
-  /profiles/:username/promote:
+  /profiles/{username}/promote:
     parameters:
-      - name: userId
+      - name: username
         in: path
         required: true
         schema:
           type: string
-    post:
+    put:
+      security:
+        - bearerAuth: []
       tags:
         - Profile
       summary: Promote to Moderator
       description: Get Profile ( with Authorization Bearer )
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              title: example
-              properties:
-                role:
-                  type: string
-                  description: The user's login
-                userId:
-                  type: string
-                  description: The user's email
-                follows:
-                  type: string
-                  description: The user's password
-              required:
-                - role
-                - userId
-                - follows
       responses:
         200:
           description: Profile.
