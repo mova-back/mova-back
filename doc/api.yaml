@@ -429,6 +429,8 @@ paths:
         schema:
           type: string
     post:
+      security:
+        - bearerAuth: []
       tags:
         - Profile
       summary: Follow Profile
@@ -471,6 +473,8 @@ paths:
         schema:
           type: string
     delete:
+      security:
+        - bearerAuth: []
       tags:
         - Profile
       summary: Unfollow Profile
