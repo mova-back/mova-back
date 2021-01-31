@@ -14,7 +14,15 @@ const wordRouter = require('./resources/word/word.router');
 
 const app = express();
 
-const allowedOrigins = ['http://localhost:3000', 'https://mova-front.netlify.app/'];
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://0.0.0.0:3000',
+  'http://localhost:4400',
+  'http://0.0.0.0:4400',
+  'https://mova-front.netlify.app/',
+  'http://localhost:5000',
+  'http://0.0.0.0:5000'
+];
 app.use(
   cors({
     origin(origin, callback) {
