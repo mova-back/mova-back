@@ -13,6 +13,10 @@ const createWord = catchErrors(async (req, res) => {
   const { wordname: reqWordname, meaning: reqMeaning } = req.body;
   const { userId } = req;
 
+  if (!userId) {
+    throw new NotFound('Not found user');
+  }
+
   if (
     (!reqWordname || !reqMeaning) &&
     req.body.constructor === Object &&
@@ -94,6 +98,12 @@ const likeWord = catchErrors(async (req, res) => {
     throw new NotFound('Profile not found.');
   }
 
+  const word = await wordModel.getWordById(id);
+
+  if (!word) {
+    throw new NotFound('Word not found.');
+  }
+
   const isRating = await ratingModel.findRatingById(id, profile_id);
 
   if (!isRating) {
@@ -103,15 +113,18 @@ const likeWord = catchErrors(async (req, res) => {
   }
 
   if (isRating.value === 'like') {
-    await ratingModel.deleteRating();
     await wordModel.updateWord({ _id: id }, { $inc: { likes: -1 } });
+    await ratingModel.deleteRating();
     return res.status(200).json(false);
   }
 
-  await ratingModel.updateRating(isRating, 'like');
-  await wordModel.updateWord({ _id: id }, { $inc: { dislikes: -1, likes: 1 } });
+  if (isRating.value === 'dislike') {
+    await ratingModel.updateRating(isRating, 'like');
+    await wordModel.updateWord({ _id: id }, { $inc: { dislikes: -1, likes: 1 } });
+    return res.status(200).json(true);
+  }
 
-  return res.status(200).json(true);
+  throw new NotFound('ERROR');
 });
 
 // #route:  PUT /word/:id/dislike
@@ -142,15 +155,18 @@ const dislikeWord = catchErrors(async (req, res) => {
   }
 
   if (isRating.value === 'dislike') {
-    await ratingModel.deleteRating();
     await wordModel.updateWord({ _id: id }, { $inc: { dislikes: -1 } });
+    await ratingModel.deleteRating();
     return res.status(200).json(false);
   }
 
-  await ratingModel.updateRating(isRating, 'dislike');
-  await wordModel.updateWord({ _id: id }, { $inc: { likes: -1, dislikes: 1 } });
+  if (isRating.value === 'like') {
+    await ratingModel.updateRating(isRating, 'dislike');
+    await wordModel.updateWord({ _id: id }, { $inc: { likes: -1, dislikes: 1 } });
+    return res.status(200).json(true);
+  }
 
-  return res.status(200).json(true);
+  throw new NotFound('ERROR');
 });
 
 // #route:  GET /feed

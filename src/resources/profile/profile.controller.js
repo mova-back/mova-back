@@ -10,6 +10,9 @@ const { isValidToken } = require('../../utils/security/jwt');
 
 const { MR } = require('../../constants');
 
+// #route:  DELETE /profiles/:username/follow
+// #desc:   follow profile
+// #access: Private
 const followUser = catchErrors(async (req, res) => {
   const user = await userModel.findUserName(req.params.username);
   if (!user) {
@@ -32,6 +35,9 @@ const followUser = catchErrors(async (req, res) => {
   return res.status(200).json(result);
 });
 
+// #route:  DELETE /profiles/:username/unfollow
+// #desc:   unfollow profile
+// #access: Private
 const unFollowUser = catchErrors(async (req, res) => {
   const user = await userModel.findUserName(req.params.username);
   if (!user) {
@@ -54,6 +60,9 @@ const unFollowUser = catchErrors(async (req, res) => {
   return res.status(200).json(result);
 });
 
+// #route:  DELETE /profiles/:username
+// #desc:   get profile
+// #access: Private
 const getProfile = catchErrors(async (req, res) => {
   const accessToken = getBearerTokenFromRequest(req);
   if (!isValidToken(accessToken)) {
@@ -69,6 +78,9 @@ const getProfile = catchErrors(async (req, res) => {
   return res.status(200).json(result);
 });
 
+// #route:  DELETE /profiles/:username/promote
+// #desc:   promote to moderator user profile
+// #access: Private
 const promoteToModerator = catchErrors(async (req, res) => {
   const user = await userModel.findUserName(req.params.username);
   if (!user) {

@@ -1,6 +1,7 @@
 const express = require('express');
 const YAML = require('yamljs');
 const path = require('path');
+const cors = require('cors');
 
 const swaggerUI = require('swagger-ui-express');
 
@@ -12,6 +13,12 @@ const profileRouter = require('./resources/profile/profile.router');
 const wordRouter = require('./resources/word/word.router');
 
 const app = express();
+
+const corsOptions = {
+  origin: 'http://localhost:3000/',
+  credential: true
+};
+app.use(cors(corsOptions));
 
 const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
 

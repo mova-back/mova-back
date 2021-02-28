@@ -8,11 +8,11 @@ module.exports = {
     'mongodb+srv://admin:G8G2Bfs5cBepEdr@cluster-mova-data-base.bnb39.mongodb.net/mova-data-base-user?retryWrites=true&w=majority',
   COOKIE_SESSION_SECRET: process.env.COOKIE_SESSION_SECRET,
   JWT_SECRET: process.env.JWT_SECRET,
-  EMAIL_HOST: process.env.EMAIL_HOST,
-  EMAIL_USERNAME: process.env.EMAIL_USERNAME,
-  EMAIL_PW: process.env.EMAIL_PW,
-  EMAIL_PORT: process.env.EMAIL_PORT,
-  REFRESH__EXP: process.env.REFRESH__EXP,
-  CODE_EXP: process.env.CODE_EXP,
-  ACCESS_EXP: process.env.ACCESS_EXP
+  EMAIL_HOST: 'smtp.ethereal.email',
+  EMAIL_USERNAME: 'dean82@ethereal.email',
+  EMAIL_PW: 'bRc47j8btyxNedz92Y',
+  EMAIL_PORT: '587',
+  REFRESH__EXP: '60d',
+  CODE_EXP: '10m',
+  ACCESS_EXP: '30m'
 };

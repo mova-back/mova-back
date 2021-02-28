@@ -27,14 +27,6 @@ const wordSchema = new Schema(
       type: String,
       default: null
     },
-    created_at: {
-      type: Date,
-      default: Date.now()
-    },
-    updated_at: {
-      type: Date,
-      default: Date.now()
-    },
     is_anonymous: {
       type: Boolean,
       default: false
