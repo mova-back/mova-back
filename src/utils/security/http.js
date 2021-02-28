@@ -1,6 +1,6 @@
 const { Unauthorized } = require('../../error');
 
-const getRetrievedBearerTokenFromRequest = (req) => {
+const getBearerTokenFromRequest = (req) => {
   let authorizationHeader = req.headers.authorization;
 
   if (!authorizationHeader) {
@@ -17,4 +17,4 @@ const getRetrievedBearerTokenFromRequest = (req) => {
   return authorizationHeader;
 };
 
-module.exports = { getRetrievedBearerTokenFromRequest };
+module.exports = { getBearerTokenFromRequest };

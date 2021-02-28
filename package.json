@@ -8,27 +8,30 @@
   },
   "scripts": {
     "lint": "eslint . --fix",
-    "start": "nodejs .",
+    "start": "node .",
     "dev": "nodemon ."
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TamaraKhliabets/mova.git"
+    "url": "git+https://github.com/mova-back/mova-back.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/TamaraKhliabets/mova/issues"
+    "url": "https://github.com/mova-back/mova-back/issues"
   },
-  "homepage": "https://github.com/TamaraKhliabets/mova#readme",
+  "homepage": "https://github.com/mova-back/mova-back#readme",
   "dependencies": {
     "bcrypt": "^5.0.0",
+    "cors": "^2.8.5",
+    "crypto-random-string": "^3.3.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.1",
     "mongoose": "^5.11.8",
+    "nodemailer": "^6.4.17",
     "swagger-ui-express": "^4.1.6",
     "uuid": "^8.3.2",
     "winston": "^3.3.3",

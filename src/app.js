@@ -1,6 +1,7 @@
 const express = require('express');
 const YAML = require('yamljs');
 const path = require('path');
+const cors = require('cors');
 
 const swaggerUI = require('swagger-ui-express');
 
@@ -13,9 +14,19 @@ const wordRouter = require('./resources/word/word.router');
 
 const app = express();
 
+const corsOptions = {
+  origin: 'http://localhost:3000/',
+  credential: true
+};
+app.use(cors(corsOptions));
+
 const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
 
 app.use(express.json());
+// app.use((req, res, next) => {
+//   res.locals.env = process.env;
+//   next();
+// });
 app.use('/doc', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 app.use('/', (req, res, next) => {
@@ -26,9 +37,17 @@ app.use('/', (req, res, next) => {
   next();
 });
 
+app.use('/api/test', (req, res, next) => {
+  if (req.method === 'GET') {
+    res.status(200).json({ message: "It's Alive!" });
+    return;
+  }
+  next();
+});
+
 app.use('/api', userRouter);
 app.use('/api/profiles', profileRouter);
-app.use('/api/word', wordRouter);
+app.use('/api/dictionary', wordRouter);
 app.use(errorMiddleware);
 app.use(errorLoggerMiddleware);
 
