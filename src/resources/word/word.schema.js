@@ -50,7 +50,9 @@ const wordSchema = new Schema(
     dislikes: {
       type: Number,
       default: 0
-    }
+    },
+    createdAt: { type: Date },
+    updatedAt: { type: Date }
   },
   { timestamps: true }
 );
