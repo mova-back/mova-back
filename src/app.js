@@ -13,7 +13,12 @@ const profileRouter = require('./resources/profile/profile.router');
 const wordRouter = require('./resources/word/word.router');
 
 const app = express();
-app.use(cors());
+
+const corsOptions = {
+  origin: 'http://localhost:3000/',
+  credential: true
+};
+app.use(cors(corsOptions));
 
 const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
 
