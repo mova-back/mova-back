@@ -8,7 +8,7 @@ const profileModel = require('../../resources/profile/profile.model');
 
 const { JWT_SECRET, ACCESS_EXP } = require('../../config');
 
-const generateAccessTokenAndRefreshTokenForUser = async (user, jwtId) => {
+const generateRefreshToken = async (user, jwtId) => {
   const refreshToken = new RefreshToken();
 
   refreshToken.userId = user.id;
@@ -38,7 +38,7 @@ const generateAccessTokenAndRefreshToken = async (user) => {
     subject: user.id.toString()
   });
 
-  const refreshToken = await generateAccessTokenAndRefreshTokenForUser(user, jwtId);
+  const refreshToken = await generateRefreshToken(user, jwtId);
 
   return { accessToken, refreshToken };
 };

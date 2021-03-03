@@ -1,10 +1,12 @@
 const cryptoRandomString = require('crypto-random-string');
+const ms = require('ms');
+const moment = require('moment');
 const userModel = require('./user.model');
 const codeModel = require('../secretCode/secretCode.model');
 const profileModel = require('../profile/profile.model');
 const refreshTokenModel = require('../refreshToken/refreshToken.model');
 const emailService = require('../../utils/nodemailer');
-const { EMAIL_USERNAME } = require('../../config/index');
+const { EMAIL_USERNAME, REFRESH__EXP } = require('../../config/index');
 
 const User = require('./user.schema');
 const Code = require('../secretCode/secretCode.schema');
@@ -103,6 +105,7 @@ const registerUser = catchErrors(async (req, res) => {
 // #desc:   login a user
 // #access: Public
 const loginUser = catchErrors(async (req, res) => {
+  // todo fingerprint
   const { password: reqPassword, email: reqEmail } = req.body;
 
   const email = await userModel.findEmail(reqEmail.toLowerCase());
@@ -119,10 +122,25 @@ const loginUser = catchErrors(async (req, res) => {
   }
 
   // retrieve refreshToken and accessToken
-  const token = await generateAccessTokenAndRefreshToken(user);
+  const { accessToken, refreshToken } = await generateAccessTokenAndRefreshToken(user);
+
+  const refTokenExpiresInMilliseconds = moment() + ms(REFRESH__EXP);
+  const refTokenExpiresInSeconds = parseInt(refTokenExpiresInMilliseconds / 1000, 10);
 
   const result = User.toResponse(user);
-  return res.status(200).json({ ...result, ...token });
+  return res.status(200).json({
+    data: { ...result, accessToken, refreshToken },
+    cookies: [
+      {
+        name: 'refreshToken',
+        value: refreshToken,
+        domain: 'localhost',
+        path: '/',
+        maxAge: refTokenExpiresInSeconds,
+        secure: false // temp: should be deleted
+      }
+    ]
+  });
 });
 
 // #route:  GET /user
@@ -146,8 +164,8 @@ const getUser = catchErrors(async (req, res) => {
 const updateToken = catchErrors(async (req, res) => {
   const { accessToken: reqAccessToken, refreshToken: reqIdRefreshToken } = req.body;
 
-  const accessToken = isValidToken(reqAccessToken);
-  if (!accessToken) {
+  const accToken = isValidToken(reqAccessToken);
+  if (!accToken) {
     throw new Unauthorized('JWT is not valid');
   }
 
@@ -181,11 +199,26 @@ const updateToken = catchErrors(async (req, res) => {
   // TODO kill token
   await refreshTokenModel.deleteRefreshToken(reqRefreshToken);
 
-  // retrieve refreshToken and accessToken
-  const token = await generateAccessTokenAndRefreshToken(user);
+  const { accessToken, refreshToken } = await generateAccessTokenAndRefreshToken(user);
 
   const result = User.toResponse(user);
-  return res.status(200).json({ ...result, ...token });
+
+  const refTokenExpiresInMilliseconds = moment() + ms(REFRESH__EXP);
+  const refTokenExpiresInSeconds = parseInt(refTokenExpiresInMilliseconds / 1000, 10);
+
+  return res.status(200).json({
+    data: { ...result, accessToken, refreshToken },
+    cookies: [
+      {
+        name: 'refreshToken',
+        value: refreshToken,
+        domain: 'localhost',
+        path: '/',
+        maxAge: refTokenExpiresInSeconds,
+        secure: false // temp: should be deleted
+      }
+    ]
+  });
 });
 
 const updateUser = catchErrors(async (req, res) => {
