@@ -2,8 +2,9 @@ const express = require('express');
 const YAML = require('yamljs');
 const path = require('path');
 const cors = require('cors');
-
+const cookieParser = require('cookie-parser');
 const swaggerUI = require('swagger-ui-express');
+const { COOKIE_SESSION_SECRET } = require('./config');
 
 const { errorLoggerMiddleware } = require('./middlewares/loggerMiddleware');
 const { errorMiddleware } = require('./middlewares/errorMiddleware');
@@ -13,6 +14,7 @@ const profileRouter = require('./resources/profile/profile.router');
 const wordRouter = require('./resources/word/word.router');
 
 const app = express();
+app.use(cookieParser(COOKIE_SESSION_SECRET));
 
 const corsOptions = {
   origin: 'http://localhost:3000/',

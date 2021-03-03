@@ -7,11 +7,11 @@ const authByRole = (listRole) => (req, resp, next) => {
 
   const currentUser = isValidToken(token);
 
-  if (listRole.filter((role) => role === currentUser.role)) {
+  if (listRole.filter((role) => role === currentUser.userRole)) {
     req.userId = currentUser.userId;
     next();
   } else {
-    throw new Unauthorized('JWT is not valid');
+    throw new Unauthorized('JWT is not valid / Role access denied ');
   }
 };
 
