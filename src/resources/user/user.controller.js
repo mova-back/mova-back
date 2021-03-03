@@ -162,7 +162,10 @@ const getUser = catchErrors(async (req, res) => {
 // #desc:   refresh a token
 // #access: Public
 const updateToken = catchErrors(async (req, res) => {
-  const { accessToken: reqAccessToken, refreshToken: reqIdRefreshToken } = req.body;
+  const { accessToken: reqAccessToken, refreshToken: bodyRefreshToken } = req.body;
+  const { refreshToken: cookieRefreshToke } = req.cookies;
+
+  const reqIdRefreshToken = cookieRefreshToke || bodyRefreshToken;
 
   const accToken = isValidToken(reqAccessToken);
   if (!accToken) {
