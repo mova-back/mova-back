@@ -16,17 +16,23 @@ function jwtSign(payload, SECRET, options) {
 }
 
 function jwtVerify(token, SECRET) {
-  return new Promise((resolve, reject) => {
-    jwt.verify(token, SECRET, (error, decoded) => {
-      if (error) {
-        if (error.name === 'TokenExpiredError') {
-          return reject(new Error({ ...errorCodes.TOKEN_EXPIRED }));
-        }
-        return reject(new Error({ ...errorCodes.TOKEN_VERIFY, message: error.message }));
-      }
-      return resolve(decoded);
-    });
+  return jwt.verify(token, SECRET, (err, user) => {
+    if (err) {
+      return false;
+    }
+    return user;
   });
+  // return new Promise((resolve, reject) => {
+  //   jwt.verify(token, SECRET, (error, decoded) => {
+  //     if (error) {
+  //       if (error.name === 'TokenExpiredError') {
+  //         return reject(new Error({ ...errorCodes.TOKEN_EXPIRED }));
+  //       }
+  //       return reject(new Error({ ...errorCodes.TOKEN_VERIFY, message: error.message }));
+  //     }
+  //     return decoded;
+  //   });
+  // });
 }
 
 // const getJwtValueByKey = (token, key) => {
@@ -37,19 +43,7 @@ function jwtVerify(token, SECRET) {
 // const isValidToken = (token, ignoreExpiration) => {
 //   // ignoreExpiration
 //
-//   return jwt.verify(
-//     token,
-//     JWT_SECRET,
-//     {
-//       ignoreExpiration
-//     },
-//     (err, user) => {
-//       if (err) {
-//         return false;
-//       }
-//       return user;
-//     }
-//   );
+
 // };
 
 module.exports = {

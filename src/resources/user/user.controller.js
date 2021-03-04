@@ -86,7 +86,7 @@ const registerUser = catchErrors(async (req, res) => {
   const result = User.toResponse(user);
   return res.status(200).json({
     data: {
-      result,
+      ...result,
       accessToken: await makeAccessToken(user),
       refreshToken: newRefreshSession.refreshToken
     }
@@ -132,7 +132,6 @@ const loginUser = catchErrors(async (req, res) => {
 
   // TODO DELETE
   const result = User.toResponse(user);
-
   return res.status(200).json({
     data: {
       ...result,
@@ -148,7 +147,7 @@ const loginUser = catchErrors(async (req, res) => {
 const getUser = catchErrors(async (req, res) => {
   // TODO , I suppose that code is found below need wrap to function because it will be use with all request
 
-  const user = await userModel.findId(req.userId);
+  const user = await userModel.findById(req.userId);
   if (!user) {
     throw new NotFound(`User with the id ${req.userId} was not found`);
   }
@@ -181,7 +180,6 @@ const updateToken = catchErrors(async (req, res) => {
   // await verifyRefreshSession(new RefreshSessionEntity(oldRefreshSession), reqFingerprint)
 
   const user = await userModel.findById(oldRefreshSession.userId);
-
   const newRefreshSession = makeRefreshSession({
     userId: user.id,
     expiresIn: getExpiresInSeconds(TOKEN_REFRESH_EXP)
