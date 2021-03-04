@@ -153,7 +153,7 @@ const getUser = catchErrors(async (req, res) => {
   }
 
   const result = User.toResponse(user);
-  return res.status(200).json(result);
+  return res.status(200).json({ data: { ...result } });
 });
 
 // #route:  POST /user/refresh
