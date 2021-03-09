@@ -17,7 +17,7 @@ const app = express();
 app.use(cookieParser(COOKIE_SESSION_SECRET));
 
 const corsOptions = {
-  origin: 'http://localhost:3000/',
+  origin: 'https://mova-gh.netlify.app/',
   credential: true
 };
 app.use(cors(corsOptions));
