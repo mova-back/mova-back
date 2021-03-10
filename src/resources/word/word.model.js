@@ -8,13 +8,12 @@ const sortByFilter = async (offset, limitPage) =>
   word.find({}, null, {
     skip: offset,
     limit: limitPage,
-    sort: { likes: 'descending' }
+    sort: { likes: 'descending' },
   });
 
 const getWordById = async (id) => word.findById(id);
 
-const updateWord = async (id, data) =>
-  word.updateOne({ _id: id }, { ...data, updated_at: Date.now() });
+const updateWord = async (id, data) => word.updateOne({ _id: id }, { ...data, updated_at: Date.now() });
 
 const deleteWord = async (id) => word.deleteOne({ _id: id });
 
@@ -24,5 +23,5 @@ module.exports = {
   getWordById,
   updateWord,
   deleteWord,
-  sortByFilter
+  sortByFilter,
 };

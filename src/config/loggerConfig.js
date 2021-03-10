@@ -6,7 +6,7 @@ const errorsPath = path.join(__dirname, '../../logs/logs-errors.log');
 
 const configConsole = {
   format: format.combine(format.colorize(), format.cli()),
-  transports: [new transports.Console()]
+  transports: [new transports.Console()],
 };
 
 const configFile = {
@@ -14,13 +14,13 @@ const configFile = {
   transports: [
     new transports.File({
       level: 'info',
-      filename: infoPath
+      filename: infoPath,
     }),
     new transports.File({
       level: 'error',
-      filename: errorsPath
-    })
-  ]
+      filename: errorsPath,
+    }),
+  ],
 };
 
 module.exports = { configConsole, configFile };

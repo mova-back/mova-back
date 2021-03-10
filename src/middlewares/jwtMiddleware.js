@@ -19,5 +19,5 @@ const authByRole = (listRole) => async (req, resp, next) => {
 };
 
 module.exports = {
-  authByRole
+  authByRole,
 };

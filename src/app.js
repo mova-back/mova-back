@@ -18,7 +18,7 @@ app.use(cookieParser(COOKIE_SESSION_SECRET));
 
 const corsOptions = {
   origin: 'http://localhost:3000/',
-  credential: true
+  credential: true,
 };
 app.use(cors(corsOptions));
 

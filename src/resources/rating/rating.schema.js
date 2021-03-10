@@ -7,18 +7,18 @@ const RatingSchema = new Schema(
     value: {
       type: String,
       enum: ['like', 'dislike'],
-      required: true
+      required: true,
     },
     profile_id: {
       type: mongoose.Schema.ObjectId,
       ref: 'profiles',
-      required: true
+      required: true,
     },
     word_id: {
       type: mongoose.Schema.ObjectId,
       ref: 'words',
-      required: true
-    }
+      required: true,
+    },
   },
   { timestamps: true }
 );

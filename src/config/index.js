@@ -20,6 +20,5 @@ module.exports = {
   EMAIL_PORT: '587',
   CODE_EXP: '10m',
   TOKEN_EMAIL_CONFIRM_SECRET: process.env.TOKEN_EMAIL_CONFIRM_SECRET,
-  MDB_URL:
-    'mongodb+srv://admin:G8G2Bfs5cBepEdr@cluster-mova-data-base.bnb39.mongodb.net/mova-data-base-user?retryWrites=true&w=majority'
+  MDB_URL: 'mongodb+srv://admin:G8G2Bfs5cBepEdr@cluster-mova-data-base.bnb39.mongodb.net/mova-data-base-user?retryWrites=true&w=majority',
 };

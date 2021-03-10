@@ -18,15 +18,9 @@ router
   .delete(jwtMiddleware.authByRole([UR, MR, AR]), wordController.deleteWord);
 
 router.route('/word/:id/like').put(jwtMiddleware.authByRole([UR, MR, AR]), wordController.likeWord);
-router
-  .route('/word/:id/dislike')
-  .put(jwtMiddleware.authByRole([UR, MR, AR]), wordController.dislikeWord);
+router.route('/word/:id/dislike').put(jwtMiddleware.authByRole([UR, MR, AR]), wordController.dislikeWord);
 
-router
-  .route('/word/:id/favorite')
-  .post(jwtMiddleware.authByRole([UR, MR, AR]), wordController.favoriteWord);
-router
-  .route('/word/:id/unfavorite')
-  .delete(jwtMiddleware.authByRole([UR, MR, AR]), wordController.unfavoriteWord);
+router.route('/word/:id/favorite').post(jwtMiddleware.authByRole([UR, MR, AR]), wordController.favoriteWord);
+router.route('/word/:id/unfavorite').delete(jwtMiddleware.authByRole([UR, MR, AR]), wordController.unfavoriteWord);
 
 module.exports = router;

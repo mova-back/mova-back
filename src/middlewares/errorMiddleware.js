@@ -7,7 +7,7 @@ const errorMiddleware = (err, req, res, next) => {
 
     res.status(httpError.statusCode).json({
       statusCode: httpError.statusCode,
-      message: httpError.message
+      message: httpError.message,
     });
 
     next(err);
@@ -16,7 +16,7 @@ const errorMiddleware = (err, req, res, next) => {
 
   res.status(500).json({
     statusCode: 500,
-    message: err.message
+    message: err.message,
   });
 
   next(err);
@@ -41,5 +41,5 @@ const handleErrorLogger = (err) => {
 module.exports = {
   errorMiddleware,
   catchErrors,
-  handleErrorLogger
+  handleErrorLogger,
 };
