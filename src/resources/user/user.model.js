@@ -8,7 +8,7 @@ const findUserName = async (username) => {
   return User.findOne({ username }).exec();
 };
 
-const findId = async (id) => {
+const findById = async (id) => {
   return User.findOne({ _id: id }).exec();
 };
 
@@ -28,7 +28,7 @@ module.exports = {
   findUserName,
   findEmail,
   registerUser,
-  findId,
+  findById,
   findAndUpdate,
-  updateVerifyStatus
+  updateVerifyStatus,
 };

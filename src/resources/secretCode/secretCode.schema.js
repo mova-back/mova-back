@@ -8,17 +8,17 @@ const { Schema } = mongoose;
 const secretCode = new Schema({
   email: {
     type: String,
-    required: true
+    required: true,
   },
   code: {
     type: String,
-    required: true
+    required: true,
   },
   createdAt: {
     type: Date,
     default: moment(),
-    expires: CODE_EXP
-  }
+    expires: CODE_EXP,
+  },
 });
 
 // expire 10 min

@@ -8,8 +8,8 @@ const emailService = nodemailer.createTransport({
   secure: false,
   auth: {
     user: EMAIL_USERNAME,
-    pass: EMAIL_PW
-  }
+    pass: EMAIL_PW,
+  },
 });
 
 module.exports = emailService;

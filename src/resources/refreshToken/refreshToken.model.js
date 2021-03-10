@@ -1,24 +1,25 @@
 const RefreshToken = require('./refreshToken.schema');
+const RefreshSchema = require('./refreshToken.schema');
 
-const findId = async (id) => {
-  return RefreshToken.findOne({ _id: id }).exec();
+const getByRefreshToken = async (refreshToken) => {
+  return RefreshToken.findOne({ refreshToken }).exec();
 };
 
-const save = async (refreshToken) => {
-  await refreshToken.save();
+const create = async (refreshToken) => {
+  await RefreshSchema.create(refreshToken);
 };
 
 const findJwtId = async (jwtId) => {
   return RefreshToken.findOne({ jwtId }).exec();
 };
 
-const deleteRefreshToken = async (id) => {
-  return RefreshToken.findByIdAndDelete(id);
+const deleteRefreshToken = async (refreshToken) => {
+  return RefreshToken.findOneAndDelete({ refreshToken });
 };
 
 module.exports = {
-  findId,
-  save,
+  getByRefreshToken,
+  create,
   findJwtId,
-  deleteRefreshToken
+  deleteRefreshToken,
 };

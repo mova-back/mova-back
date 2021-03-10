@@ -5,5 +5,5 @@ const isComparePassword = async (plainPassword, hashedPassword) => {
 };
 
 module.exports = {
-  isComparePassword
+  isComparePassword,
 };

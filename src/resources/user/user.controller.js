@@ -1,27 +1,24 @@
 const cryptoRandomString = require('crypto-random-string');
+
 const userModel = require('./user.model');
 const codeModel = require('../secretCode/secretCode.model');
 const profileModel = require('../profile/profile.model');
 const refreshTokenModel = require('../refreshToken/refreshToken.model');
 const emailService = require('../../utils/nodemailer');
-const { EMAIL_USERNAME } = require('../../config/index');
+const { EMAIL_USERNAME, TOKEN_REFRESH_EXP } = require('../../config/index');
 
 const User = require('./user.schema');
 const Code = require('../secretCode/secretCode.schema');
 const Profile = require('../profile/profile.schema');
-const RefreshToken = require('../refreshToken/refreshToken.schema');
 
 const { NotFound, UnprocessableEntity, BadRequest, Unauthorized } = require('../../error');
 const { UR } = require('../../constants');
 
 const { catchErrors } = require('../../middlewares/errorMiddleware');
-const {
-  generateAccessTokenAndRefreshToken,
-  getJwtValueByKey,
-  isValidToken
-} = require('../../utils/security/jwt');
+const { makeAccessToken } = require('../../utils/security/accessToken');
+const { getExpiresInSeconds } = require('../../utils/getExpiresInSeconds');
+const { addRefreshSession, makeRefreshSession } = require('../../utils/security/refreshToken');
 const { isComparePassword } = require('../../utils/security/hash');
-const { getBearerTokenFromRequest } = require('../../utils/security/http');
 
 // #route:  POST /user
 // #desc:   Register a user
@@ -29,28 +26,8 @@ const { getBearerTokenFromRequest } = require('../../utils/security/http');
 const registerUser = catchErrors(async (req, res) => {
   const { username: reqUsername, password: reqPassword, email: reqEmail } = req.body;
 
-  if (
-    (!reqUsername || !reqPassword || !reqEmail) &&
-    req.body.constructor === Object &&
-    Object.keys(req.body).length !== 0
-  ) {
+  if ((!reqUsername || !reqPassword || !reqEmail) && req.body.constructor === Object && Object.keys(req.body).length !== 0) {
     throw new BadRequest('Please fill all fields correctly.');
-  }
-
-  // Password validation ???
-  // if (!reqPassword.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{6,}$/)) {
-  //   throw new BadRequest(
-  //     'Your password must be at least 6 characters long and contain a lowercase letter, an uppercase letter, a numeric digit and a special character.'
-  //   );
-  // }
-
-  // test validation
-  if (
-    !reqEmail.match(
-      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
-    )
-  ) {
-    throw new BadRequest('Your email must be at correctly (with @ symbol)');
   }
 
   const email = await userModel.findEmail(reqEmail);
@@ -63,46 +40,60 @@ const registerUser = catchErrors(async (req, res) => {
     throw new UnprocessableEntity('Username already registered');
   }
 
-  const newUser = await userModel.registerUser(req.body);
+  const user = await userModel.registerUser(req.body);
 
   // create profile
   const profile = new Profile({
-    userId: newUser._id
+    userId: user._id,
   });
   await profileModel.save(profile);
 
   // create token
-  const token = await generateAccessTokenAndRefreshToken(newUser);
+  const newRefreshSession = makeRefreshSession({
+    userId: user.id,
+    expiresIn: getExpiresInSeconds(TOKEN_REFRESH_EXP),
+    // ip: req.ip,
+    // ua: req.headers['User-Agent'],
+    // fingerprint: req.body.fingerprint,
+  });
+  await addRefreshSession(newRefreshSession);
 
   const baseUrl = `${req.protocol}://${req.get('host')}`;
   const secretCode = cryptoRandomString({
-    length: 6
+    length: 6,
   });
 
   // create email verification code
   const newCode = new Code({
     code: secretCode,
-    email: newUser.email
+    email: user.email,
   });
   await codeModel.save(newCode);
   const data = {
     from: `YOUR NAME <${EMAIL_USERNAME}>`,
-    to: newUser.email,
+    to: user.email,
     subject: 'Your Activation Link for YOUR APP',
-    text: `Please use the following link within the next 10 minutes to activate your account on YOUR APP: ${baseUrl}/api/auth/verification/verify-account/${newUser._id}/${secretCode}`,
-    html: `<p>Please use the following link within the next 10 minutes to activate your account on YOUR APP: <strong><a href="${baseUrl}/api/auth/verification/verify-account/${newUser._id}/${secretCode}" target="_blank">Email confirm</a></strong></p>`
+    text: `Please use the following link within the next 10 minutes to activate your account on YOUR APP: ${baseUrl}/api/auth/verification/verify-account/${user._id}/${secretCode}`,
+    html: `<p>Please use the following link within the next 10 minutes to activate your account on YOUR APP: <strong><a href="${baseUrl}/api/auth/verification/verify-account/${user._id}/${secretCode}" target="_blank">Email confirm</a></strong></p>`,
   };
 
   await emailService.sendMail(data);
 
-  const result = User.toResponse(newUser);
-  return res.status(200).json({ ...result, ...token });
+  const result = User.toResponse(user);
+  return res.status(200).json({
+    data: {
+      ...result,
+      accessToken: await makeAccessToken(user),
+      refreshToken: newRefreshSession.refreshToken,
+    },
+  });
 });
 
 // #route:  POST /user/login
 // #desc:   login a user
 // #access: Public
 const loginUser = catchErrors(async (req, res) => {
+  // todo fingerprint
   const { password: reqPassword, email: reqEmail } = req.body;
 
   const email = await userModel.findEmail(reqEmail.toLowerCase());
@@ -111,18 +102,39 @@ const loginUser = catchErrors(async (req, res) => {
   }
 
   const user = await userModel.findEmail(reqEmail);
-
-  // check if the password is valid
   const isMatch = await isComparePassword(reqPassword, user.password);
   if (!isMatch) {
     throw new BadRequest('Wrong password');
   }
 
-  // retrieve refreshToken and accessToken
-  const token = await generateAccessTokenAndRefreshToken(user);
+  const newRefreshSession = makeRefreshSession({
+    userId: user.id,
+    expiresIn: getExpiresInSeconds(TOKEN_REFRESH_EXP),
+    // ip: req.ip,
+    // ua: req.headers['User-Agent'],
+    // fingerprint: req.body.fingerprint,
+  });
+  await addRefreshSession(newRefreshSession);
 
+  res.cookie('refreshToken', newRefreshSession.refreshToken, {
+    domain: 'localhost',
+    path: '/',
+    maxAge: getExpiresInSeconds(TOKEN_REFRESH_EXP),
+    httpOnly: true,
+    signed: true,
+    sameSite: true,
+    secure: false, // temp: should be deleted
+  });
+
+  // TODO DELETE
   const result = User.toResponse(user);
-  return res.status(200).json({ ...result, ...token });
+  return res.status(200).json({
+    data: {
+      ...result,
+      accessToken: await makeAccessToken(user),
+      refreshToken: newRefreshSession.refreshToken,
+    },
+  });
 });
 
 // #route:  GET /user
@@ -131,67 +143,71 @@ const loginUser = catchErrors(async (req, res) => {
 const getUser = catchErrors(async (req, res) => {
   // TODO , I suppose that code is found below need wrap to function because it will be use with all request
 
-  const user = await userModel.findId(req.userId);
+  const user = await userModel.findById(req.userId);
   if (!user) {
     throw new NotFound(`User with the id ${req.userId} was not found`);
   }
 
   const result = User.toResponse(user);
-  return res.status(200).json(result);
+  return res.status(200).json({ data: { ...result } });
 });
 
 // #route:  POST /user/refresh
 // #desc:   refresh a token
 // #access: Public
 const updateToken = catchErrors(async (req, res) => {
-  const { accessToken: reqAccessToken, refreshToken: reqIdRefreshToken } = req.body;
-
-  const accessToken = isValidToken(reqAccessToken);
-  if (!accessToken) {
-    throw new Unauthorized('JWT is not valid');
+  // refreshToken for mobileApp
+  const { refreshToken: bodyRefreshToken } = req.body;
+  // refreshToken for browser
+  const { refreshToken: cookieRefreshToken } = { ...req.cookies, ...req.signedCookies };
+  const reqIdRefreshToken = cookieRefreshToken || bodyRefreshToken;
+  if (!reqIdRefreshToken) {
+    throw new BadRequest('Refresh token not provided');
   }
 
-  const user = await userModel.findId(getJwtValueByKey(reqAccessToken, 'userId'));
-  if (!user) {
-    throw new NotFound('User does not exist');
-  }
+  // const headers = {
+  //   'Content-Type': req.get('Content-Type'),
+  //   Referer: req.get('referer'),
+  //   'User-Agent': req.get('User-Agent')
+  // };
+  const oldRefreshSession = await refreshTokenModel.getByRefreshToken(reqIdRefreshToken);
+  await refreshTokenModel.deleteRefreshToken(reqIdRefreshToken);
+  // TODO verifyRefereshSession
+  // await verifyRefreshSession(new RefreshSessionEntity(oldRefreshSession), reqFingerprint)
 
-  const jwtId = getJwtValueByKey(reqAccessToken, 'jti');
-  const reqRefreshToken = await refreshTokenModel.findId(reqIdRefreshToken);
+  const user = await userModel.findById(oldRefreshSession.userId);
+  const newRefreshSession = makeRefreshSession({
+    userId: user.id,
+    expiresIn: getExpiresInSeconds(TOKEN_REFRESH_EXP),
+    // ip: req.ip,
+    // ua: req.headers['User-Agent'],
+    // fingerprint: req.body.fingerprint,
+  });
+  await addRefreshSession(newRefreshSession);
 
-  // if refreshToken is expired
-  if (!reqRefreshToken) {
-    throw new Unauthorized('Refresh Token has expired');
-  }
+  res.cookie('refreshToken', newRefreshSession.refreshToken, {
+    domain: 'localhost',
+    path: '/',
+    maxAge: getExpiresInSeconds(TOKEN_REFRESH_EXP),
+    httpOnly: true,
+    signed: true,
+    sameSite: true,
+    secure: false, // temp: should be deleted
+  });
 
-  // if refreshToken linked that jwt token
-  if (reqRefreshToken.jwtId !== jwtId) {
-    throw new Unauthorized('Token does not match with RefreshToken');
-  }
-
-  // dead-token logic for security
-  if (reqRefreshToken.used || reqRefreshToken.invalidated) {
-    throw new Unauthorized('Refresh Token has been used or invalidated');
-  }
-
-  // reqRefreshToken.used = true;
-  // const refreshToken = new RefreshToken(reqRefreshToken);
-  // await refreshTokenModel.save(refreshToken);
-
-  // TODO kill token
-  await refreshTokenModel.deleteRefreshToken(reqRefreshToken);
-
-  // retrieve refreshToken and accessToken
-  const token = await generateAccessTokenAndRefreshToken(user);
-
-  const result = User.toResponse(user);
-  return res.status(200).json({ ...result, ...token });
+  return res.status(200).json({
+    data: {
+      accessToken: await makeAccessToken(user),
+      refreshToken: newRefreshSession.refreshToken,
+    },
+  });
 });
 
+// TODO check
 const updateUser = catchErrors(async (req, res) => {
   const { password } = req.body;
 
-  const user = await userModel.findId(req.userId);
+  const user = await userModel.findById(req.userId);
 
   const isMatch = await isComparePassword(password, user.password);
   if (!isMatch) {
@@ -203,12 +219,13 @@ const updateUser = catchErrors(async (req, res) => {
   return res.status(200).json(User.toResponse(result));
 });
 
+// TODO check
 const changePassword = catchErrors(async (req, res) => {
   const { userId } = req;
 
   const { old_password, new_password1, new_password2 } = req.body;
 
-  const user = await userModel.findId(req.userId);
+  const user = await userModel.findById(req.userId);
 
   const isMatch = await isComparePassword(old_password, user.password);
   if (!isMatch) {
@@ -219,7 +236,7 @@ const changePassword = catchErrors(async (req, res) => {
     throw new BadRequest('new_password1 does not match new_password2!');
   }
 
-  userModel.findAndUpdate(userId, { password: new_password1 });
+  await userModel.findAndUpdate(userId, { password: new_password1 });
 
   return res.status(200).json({ message: 'User password has been changed successfully!' });
 });
@@ -228,23 +245,20 @@ const changePassword = catchErrors(async (req, res) => {
 // #desc:   logout a user
 // #access: Public
 const logout = catchErrors(async (req, res) => {
-  const accessToken = getBearerTokenFromRequest(req);
-  if (!isValidToken(accessToken)) {
-    throw new Unauthorized('Unauthorized');
-  }
+  // refreshToken for mobileApp
+  const { refreshToken: bodyRefreshToken } = req.body;
+  // refreshToken for browser
+  const { refreshToken: cookieRefreshToken } = { ...req.cookies, ...req.signedCookies };
 
-  // TODO update token
-  const jwtId = getJwtValueByKey(accessToken, 'jti');
-  const reqRefreshToken = await refreshTokenModel.findJwtId(jwtId);
+  const reqRefreshToken = cookieRefreshToken || bodyRefreshToken;
+  // TODO check validation
   if (!reqRefreshToken) {
-    throw new Unauthorized('Refresh Token does not exist');
+    throw new BadRequest('Refresh token not provided');
   }
 
-  reqRefreshToken.invalidated = true;
-  const refreshToken = new RefreshToken(reqRefreshToken);
-  await refreshTokenModel.save(refreshToken);
-
-  return res.status(204).json({ message: 'Logout successfully' });
+  await refreshTokenModel.deleteRefreshToken(reqRefreshToken);
+  return res.status(200).json({ message: 'Logout successfully' });
+  //
 });
 
 // #route:  GET /user/send-user-verification-email
@@ -254,7 +268,7 @@ const logout = catchErrors(async (req, res) => {
 const sendVerifyEmail = catchErrors(async (req, res) => {
   const baseUrl = `${req.protocol}://${req.get('host')}`;
 
-  const user = await userModel.findId(req.userId);
+  const user = await userModel.findById(req.userId);
 
   if (!user) {
     throw new NotFound(`User with the id ${req.userId} was not found`);
@@ -263,12 +277,12 @@ const sendVerifyEmail = catchErrors(async (req, res) => {
   await codeModel.deleteMatches(user.email);
 
   const secretCode = cryptoRandomString({
-    length: 6
+    length: 6,
   });
 
   const newCode = new Code({
     code: secretCode,
-    email: user.email
+    email: user.email,
   });
   await codeModel.save(newCode);
 
@@ -277,20 +291,18 @@ const sendVerifyEmail = catchErrors(async (req, res) => {
     to: user.email,
     subject: 'Your Activation Link for YOUR APP',
     text: `Please use the following link within the next 10 minutes to activate your account on YOUR APP: ${baseUrl}/api/user/verify_email/${user._id}/${secretCode}`,
-    html: `<p>Please use the following link within the next 10 minutes to activate your account on YOUR APP: <strong><a href="${baseUrl}/api/user/verify_email/${user._id}/${secretCode}" target="_blank">Email confirm</a></strong></p>`
+    html: `<p>Please use the following link within the next 10 minutes to activate your account on YOUR APP: <strong><a href="${baseUrl}/api/user/verify_email/${user._id}/${secretCode}" target="_blank">Email confirm</a></strong></p>`,
   };
   await emailService.sendMail(data);
 
-  return res
-    .status(204)
-    .json({ message: 'The activation link was sent to your registered email address.' });
+  return res.status(204).json({ message: 'The activation link was sent to your registered email address.' });
 });
 
 // #route:  GET /user/verify_email:userId/:secretCode
 // #desc:   Verify user's email address
 // #access: Public
 const verifyEmail = catchErrors(async (req, res) => {
-  const user = await userModel.findId(req.params.userId);
+  const user = await userModel.findById(req.params.userId);
 
   const response = await codeModel.findEmailAndSecret(user.email, req.params.secretCode);
 
@@ -329,12 +341,12 @@ const resetPasswordByEmail = catchErrors(async (req, res) => {
   }
 
   const secretCode = cryptoRandomString({
-    length: 6
+    length: 6,
   });
 
   const newCode = new Code({
     code: secretCode,
-    email: reqEmail
+    email: reqEmail,
   });
   await codeModel.save(newCode);
 
@@ -343,13 +355,11 @@ const resetPasswordByEmail = catchErrors(async (req, res) => {
     to: reqEmail,
     subject: 'Your Password Reset Code for YOUR APP',
     text: `Please use the following code within the next 10 minutes to reset your password on YOUR APP: ${secretCode}`,
-    html: `<p>Please use the following code within the next 10 minutes to reset your password on YOUR APP: <strong>${secretCode}</strong></p>`
+    html: `<p>Please use the following code within the next 10 minutes to reset your password on YOUR APP: <strong>${secretCode}</strong></p>`,
   };
   await emailService.sendMail(data);
 
-  return res
-    .status(204)
-    .json({ message: 'The reset password link was sent to your registered email address.' });
+  return res.status(204).json({ message: 'The reset password link was sent to your registered email address.' });
 });
 
 module.exports = {
@@ -362,5 +372,5 @@ module.exports = {
   logout,
   sendVerifyEmail,
   verifyEmail,
-  resetPasswordByEmail
+  resetPasswordByEmail,
 };

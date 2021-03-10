@@ -15,7 +15,7 @@ const userSchema = new Schema(
     // createdAt: { type: String, default: moment().subtract(24, 'hours').toDate() },
     // updatedAt: { type: String, default: moment().subtract(24, 'hours').toDate() },
     createdAt: { type: Date },
-    updatedAt: { type: Date }
+    updatedAt: { type: Date },
     // emailVerified: { type: Boolean, default: false }
     // это поле не нужно, для этого есть роль PRE_UR
   },

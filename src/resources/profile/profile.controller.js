@@ -99,5 +99,5 @@ module.exports = {
   promoteToModerator,
   getProfile,
   followUser,
-  unFollowUser
+  unFollowUser,
 };
