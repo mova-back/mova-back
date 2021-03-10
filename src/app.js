@@ -22,6 +22,7 @@ const allowedOrigins = [
   'http://localhost:4400',
   'http://0.0.0.0:4400',
   'https://mova-front.netlify.app/',
+  'https://movafront.netlify.app/',
   'https://mova-gh.netlify.app/',
   'http://localhost:5000',
   'http://0.0.0.0:5000',
