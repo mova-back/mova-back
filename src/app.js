@@ -40,7 +40,7 @@ var corsOptions = {
   },
   credential: true
 }
-app.use(cors(corsOptions));
+app.options('*', cors(corsOptions))
 
 const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
 
