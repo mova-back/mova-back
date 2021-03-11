@@ -4,6 +4,7 @@ const { errorCodes } = require('../error/errorCodes');
 
 class ContentTypeMiddleware extends BaseMiddleware {
   async init() {
+    // TODO
     console.log(`${this.constructor.name} initialized...`);
   }
 
