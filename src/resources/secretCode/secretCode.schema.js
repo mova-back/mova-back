@@ -1,24 +1,24 @@
 const mongoose = require('mongoose');
 const moment = require('moment');
 
-const { CODE_EXP } = require('../../config/index');
+// const { CODE_EXP } = require('../../config/index');
 
 const { Schema } = mongoose;
 
 const secretCode = new Schema({
   email: {
     type: String,
-    required: true
+    required: true,
   },
   code: {
     type: String,
-    required: true
+    required: true,
   },
   createdAt: {
     type: Date,
     default: moment(),
-    expires: CODE_EXP
-  }
+    expires: 'CODE_EXP',
+  },
 });
 
 // expire 10 min

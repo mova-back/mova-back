@@ -21,5 +21,5 @@ module.exports = {
   getByRefreshToken,
   create,
   findJwtId,
-  deleteRefreshToken
+  deleteRefreshToken,
 };

@@ -6,7 +6,7 @@ const profileSchema = new mongoose.Schema(
   {
     role: { type: String, default: PRE_UR },
     userId: { type: String },
-    follows: []
+    follows: [],
   },
   { timestamps: true }
 );

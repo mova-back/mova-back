@@ -6,7 +6,7 @@ function makeRefreshSession({ userId, expiresIn } = {}) {
   return {
     refreshToken: uuid(),
     userId,
-    expiresIn
+    expiresIn,
     // this.fingerprint = fingerprint;
     // this.ip = ip;
     // this.ua = ua || null;
@@ -71,5 +71,5 @@ async function addRefreshSession(refreshSession) {
 
 module.exports = {
   makeRefreshSession,
-  addRefreshSession
+  addRefreshSession,
 };
