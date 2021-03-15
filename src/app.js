@@ -14,31 +14,30 @@ const wordRouter = require('./resources/word/word.router');
 
 const app = express();
 
-const allowedOrigins = [
+const whitelist = [
+
   'http://localhost:3000',
   'http://0.0.0.0:3000',
   'http://localhost:4400',
   'http://0.0.0.0:4400',
-  'https://mova-front.netlify.app/',
+  'https://movafront.netlify.app/',
+  'https://mova-gh.netlify.app/',
   'http://localhost:5000',
   'http://0.0.0.0:5000',
   'http://127.0.0.1:5000/'
 ];
-app.use(
-  cors({
-    origin(origin, callback) {
-      // allow requests with no origin
-      // (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) === -1) {
-        const msg =
-          'The CORS policy for this site does not allow access from the specified Origin.';
-        return callback(new Error(msg), false);
-      }
-      return callback(null, true);
+
+var corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
     }
-  })
-);
+  },
+  credential: true
+}
+app.options('*', cors(corsOptions))
 
 const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
 
