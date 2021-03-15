@@ -2,10 +2,12 @@ require('dotenv').config();
 
 const mongoose = require('mongoose');
 
-const { Server } = require('./src/root/Server');
-const appConfig = require('./src/config/AppConfig');
+const { Server } = require('./src/root');
+const config = require('./src/config/AppConfig');
+const controllers = require('./src/controllers');
+const middlewares = require('./src/middlewares');
 
-mongoose.connect(appConfig.mongooseConnectionURL, {
+mongoose.connect(config.mongooseConnectionURL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useFindAndModify: false,
@@ -26,7 +28,7 @@ connectToDB.on('connected', () => {
     // eslint-disable-next-line consistent-return
     return new Promise((resolve, reject) => {
       try {
-        appConfig.init();
+        config.init();
       } catch (e) {
         return reject(e);
       }
@@ -37,8 +39,10 @@ connectToDB.on('connected', () => {
   configInit()
     .then(() => {
       return new Server({
-        port: Number(appConfig.port),
-        host: appConfig.host,
+        port: Number(config.port),
+        host: config.host,
+        controllers,
+        middlewares,
       });
     })
     .then((params) => {
@@ -49,7 +53,7 @@ connectToDB.on('connected', () => {
     })
     .then(() => {
       console.log('---------');
-      console.log(`Server listened at ${appConfig.host}:${appConfig.port}`);
+      console.log(`Server listened at ${config.host}:${config.port}`);
       console.log('---------');
     });
 });

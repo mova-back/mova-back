@@ -1,22 +1,18 @@
-
+const { AppError } = require('./AppError');
+const { Assert: assert } = require('./Assert');
+const errorCodes = require('../error/errorCodes');
 
 class BaseController {
   constructor({ logger } = {}) {
     if (!this.init) throw new Error(`${this.constructor.name} should implement 'init' method.`);
     if (!this.router) throw new Error(`${this.constructor.name} should implement 'router' getter.`);
-    assert.instanceOf(logger, AbstractLogger);
-
-    this.logger = logger;
+    // TODO logger
   }
 
   actionRunner(action) {
     assert.func(action, { required: true });
 
-    if (!action.hasOwnProperty('accessTag')) {
-      throw new Error(`'accessTag' getter not declared in invoked '${action.name}' action`);
-    }
-
-    if (!action.hasOwnProperty('run')) {
+    if (!Object.prototype.hasOwnProperty.call(action, 'run')) {
       throw new Error(`'run' method not declared in invoked '${action.name}' action`);
     }
 
@@ -43,13 +39,6 @@ class BaseController {
 
       try {
         /**
-         * it will return request schema
-         */
-        if (ctx.query.schema && ['POST', 'PATCH', 'GET'].includes(ctx.method) && process.env.NODE_ENV === 'development') {
-          return res.json(getSchemaDescription(action.validationRules));
-        }
-
-        /**
          * verify empty body
          */
         if (action.validationRules && action.validationRules.notEmptyBody && !Object.keys(ctx.body).length) {
@@ -65,13 +54,20 @@ class BaseController {
          * validate action input data
          */
         if (action.validationRules) {
-          if (action.validationRules.query) this.validateSchema(ctx.query, action.validationRules.query, 'query');
-          if (action.validationRules.params) this.validateSchema(ctx.params, action.validationRules.params, 'params');
-          if (action.validationRules.body) this.validateSchema(ctx.body, action.validationRules.body, 'body');
-          if (action.validationRules.cookies) this.validateSchema(ctx.cookies, action.validationRules.cookies, 'cookies');
+          if (action.validationRules.query) {
+            this.validateSchema(ctx.query, action.validationRules.query, 'query');
+          }
+          if (action.validationRules.params) {
+            this.validateSchema(ctx.params, action.validationRules.params, 'params');
+          }
+          if (action.validationRules.body) {
+            this.validateSchema(ctx.body, action.validationRules.body, 'body');
+          }
+          if (action.validationRules.cookies) {
+            this.validateSchema(ctx.cookies, action.validationRules.cookies, 'cookies');
+          }
         }
 
-        console.log('ctx COOKIES', ctx.cookies);
         /**
          * fire action
          */
@@ -122,6 +118,8 @@ class BaseController {
 
     const schemaKeys = Object.keys(requestSchema);
     const srcKeys = Object.keys(src);
+    console.log('schemaKeys', schemaKeys);
+    console.log('srcKeys', srcKeys);
 
     const defaultValidKeys = ['offset', 'page', 'limit', 'filter', 'orderBy'];
     const invalidExtraKeys = srcKeys.filter((srcKey) => !schemaKeys.includes(srcKey) && !defaultValidKeys.includes(srcKey));
@@ -139,10 +137,10 @@ class BaseController {
       const validationSrc = src[propName];
 
       const { schemaRule, options } = requestSchema[propName];
-      const { validator, description, example } = schemaRule;
+      const { validate } = schemaRule;
       const hasAllowedDefaultData = options.allowed.includes(validationSrc);
 
-      if (options.required && !src.hasOwnProperty(propName) && !hasAllowedDefaultData) {
+      if (options.required && !Object.prototype.hasOwnProperty.call(src, propName) && !hasAllowedDefaultData) {
         throw new AppError({
           ...errorCodes.VALIDATION,
           message: `'${schemaTitle}.${propName}' field is required.`,
@@ -150,8 +148,8 @@ class BaseController {
         });
       }
 
-      if (src.hasOwnProperty(propName)) {
-        const tmpValidationResult = validator(validationSrc);
+      if (Object.prototype.hasOwnProperty.call(src, propName)) {
+        const tmpValidationResult = validate.validator(validationSrc);
         if (!['boolean', 'string'].includes(typeof tmpValidationResult)) {
           throw new AppError({
             ...errorCodes.DEV_IMPLEMENTATION,
@@ -165,7 +163,6 @@ class BaseController {
           throw new AppError({
             ...errorCodes.VALIDATION,
             message: `Invalid '${schemaTitle}.${propName}' field, ${validationResult}`,
-            meta: { example, expect: description },
             layer: this.constructor.name,
           });
         }
@@ -173,49 +170,13 @@ class BaseController {
           throw new AppError({
             ...errorCodes.VALIDATION,
             message: `Invalid '${schemaTitle}.${propName}' field`,
-            meta: { example, expect: description },
+
             layer: this.constructor.name,
           });
         }
       }
     });
   }
-}
-
-function getSchemaDescription(validationRules = {}) {
-  assert.object(validationRules, { required: true });
-
-  function getRuleDescription(propName, schema) {
-    assert.string(propName, { required: true });
-    assert.object(schema, { required: true });
-
-    const requestRule = schema[propName];
-    assert.instanceOf(requestRule, RequestRule);
-
-    if (!requestRule) return;
-    const { schemaRule, options } = requestRule;
-
-    // eslint-disable-next-line consistent-return
-    return `${schemaRule.description} ${options.required ? ';(required)' : ';(optional)'}`;
-  }
-
-  const result = { query: {}, params: {}, body: {} };
-  const { query, params, body } = validationRules;
-
-  if (query)
-    Object.keys(query).forEach((schemaPropName) => {
-      result.query[schemaPropName] = getRuleDescription(schemaPropName, query);
-    });
-  if (params)
-    Object.keys(params).forEach((schemaPropName) => {
-      result.params[schemaPropName] = getRuleDescription(schemaPropName, params);
-    });
-  if (body)
-    Object.keys(body).forEach((schemaPropName) => {
-      result.body[schemaPropName] = getRuleDescription(schemaPropName, body);
-    });
-
-  return result;
 }
 
 module.exports = { BaseController };

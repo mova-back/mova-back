@@ -1,4 +1,4 @@
-const { TOKEN_ACCESS_SECRET, JWT_ISS, TOKEN_ACCESS_EXP } = require('../../config');
+// const { TOKEN_ACCESS_SECRET, JWT_ISS, TOKEN_ACCESS_EXP } = require('../../config');
 const { jwtSign } = require('./jwt');
 
 const profileModel = require('../../resources/profile/profile.model');

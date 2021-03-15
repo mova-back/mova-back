@@ -29,6 +29,9 @@
     "no-underscore-dangle": "off",
     "no-use-before-define": "off",
     "no-console": "off",
-    "class-methods-use-this": "off"
+    "class-methods-use-this": "off",
+    "dot-notation": "off",
+    "prefer-rest-parm": "off",
+    "prefer-rest-params": "off"
   }
 }

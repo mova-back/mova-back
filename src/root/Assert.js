@@ -1,7 +1,7 @@
 const { AssertError } = require('./AssertError');
-const { Rule } = require('./Rule');
 
 const UUID_REGEXP = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const MONO_AUTO_ID = /^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i;
 const URL_REGEXP = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
 const validTypes = [Number, String, Object, Array, Boolean, Function];
 
@@ -15,8 +15,7 @@ class Assert {
   }
 
   static validate(value, rule, { required = false } = {}) {
-    Assert.instanceOf(rule, Rule);
-    const validationResult = rule.validator(value);
+    const validationResult = rule.validate.validator(value);
     if (!['boolean', 'string'].includes(typeof validationResult)) {
       Assert.fail(
         validationResult,
@@ -137,6 +136,12 @@ class Assert {
   static func(value, { required = false, message = '' } = {}) {
     if (required) Assert.typeOf(value, Function, message);
     if (value !== undefined) Assert.instanceOf(value, Function, message);
+  }
+
+  static mongoAutoId(value, { required = false, message = '' } = {}) {
+    const isValidId = MONO_AUTO_ID.test(value);
+    if (!isValidId && required) Assert.fail(value, 'UUID or Number', message);
+    if (value !== undefined && !isValidId) Assert.fail(value, 'UUID or Number', message);
   }
 
   static id(value, { required = false, message = '' } = {}) {

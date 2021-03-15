@@ -1,7 +1,7 @@
 const { BaseMiddleware } = require('../root/BaseMiddleware');
 const { errorCodes } = require('../error/errorCodes');
 const { jwtVerify } = require('../utils/security/jwt');
-const SECRET = require('../config/AppConfig').token.access.secret;
+const SECRET = require('../config/AppConfig').tokenAccessSecret;
 const roles = require('../permissions/roles');
 
 class CheckAccessTokenMiddleware extends BaseMiddleware {

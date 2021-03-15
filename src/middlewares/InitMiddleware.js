@@ -1,5 +1,5 @@
-const { BaseMiddleware } = require('supra-core');
-const config = require('../config');
+const { BaseMiddleware } = require('../root/BaseMiddleware');
+const config = require('../config/AppConfig');
 
 class InitMiddleware extends BaseMiddleware {
   async init() {
@@ -8,7 +8,7 @@ class InitMiddleware extends BaseMiddleware {
 
   handler() {
     return (req, res, next) => {
-      res.header('X-Server', config.app.name);
+      res.header('X-Server', config.name);
       next();
     };
   }

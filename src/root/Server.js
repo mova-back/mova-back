@@ -67,7 +67,7 @@ function start({ port, host, controllers, middlewares, cookieSecret, reqLimit })
 
     // eslint-disable-next-line no-unused-vars
     process.on('unhandledRejection', (reason, promise) => {
-      // Todo ; change 2 logger
+      // Todo change 2 logger
       console.log('unhandledRejection', reason);
     });
 

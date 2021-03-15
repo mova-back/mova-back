@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 const errorCodes = require('../../error/errorCodes');
+const { AppError } = require('../../root/AppError');
+const { Assert: assert } = require('../../root/Assert');
 
 // const RefreshToken = require('../../resources/refreshToken/refreshToken.schema');
 
@@ -15,35 +17,21 @@ function jwtSign(payload, SECRET, options) {
 }
 
 function jwtVerify(token, SECRET) {
-  return jwt.verify(token, SECRET, (err, user) => {
-    if (err) {
-      return false;
-    }
-    return user;
+  assert.string(token, { notEmpty: true });
+  assert.string(SECRET, { notEmpty: true });
+
+  return new Promise((resolve, reject) => {
+    jwt.verify(token, SECRET, (error, decoded) => {
+      if (error) {
+        if (error.name === 'TokenExpiredError') {
+          return reject(new AppError({ ...errorCodes.TOKEN_EXPIRED }));
+        }
+        return reject(new AppError({ ...errorCodes.TOKEN_VERIFY, message: error.message }));
+      }
+      return resolve(decoded);
+    });
   });
-  // return new Promise((resolve, reject) => {
-  //   jwt.verify(token, SECRET, (error, decoded) => {
-  //     if (error) {
-  //       if (error.name === 'TokenExpiredError') {
-  //         return reject(new Error({ ...errorCodes.TOKEN_EXPIRED }));
-  //       }
-  //       return reject(new Error({ ...errorCodes.TOKEN_VERIFY, message: error.message }));
-  //     }
-  //     return decoded;
-  //   });
-  // });
 }
-
-// const getJwtValueByKey = (token, key) => {
-//   const decodedToken = jwt.decode(token);
-//   return decodedToken[key];
-// };
-//
-// const isValidToken = (token, ignoreExpiration) => {
-//   // ignoreExpiration
-//
-
-// };
 
 module.exports = {
   jwtSign,

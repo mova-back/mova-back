@@ -5,7 +5,7 @@ const codeModel = require('../secretCode/secretCode.model');
 const profileModel = require('../profile/profile.model');
 const refreshTokenModel = require('../refreshToken/refreshToken.model');
 const emailService = require('../../utils/nodemailer');
-const { EMAIL_USERNAME, TOKEN_REFRESH_EXP } = require('../../config/index');
+// const { EMAIL_USERNAME, TOKEN_REFRESH_EXP } = require('../../config/index');
 
 const User = require('./user.schema');
 const Code = require('../secretCode/secretCode.schema');

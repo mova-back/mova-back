@@ -1,4 +1,4 @@
-const { RootController } = require('../resources/user/user.controller');
-const { AuthController } = require('../modules/auth/AuthController');
+const { AuthController } = require('../resources/modules/auth/AuthController');
+const { UsersController } = require('../resources/modules/users/UsersController');
 
-module.exports = [RootController, AuthController];
+module.exports = [AuthController, UsersController];
