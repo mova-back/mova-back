@@ -13,11 +13,7 @@ const updateRole = async (id, inputRole) => {
 };
 
 const addFollower = async (id, profileId) => {
-  return Profile.findOneAndUpdate(
-    { userId: id },
-    { follows: [...profileId] },
-    { new: true }
-  ).exec();
+  return Profile.findOneAndUpdate({ userId: id }, { follows: [...profileId] }, { new: true }).exec();
 };
 
 const deleteFollower = async (id, profileId) => {
@@ -34,5 +30,5 @@ module.exports = {
   findProfileByUserId,
   updateRole,
   addFollower,
-  deleteFollower
+  deleteFollower,
 };

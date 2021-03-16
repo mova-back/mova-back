@@ -7,12 +7,12 @@ const refreshTokenSchema = new mongoose.Schema({
   expiresIn: { type: Date },
   createdAt: {
     type: Date,
-    default: moment()
+    default: moment(),
   },
   updatedAt: {
     type: Date,
-    default: moment()
-  }
+    default: moment(),
+  },
 });
 
 // TODO       userId: user.id,

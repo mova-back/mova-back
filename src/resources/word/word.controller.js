@@ -17,11 +17,7 @@ const createWord = catchErrors(async (req, res) => {
     throw new NotFound('Not found user');
   }
 
-  if (
-    (!reqWordname || !reqMeaning) &&
-    req.body.constructor === Object &&
-    Object.keys(req.body).length !== 0
-  ) {
+  if ((!reqWordname || !reqMeaning) && req.body.constructor === Object && Object.keys(req.body).length !== 0) {
     throw new NotFound('Unable create word.');
   }
 
@@ -182,7 +178,7 @@ const feedWords = catchErrors(async (_, res) => {
     throw new NotFound('Feed not found.');
   }
 
-  return res.status(200).json(feed.map(wordSchema.toResponse));
+  return res.status(200).json({ data: feed.map(wordSchema.toResponse) });
 });
 
 // #route:  POST /word/:id/favorite
@@ -204,10 +200,10 @@ const favoriteWord = catchErrors(async (req, res) => {
   const addFavorite = await wordSchema.findByIdAndUpdate(
     { _id: id },
     {
-      $push: { favorites: userId }
+      $push: { favorites: userId },
     },
     {
-      new: true
+      new: true,
     }
   );
 
@@ -233,10 +229,10 @@ const unfavoriteWord = catchErrors(async (req, res) => {
   const deleteFavorite = await wordSchema.findByIdAndUpdate(
     { _id: id },
     {
-      $pull: { favorites: userId }
+      $pull: { favorites: userId },
     },
     {
-      new: true
+      new: true,
     }
   );
 
@@ -253,5 +249,5 @@ module.exports = {
   dislikeWord,
   feedWords,
   favoriteWord,
-  unfavoriteWord
+  unfavoriteWord,
 };

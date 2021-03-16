@@ -11,12 +11,12 @@ const deleteMatches = async (email) => {
 const findEmailAndSecret = async (email, code) => {
   return Code.findOne({
     email,
-    code
+    code,
   });
 };
 
 module.exports = {
   save,
   deleteMatches,
-  findEmailAndSecret
+  findEmailAndSecret,
 };

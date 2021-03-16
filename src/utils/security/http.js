@@ -8,10 +8,7 @@ const getBearerTokenFromRequest = (req) => {
   }
 
   if (authorizationHeader.startsWith('Bearer ')) {
-    authorizationHeader = authorizationHeader.substring(
-      'Bearer '.length,
-      authorizationHeader.length
-    );
+    authorizationHeader = authorizationHeader.substring('Bearer '.length, authorizationHeader.length);
   }
 
   return authorizationHeader;

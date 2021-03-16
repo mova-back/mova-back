@@ -8,51 +8,51 @@ const wordSchema = new Schema(
       type: String,
       required: true,
       createIndexes: {
-        unique: true
-      }
+        unique: true,
+      },
     },
     meaning: {
       type: String,
-      required: true
+      required: true,
     },
     extended_description: {
       type: String,
-      default: null
+      default: null,
     },
     usages: {
       type: String,
-      default: null
+      default: null,
     },
     synonyms: {
       type: String,
-      default: null
+      default: null,
     },
     is_anonymous: {
       type: Boolean,
-      default: false
+      default: false,
     },
     is_on_report_feed: {
       type: Boolean,
-      default: false
+      default: false,
     },
     tags: [
       {
         type: String,
-        tagname: String
-      }
+        tagname: String,
+      },
     ],
     userId: { type: Schema.Types.ObjectId, ref: 'profiles' },
     favorites: [{ type: Schema.Types.ObjectId, ref: 'profiles', default: null }],
     likes: {
       type: Number,
-      default: 0
+      default: 0,
     },
     dislikes: {
       type: Number,
-      default: 0
+      default: 0,
     },
     createdAt: { type: Date },
-    updatedAt: { type: Date }
+    updatedAt: { type: Date },
   },
   { timestamps: true }
 );
@@ -73,7 +73,7 @@ wordSchema.statics.toResponse = (word) => {
     userId,
     favorites,
     likes,
-    dislikes
+    dislikes,
   } = word;
   return {
     id,
@@ -90,7 +90,7 @@ wordSchema.statics.toResponse = (word) => {
     userId,
     favorites,
     likes,
-    dislikes
+    dislikes,
   };
 };
 

@@ -30,5 +30,5 @@ module.exports = {
   registerUser,
   findById,
   findAndUpdate,
-  updateVerifyStatus
+  updateVerifyStatus,
 };

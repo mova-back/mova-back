@@ -5,7 +5,7 @@ const codeModel = require('../secretCode/secretCode.model');
 const profileModel = require('../profile/profile.model');
 const refreshTokenModel = require('../refreshToken/refreshToken.model');
 const emailService = require('../../utils/nodemailer');
-const { EMAIL_USERNAME, TOKEN_REFRESH_EXP } = require('../../config/index');
+// const { EMAIL_USERNAME, TOKEN_REFRESH_EXP } = require('../../config/index');
 
 const User = require('./user.schema');
 const Code = require('../secretCode/secretCode.schema');
@@ -26,11 +26,7 @@ const { isComparePassword } = require('../../utils/security/hash');
 const registerUser = catchErrors(async (req, res) => {
   const { username: reqUsername, password: reqPassword, email: reqEmail } = req.body;
 
-  if (
-    (!reqUsername || !reqPassword || !reqEmail) &&
-    req.body.constructor === Object &&
-    Object.keys(req.body).length !== 0
-  ) {
+  if ((!reqUsername || !reqPassword || !reqEmail) && req.body.constructor === Object && Object.keys(req.body).length !== 0) {
     throw new BadRequest('Please fill all fields correctly.');
   }
 
@@ -48,14 +44,14 @@ const registerUser = catchErrors(async (req, res) => {
 
   // create profile
   const profile = new Profile({
-    userId: user._id
+    userId: user._id,
   });
   await profileModel.save(profile);
 
   // create token
   const newRefreshSession = makeRefreshSession({
     userId: user.id,
-    expiresIn: getExpiresInSeconds(TOKEN_REFRESH_EXP)
+    expiresIn: getExpiresInSeconds(TOKEN_REFRESH_EXP),
     // ip: req.ip,
     // ua: req.headers['User-Agent'],
     // fingerprint: req.body.fingerprint,
@@ -64,13 +60,13 @@ const registerUser = catchErrors(async (req, res) => {
 
   const baseUrl = `${req.protocol}://${req.get('host')}`;
   const secretCode = cryptoRandomString({
-    length: 6
+    length: 6,
   });
 
   // create email verification code
   const newCode = new Code({
     code: secretCode,
-    email: user.email
+    email: user.email,
   });
   await codeModel.save(newCode);
   const data = {
@@ -78,7 +74,7 @@ const registerUser = catchErrors(async (req, res) => {
     to: user.email,
     subject: 'Your Activation Link for YOUR APP',
     text: `Please use the following link within the next 10 minutes to activate your account on YOUR APP: ${baseUrl}/api/auth/verification/verify-account/${user._id}/${secretCode}`,
-    html: `<p>Please use the following link within the next 10 minutes to activate your account on YOUR APP: <strong><a href="${baseUrl}/api/auth/verification/verify-account/${user._id}/${secretCode}" target="_blank">Email confirm</a></strong></p>`
+    html: `<p>Please use the following link within the next 10 minutes to activate your account on YOUR APP: <strong><a href="${baseUrl}/api/auth/verification/verify-account/${user._id}/${secretCode}" target="_blank">Email confirm</a></strong></p>`,
   };
 
   await emailService.sendMail(data);
@@ -88,8 +84,8 @@ const registerUser = catchErrors(async (req, res) => {
     data: {
       ...result,
       accessToken: await makeAccessToken(user),
-      refreshToken: newRefreshSession.refreshToken
-    }
+      refreshToken: newRefreshSession.refreshToken,
+    },
   });
 });
 
@@ -113,7 +109,7 @@ const loginUser = catchErrors(async (req, res) => {
 
   const newRefreshSession = makeRefreshSession({
     userId: user.id,
-    expiresIn: getExpiresInSeconds(TOKEN_REFRESH_EXP)
+    expiresIn: getExpiresInSeconds(TOKEN_REFRESH_EXP),
     // ip: req.ip,
     // ua: req.headers['User-Agent'],
     // fingerprint: req.body.fingerprint,
@@ -127,7 +123,7 @@ const loginUser = catchErrors(async (req, res) => {
     httpOnly: true,
     signed: true,
     sameSite: true,
-    secure: false // temp: should be deleted
+    secure: false, // temp: should be deleted
   });
 
   // TODO DELETE
@@ -136,8 +132,8 @@ const loginUser = catchErrors(async (req, res) => {
     data: {
       ...result,
       accessToken: await makeAccessToken(user),
-      refreshToken: newRefreshSession.refreshToken
-    }
+      refreshToken: newRefreshSession.refreshToken,
+    },
   });
 });
 
@@ -182,7 +178,7 @@ const updateToken = catchErrors(async (req, res) => {
   const user = await userModel.findById(oldRefreshSession.userId);
   const newRefreshSession = makeRefreshSession({
     userId: user.id,
-    expiresIn: getExpiresInSeconds(TOKEN_REFRESH_EXP)
+    expiresIn: getExpiresInSeconds(TOKEN_REFRESH_EXP),
     // ip: req.ip,
     // ua: req.headers['User-Agent'],
     // fingerprint: req.body.fingerprint,
@@ -196,14 +192,14 @@ const updateToken = catchErrors(async (req, res) => {
     httpOnly: true,
     signed: true,
     sameSite: true,
-    secure: false // temp: should be deleted
+    secure: false, // temp: should be deleted
   });
 
   return res.status(200).json({
     data: {
       accessToken: await makeAccessToken(user),
-      refreshToken: newRefreshSession.refreshToken
-    }
+      refreshToken: newRefreshSession.refreshToken,
+    },
   });
 });
 
@@ -281,12 +277,12 @@ const sendVerifyEmail = catchErrors(async (req, res) => {
   await codeModel.deleteMatches(user.email);
 
   const secretCode = cryptoRandomString({
-    length: 6
+    length: 6,
   });
 
   const newCode = new Code({
     code: secretCode,
-    email: user.email
+    email: user.email,
   });
   await codeModel.save(newCode);
 
@@ -295,13 +291,11 @@ const sendVerifyEmail = catchErrors(async (req, res) => {
     to: user.email,
     subject: 'Your Activation Link for YOUR APP',
     text: `Please use the following link within the next 10 minutes to activate your account on YOUR APP: ${baseUrl}/api/user/verify_email/${user._id}/${secretCode}`,
-    html: `<p>Please use the following link within the next 10 minutes to activate your account on YOUR APP: <strong><a href="${baseUrl}/api/user/verify_email/${user._id}/${secretCode}" target="_blank">Email confirm</a></strong></p>`
+    html: `<p>Please use the following link within the next 10 minutes to activate your account on YOUR APP: <strong><a href="${baseUrl}/api/user/verify_email/${user._id}/${secretCode}" target="_blank">Email confirm</a></strong></p>`,
   };
   await emailService.sendMail(data);
 
-  return res
-    .status(204)
-    .json({ message: 'The activation link was sent to your registered email address.' });
+  return res.status(204).json({ message: 'The activation link was sent to your registered email address.' });
 });
 
 // #route:  GET /user/verify_email:userId/:secretCode
@@ -347,12 +341,12 @@ const resetPasswordByEmail = catchErrors(async (req, res) => {
   }
 
   const secretCode = cryptoRandomString({
-    length: 6
+    length: 6,
   });
 
   const newCode = new Code({
     code: secretCode,
-    email: reqEmail
+    email: reqEmail,
   });
   await codeModel.save(newCode);
 
@@ -361,13 +355,11 @@ const resetPasswordByEmail = catchErrors(async (req, res) => {
     to: reqEmail,
     subject: 'Your Password Reset Code for YOUR APP',
     text: `Please use the following code within the next 10 minutes to reset your password on YOUR APP: ${secretCode}`,
-    html: `<p>Please use the following code within the next 10 minutes to reset your password on YOUR APP: <strong>${secretCode}</strong></p>`
+    html: `<p>Please use the following code within the next 10 minutes to reset your password on YOUR APP: <strong>${secretCode}</strong></p>`,
   };
   await emailService.sendMail(data);
 
-  return res
-    .status(204)
-    .json({ message: 'The reset password link was sent to your registered email address.' });
+  return res.status(204).json({ message: 'The reset password link was sent to your registered email address.' });
 });
 
 module.exports = {
@@ -380,5 +372,5 @@ module.exports = {
   logout,
   sendVerifyEmail,
   verifyEmail,
-  resetPasswordByEmail
+  resetPasswordByEmail,
 };
