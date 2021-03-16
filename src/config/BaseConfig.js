@@ -10,7 +10,7 @@ class BaseConfig {
     let value;
     if (process.env[env] || process.env[env] === '') {
       value = process.env[env];
-    } else if (env === 'APP_PORT') {
+    } else if (env === 'PORT') {
       value = process.env[env] || 4400;
     } else {
       if (defaultVal === undefined) {
