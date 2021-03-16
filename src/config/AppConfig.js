@@ -7,7 +7,7 @@ class AppConfig extends BaseConfig {
   constructor() {
     super();
     this.nodeEnv = this.set('NODE_ENV', (v) => ['development', 'production', 'test'].includes(v), 'development');
-    this.port = this.set('APP_PORT', this.joi.number().port().required(), 4400);
+    this.port = this.set('APP_PORT', this.joi.number().port().required());
     this.host = this.set('APP_HOST', this.joi.string().required(), 'localhost');
     this.name = this.setDirect(packageJson.name, this.joi.string().required(), 'd90375-app');
     this.url = this.set('APP_URL', this.joi.string().required());

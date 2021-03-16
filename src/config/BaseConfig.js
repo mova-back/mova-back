@@ -1,6 +1,5 @@
 require('dotenv').config();
 const joi = require('joi');
-const { of } = require('mongoose/lib/types/core_array');
 
 class BaseConfig {
   async init() {
@@ -9,8 +8,10 @@ class BaseConfig {
 
   set(env, validator, defaultVal) {
     let value;
-    if (!process.env.APP_PORT && (process.env[env] || process.env[env] === '')) {
+    if (process.env[env] || process.env[env] === '') {
       value = process.env[env];
+    } else if (env === 'APP_PORT') {
+      value = process.env[env] || 4400;
     } else {
       if (defaultVal === undefined) {
         throw new Error(`Missing default value "${env}".`);
