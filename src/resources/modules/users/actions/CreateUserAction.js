@@ -14,7 +14,7 @@ class CreateUserAction extends BaseAction {
   static get validationRules() {
     return {
       body: {
-        name: new RequestRule(UserSchema.schema.obj.name, { required: true }),
+        name: new RequestRule(UserSchema.schema.obj.name),
         username: new RequestRule(UserSchema.schema.obj.username, {
           required: true,
         }),

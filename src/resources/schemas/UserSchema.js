@@ -9,7 +9,6 @@ const schema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
       validate: {
         validator: (v) => typeof v === 'string' && v.length >= 3 && v.length <= 50,
         message: (prop) => `${prop.value} - string; min 3; max 50 chars`,
