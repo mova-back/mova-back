@@ -1,13 +1,13 @@
 const { assert } = require('../../../../../root');
 
-const { UserModel } = require('../../../../models/UserModel');
-const { config } = require('../../../../../config/AppConfig');
+const { UserSchema } = require('../../../../schemas/UserSchema');
+const config = require('../../../../../config/AppConfig');
 
 class ResetPasswordEmail {
   constructor({ to, resetPasswordToken } = {}) {
     assert.object(arguments[0], { required: true });
-    assert.validate(to, UserModel.schema.email, { required: true });
-    assert.validate(resetPasswordToken, UserModel.schema.resetPasswordToken, { required: true });
+    assert.validate(to, UserSchema.schema.obj.email, { required: true });
+    assert.validate(resetPasswordToken, UserSchema.schema.obj.resetPasswordToken, { required: true });
 
     this.to = to;
     this.subject = `[${config.name}] Password reset instructions`;

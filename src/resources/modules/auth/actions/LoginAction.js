@@ -1,6 +1,6 @@
 const ms = require('ms');
 const { AppError, CookieEntity } = require('../../../../root');
-const errorCodes = require('../../../../error/errorCodes');
+const { errorCodes } = require('../../../../error/errorCodes');
 
 const { BaseAction } = require('../../../../root');
 const { addRefreshSession } = require('../utils/addRefreshSession');
@@ -18,6 +18,7 @@ class LoginAction extends BaseAction {
 
     try {
       user = await UserModel.getByEmail(ctx.body.email);
+      console.log(user);
       await checkPassword(ctx.body.password, user.passwordHash);
     } catch (e) {
       if ([errorCodes.NOT_FOUND.code, errorCodes.INVALID_PASSWORD.code].includes(e.code)) {
@@ -35,7 +36,7 @@ class LoginAction extends BaseAction {
     });
 
     await addRefreshSession(newRefreshSession);
-
+    console.log(newRefreshSession.refreshToken);
     return this.result({
       data: {
         accessToken: await makeAccessToken(user),

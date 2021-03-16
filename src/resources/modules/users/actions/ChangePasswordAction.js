@@ -22,8 +22,10 @@ class ChangePasswordAction extends BaseAction {
 
   static async run(ctx) {
     const { currentUser } = ctx;
+    console.log(currentUser);
 
     const user = await UserModel.getById(currentUser.id);
+
     await checkPassword(ctx.body.oldPassword, user.passwordHash);
     const newHash = await makePasswordHash(ctx.body.newPassword);
 

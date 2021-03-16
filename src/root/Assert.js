@@ -15,6 +15,7 @@ class Assert {
   }
 
   static validate(value, rule, { required = false } = {}) {
+    console.log(rule);
     const validationResult = rule.validate.validator(value);
     if (!['boolean', 'string'].includes(typeof validationResult)) {
       Assert.fail(

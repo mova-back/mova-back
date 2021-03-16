@@ -1,7 +1,9 @@
 const { assert } = require('../../../../root');
 const { jwtSign } = require('../../../../utils/security/jwt');
 
-const { appConfig } = require('../../../../config/AppConfig');
+const SECRET = require('../../../../config/AppConfig').tokenEmailConfirmSecret;
+const expiresIn = require('../../../../config/AppConfig').tokenEmailConfirmExpiresIn;
+const iss = require('../../../../config/AppConfig').jwtIss;
 
 /**
  * @return {Promise} string
@@ -13,17 +15,17 @@ function makeEmailConfirmToken(userEntity) {
     payload: {
       email: userEntity.email,
       newEmail: userEntity.newEmail,
-      iss: appConfig.jwtISS,
+      iss,
     },
 
     options: {
       algorithm: 'HS512',
-      subject: userEntity.id,
-      expiresIn: appConfig.tokenEmailConfirmExpiresIn,
+      subject: userEntity.id.toString(),
+      expiresIn,
     },
   };
 
-  return jwtSign(config.payload, appConfig.tokenEmailConfirmSecret, config.options);
+  return jwtSign(config.payload, SECRET, config.options);
 }
 
 module.exports = { makeEmailConfirmToken };

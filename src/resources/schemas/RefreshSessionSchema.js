@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const isIP = require('validator/lib/isIP');
 const isUUID = require('validator/lib/isUUID');
-const { v4: uuidv4 } = require('uuid');
 
 const schema = new mongoose.Schema(
   {
@@ -10,7 +9,6 @@ const schema = new mongoose.Schema(
     refreshToken: {
       type: String,
       required: true,
-      default: uuidv4,
       validate: {
         validator: (v) => isUUID(v),
         message: (prop) => `${prop.value} - UUID`,
@@ -18,7 +16,7 @@ const schema = new mongoose.Schema(
     },
     fingerprint: {
       type: String,
-      required: true,
+      // required: true,
       validate: {
         validator: (v) => typeof v === 'string' && v.length <= 200,
         message: (prop) => `${prop.value} - string; max 200 chars`,

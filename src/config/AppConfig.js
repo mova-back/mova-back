@@ -17,7 +17,7 @@ class AppConfig extends BaseConfig {
     this.tokenAccesExpiresIn = this.set('TOKEN_ACCESS_EXP', this.joi.string().regex(expiresInRegexp).required());
     this.tokenAccesSecret = this.set('TOKEN_ACCESS_SECRET', this.joi.string().min(30).max(100).required());
     this.tokenRefreshExpiresIn = this.set('TOKEN_REFRESH_EXP', this.joi.string().regex(expiresInRegexp).required());
-    this.mailgunApiKey = this.set('MAILGUN_API_KEY', (v) => v.includes('key-'));
+    this.mailgunApiKey = this.set('MAILGUN_API_KEY', (v) => v.includes(''));
     this.mailgunDomain = this.set('MAILGUN_DOMAIN', this.joi.string().min(5).max(100).required());
     this.mailgunHost = this.set('MAILGUN_HOST', this.joi.string().min(5).max(100).required(), 'api.mailgun.net'); // or 'api.eu.mailgun.net'
     this.from = this.set('EMAIL_FROM', this.joi.string().min(10).max(100).required());

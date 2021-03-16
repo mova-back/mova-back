@@ -27,7 +27,7 @@ class SendResetPasswordEmailAction extends BaseAction {
   static async run(ctx) {
     const user = await UserModel.getByEmail(ctx.body.email);
     const resetPasswordToken = await makeResetPasswordToken(user);
-    await UserModel.update(user.id, { resetPasswordToken });
+    await UserModel.findByIdAndUpdate(user.id, { resetPasswordToken });
 
     await emailAgent.send(new ResetPasswordEmail({ to: user.email, resetPasswordToken }));
 

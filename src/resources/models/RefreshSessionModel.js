@@ -12,18 +12,19 @@ class RefreshSessionModel {
     return RefreshSessionSchema.create(token);
   }
 
-  static deleteMany(id) {
-    RefreshSessionSchema.deleteMany(id).exec();
-  }
-
   static removeToken(refreshToken) {
     RefreshSessionSchema.deleteOne({ refreshToken }).exec();
   }
 
-  static getByRefreshToken(refreshToken) {
+  static async getByRefreshToken(refreshToken) {
     assert.string(refreshToken, { notEmpty: true });
+    console.log(refreshToken);
 
     return RefreshSessionSchema.findOne({ refreshToken }).exec();
+  }
+
+  static removeMany(id) {
+    return RefreshSessionSchema.deleteMany({ id });
   }
 
   // const getByRefreshToken = async (refreshToken) => {

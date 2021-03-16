@@ -1,8 +1,7 @@
 const ms = require('ms');
-const { CookieEntity, AppError } = require('../../../../root');
+const { CookieEntity, AppError, BaseAction } = require('../../../../root');
 const { errorCodes } = require('../../../../error/errorCodes');
 
-const { BaseAction } = require('../../../../root');
 const { addRefreshSession } = require('../utils/addRefreshSession');
 const { verifyRefreshSession } = require('../utils/verifyRefreshSession');
 const { makeAccessToken } = require('../utils/makeAccessToken');
@@ -14,7 +13,9 @@ const config = require('../../../../config/AppConfig');
 class RefreshTokensAction extends BaseAction {
   static async run(ctx) {
     // take refresh token from any possible source
-    const reqRefreshToken = ctx.cookies.refreshToken || ctx.body.refreshToken;
+    // TODO : Fix save cookies refresh token(old)
+    // const reqRefreshToken = ctx.cookies.refreshToken || ctx.body.refreshToken;
+    const reqRefreshToken = ctx.body.refreshToken;
     const reqFingerprint = ctx.body.fingerprint;
 
     if (!reqRefreshToken) {
@@ -25,9 +26,10 @@ class RefreshTokensAction extends BaseAction {
     const refTokenExpiresInSeconds = parseInt(refTokenExpiresInMilliseconds / 1000, 10);
 
     const oldRefreshSession = await RefreshSessionModel.getByRefreshToken(reqRefreshToken);
+    console.log(oldRefreshSession);
     await RefreshSessionModel.removeToken(reqRefreshToken);
     await verifyRefreshSession(new RefreshSessionEntity(oldRefreshSession), reqFingerprint);
-    const user = await UserModel.GetById(oldRefreshSession.userId);
+    const user = await UserModel.getById(oldRefreshSession.userId);
 
     const newRefreshSession = new RefreshSessionEntity({
       userId: user.id,

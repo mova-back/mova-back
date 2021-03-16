@@ -43,6 +43,7 @@ connectToDB.on('connected', () => {
         host: config.host,
         controllers,
         middlewares,
+        cookieSecret: config.cookieSecret,
       });
     })
     .then((params) => {
