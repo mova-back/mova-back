@@ -38,8 +38,8 @@ class ResetPasswordAction extends BaseAction {
     const passwordHash = await makePasswordHash(ctx.body.password);
 
     await Promise.all([
-      UserModel.update(tokenUserId, { passwordHash, resetPasswordToken: '' }),
-      RefreshSessionModel.deleteMany({ userId: tokenUserId }),
+      UserModel.findByIdAndUpdate(tokenUserId, { passwordHash, resetPasswordToken: '' }),
+      RefreshSessionModel.removeMany({ userId: tokenUserId }),
     ]);
 
     return this.result({ message: 'Reset password process was successfully applied' });

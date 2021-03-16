@@ -20,7 +20,7 @@ class ConfirmRegistrationAction extends BaseAction {
   }
 
   static async run(ctx) {
-    const tokenData = await jwtVerify(ctx.body.emailConfirmToken, config.token.emailConfirm.secret);
+    const tokenData = await jwtVerify(ctx.body.emailConfirmToken, config.tokenEmailConfirmSecret);
     const { sub: userId } = tokenData;
 
     const user = await UserModel.getById(userId);
