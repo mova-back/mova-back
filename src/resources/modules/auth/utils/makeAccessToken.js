@@ -1,4 +1,4 @@
-const { assert } = require('../../../../root/Assert');
+const { assert } = require('../../../../root');
 
 const { jwtSign } = require('../../../../utils/security/jwt');
 
@@ -9,8 +9,7 @@ const iss = require('../../../../config/AppConfig').jwtISS;
 /**
  * @return {Promise} string
  */
-function makeAccessToken(userEntity) {
-  console.log(userEntity);
+async function makeAccessToken(userEntity) {
   assert.object(userEntity, { required: true });
 
   const config = {
@@ -23,7 +22,7 @@ function makeAccessToken(userEntity) {
 
     options: {
       algorithm: 'HS512',
-      subject: userEntity.id,
+      subject: userEntity.id.toString(),
       expiresIn,
     },
   };
