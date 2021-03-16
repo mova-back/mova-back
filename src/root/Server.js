@@ -85,7 +85,7 @@ function start({ port, host, controllers, middlewares, cookieSecret, reqLimit })
       process.exit(1);
     });
 
-    return app.listen(port || 4400, host, () => resolve({ port, host }));
+    return app.listen(port, host, () => resolve({ port, host }));
   });
 }
 
