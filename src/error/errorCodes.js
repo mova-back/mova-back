@@ -1,4 +1,4 @@
-module.exports = {
+const errorCodes = {
   SERVER: { description: 'Server error occurred', status: 500, code: 'SERVER_ERROR' },
   EXTERNAL: { description: 'External service error', status: 500, code: 'EXTERNAL_ERROR' },
   DEV_IMPLEMENTATION: {
@@ -100,3 +100,5 @@ module.exports = {
   },
   DB: { description: 'Database error occurred', status: 500, code: 'DB_ERROR' },
 };
+
+module.exports = { errorCodes };

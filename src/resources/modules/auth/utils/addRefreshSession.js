@@ -25,7 +25,7 @@ async function _addRefreshSession(refreshSession) {
 }
 
 async function _wipeAllUserRefreshSessions(userId) {
-  return RefreshSessionModel.remove({ userId });
+  return RefreshSessionModel.removeMany(userId);
 }
 
 module.exports = { addRefreshSession };

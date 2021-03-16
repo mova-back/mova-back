@@ -82,6 +82,7 @@ class BaseController {
          * set cookie
          */
         if (response.cookies && response.cookies.length) {
+          console.log(response.cookies);
           response.cookies.forEach((cookie) => {
             res.cookie(cookie.name, cookie.value, cookie.options);
           });

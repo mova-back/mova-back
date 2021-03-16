@@ -29,7 +29,6 @@ class CreateUserAction extends BaseAction {
 
   static async run(ctx) {
     const hash = await makePasswordHash(ctx.body.password);
-    console.log(hash);
     delete ctx.body.password;
     const user = await UserModel.create({
       ...ctx.body,
@@ -37,7 +36,7 @@ class CreateUserAction extends BaseAction {
     });
 
     const emailConfirmToken = await makeEmailConfirmToken(user);
-    await UserModel.update(user.id, { emailConfirmToken });
+    await UserModel.findByIdAndUpdate(user.id, { emailConfirmToken });
 
     try {
       const result = await emailAgent.send(

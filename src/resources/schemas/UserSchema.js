@@ -1,4 +1,3 @@
-const { boolean } = require('joi');
 const mongoose = require('mongoose');
 const isEmail = require('validator/lib/isEmail');
 const isJWT = require('validator/lib/isJWT');
@@ -43,7 +42,7 @@ const schema = new mongoose.Schema(
     },
     newEmail: {
       type: String,
-      unique: true,
+      // unique: true,
       validate: {
         validator: (v) => isEmail(v) && v.length <= 50,
         message: (prop) => `${prop.value}-  string; email; max 50 chars`,
