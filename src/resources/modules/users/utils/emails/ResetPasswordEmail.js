@@ -13,7 +13,7 @@ class ResetPasswordEmail {
     this.subject = `[${config.name}] Password reset instructions`;
     this.text = `Hi there! We received a request to reset your ${config.name} account password.
 
-To to reset password please follow this link >> ${config.url}/a/reset-password?resetPasswordToken=${resetPasswordToken}
+To to reset password please follow this link >> ${config.url}/reset-password?resetPasswordToken=${resetPasswordToken}
 
 If you did not request a password reset, feel free to disregard this email - your password will not be changed.
 If you don’t use this link within ${config.tokenResetPasswordExpiresIn}, it will expire.

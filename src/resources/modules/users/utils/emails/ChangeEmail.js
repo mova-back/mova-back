@@ -12,7 +12,7 @@ class ChangeEmail {
 
     this.to = newEmail;
     this.subject = `[${config.name}] Confirm new email`;
-    this.text = `To confirm email: ${newEmail} please follow this link >> ${config.url}/a/confirm-email?emailConfirmToken=${emailConfirmToken}
+    this.text = `To confirm email: ${newEmail} please follow this link >> ${config.url}/confirm-email?emailConfirmToken=${emailConfirmToken}
 
 If you don’t use this link within ${config.tokenEmailConfirmExpiresIn}, it will expire.
 

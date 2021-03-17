@@ -17,7 +17,7 @@ class WelcomeEmail {
 ${username} we just created new account for you. Your login: ${to}
 
 To finish registration process click the link below to confirm your account.
-${config.url}/a/confirm-registration?emailConfirmToken=${emailConfirmToken}
+${config.url}/confirm-registration?emailConfirmToken=${emailConfirmToken}
 
 Looking forward to working with you!
 
