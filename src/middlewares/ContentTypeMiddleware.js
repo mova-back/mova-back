@@ -1,5 +1,4 @@
-const { BaseMiddleware } = require('../root/BaseMiddleware');
-const { AppError } = require('../root/AppError');
+const { AppError, BaseMiddleware } = require('../root');
 const { errorCodes } = require('../error/errorCodes');
 
 class ContentTypeMiddleware extends BaseMiddleware {

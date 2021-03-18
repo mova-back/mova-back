@@ -1,4 +1,4 @@
-const { BaseMiddleware } = require('../root/BaseMiddleware');
+const { BaseMiddleware } = require('../root');
 
 class QueryMiddleware extends BaseMiddleware {
   async init() {

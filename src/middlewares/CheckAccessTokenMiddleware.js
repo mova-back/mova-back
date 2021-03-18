@@ -1,12 +1,12 @@
-const { BaseMiddleware } = require('../root/BaseMiddleware');
+const { BaseMiddleware } = require('../root');
 const { errorCodes } = require('../error/errorCodes');
 const { jwtVerify } = require('../utils/security/jwt');
-const SECRET = require('../config/AppConfig').tokenAccessSecret;
+const SECRET = require('../config/AppConfig').tokenAccesSecret;
 const roles = require('../permissions/roles');
 
 class CheckAccessTokenMiddleware extends BaseMiddleware {
   async init() {
-    // TODO
+    // TODO: log
     console.log(`${this.constructor.name} initialized...`);
   }
 
@@ -26,8 +26,7 @@ class CheckAccessTokenMiddleware extends BaseMiddleware {
       });
 
       if (token) {
-        // TODO return
-        jwtVerify(token, SECRET)
+        return jwtVerify(token, SECRET)
           .then((tokenData) => {
             // set actual current user
             req.currentUser = Object.freeze({
@@ -42,7 +41,10 @@ class CheckAccessTokenMiddleware extends BaseMiddleware {
           })
           .catch((error) => {
             if (error.code === errorCodes.TOKEN_EXPIRED.code) {
-              // TODO : pass request if token is not valid
+              /**
+               * pass request if token is not valid
+               * in this case security service will consider that request as anonymous request
+               */
               next();
             } else {
               next(error);

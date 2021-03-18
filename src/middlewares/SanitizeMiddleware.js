@@ -1,4 +1,4 @@
-const { BaseMiddleware } = require('../root/BaseMiddleware');
+const { BaseMiddleware } = require('../root');
 
 class SanitizeMiddleware extends BaseMiddleware {
   async init() {

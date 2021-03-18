@@ -1,4 +1,4 @@
-const { BaseMiddleware } = require('../root/BaseMiddleware');
+const { BaseMiddleware } = require('../root');
 const config = require('../config/AppConfig');
 
 class InitMiddleware extends BaseMiddleware {
