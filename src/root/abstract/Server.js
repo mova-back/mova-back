@@ -4,23 +4,27 @@ const morganLogger = require('morgan');
 const cookieParser = require('cookie-parser');
 
 const { Assert: assert } = require('./Assert');
+const { BaseMiddleware } = require('./BaseMiddleware');
+// const { AbstractLogger } = require('./AbstractLogger');
 
 class Server {
-  constructor({ port, host, controllers, middlewares, cookieSecret, reqLimit = '5mb' }) {
+  constructor({ port, host, controllers, middlewares, errorMiddleware, cookieSecret, reqLimit = '5mb' }) {
     assert.integer(port, { required: true, min: 1000 });
     assert.string(host, { required: true, notEmpty: true });
     assert.array(controllers, { required: true, notEmpty: true, message: 'controllers param expects not empty array' });
     assert.array(middlewares, { required: true, notEmpty: true, message: 'middlewares param expects not empty array' });
+    assert.instanceOf(errorMiddleware.prototype, BaseMiddleware);
     assert.string(cookieSecret);
     assert.string(reqLimit);
+    // assert.instanceOf(logger, AbstractLogger);
 
     // Todo ; change to logger
     console.log('Server start initialization...');
-    return start({ port, host, controllers, middlewares, cookieSecret, reqLimit });
+    return start({ port, host, controllers, middlewares, ErrorMiddleware: errorMiddleware, cookieSecret, reqLimit });
   }
 }
 
-function start({ port, host, controllers, middlewares, cookieSecret, reqLimit }) {
+function start({ port, host, controllers, middlewares, ErrorMiddleware, cookieSecret, reqLimit }) {
   return new Promise((resolve, reject) => {
     const app = express();
 
@@ -58,6 +62,18 @@ function start({ port, host, controllers, middlewares, cookieSecret, reqLimit })
       reject(e);
     }
 
+    /**
+     * error handler
+     */
+    try {
+      const middleware = new ErrorMiddleware();
+      // await
+      middleware.init();
+      app.use(middleware.handler());
+    } catch (e) {
+      return reject(e);
+    }
+
     app.use((req, res) => {
       res.status(404).json({
         message: `Route: '${req.url}' not found`,
@@ -85,7 +101,7 @@ function start({ port, host, controllers, middlewares, cookieSecret, reqLimit })
       process.exit(1);
     });
 
-    return app.listen(port || 4400);
+    return app.listen(port || 4400, host, () => resolve({ port, host }));
   });
 }
 

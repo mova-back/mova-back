@@ -1,16 +1,22 @@
 const { AppError } = require('./AppError');
 const { Assert: assert } = require('./Assert');
-const errorCodes = require('../error/errorCodes');
+const errorCodes = require('../../error/errorCodes');
+const { actionTagPolicy } = require('../../policy');
 
 class BaseController {
   constructor({ logger } = {}) {
     if (!this.init) throw new Error(`${this.constructor.name} should implement 'init' method.`);
     if (!this.router) throw new Error(`${this.constructor.name} should implement 'router' getter.`);
-    // TODO logger
+
+    this.logger = logger;
   }
 
   actionRunner(action) {
     assert.func(action, { required: true });
+
+    if (!Object.prototype.hasOwnProperty.call(action, 'accessTag')) {
+      throw new Error(`'accessTag' getter not declared in invoked '${action.name}' action`);
+    }
 
     if (!Object.prototype.hasOwnProperty.call(action, 'run')) {
       throw new Error(`'run' method not declared in invoked '${action.name}' action`);
@@ -39,6 +45,11 @@ class BaseController {
 
       try {
         /**
+         * check access to action by access tag
+         */
+        await actionTagPolicy(action.accessTag, ctx.currentUser);
+
+        /**
          * verify empty body
          */
         if (action.validationRules && action.validationRules.notEmptyBody && !Object.keys(ctx.body).length) {
@@ -54,18 +65,10 @@ class BaseController {
          * validate action input data
          */
         if (action.validationRules) {
-          if (action.validationRules.query) {
-            this.validateSchema(ctx.query, action.validationRules.query, 'query');
-          }
-          if (action.validationRules.params) {
-            this.validateSchema(ctx.params, action.validationRules.params, 'params');
-          }
-          if (action.validationRules.body) {
-            this.validateSchema(ctx.body, action.validationRules.body, 'body');
-          }
-          if (action.validationRules.cookies) {
-            this.validateSchema(ctx.cookies, action.validationRules.cookies, 'cookies');
-          }
+          if (action.validationRules.query) this.validateSchema(ctx.query, action.validationRules.query, 'query');
+          if (action.validationRules.params) this.validateSchema(ctx.params, action.validationRules.params, 'params');
+          if (action.validationRules.body) this.validateSchema(ctx.body, action.validationRules.body, 'body');
+          if (action.validationRules.cookies) this.validateSchema(ctx.cookies, action.validationRules.cookies, 'cookies');
         }
 
         /**
@@ -82,7 +85,6 @@ class BaseController {
          * set cookie
          */
         if (response.cookies && response.cookies.length) {
-          console.log(response.cookies);
           response.cookies.forEach((cookie) => {
             res.cookie(cookie.name, cookie.value, cookie.options);
           });
@@ -96,7 +98,6 @@ class BaseController {
         /**
          * set status and return result to client
          */
-
         return res.status(response.status).json({
           success: response.success,
           message: response.message,
@@ -119,8 +120,6 @@ class BaseController {
 
     const schemaKeys = Object.keys(requestSchema);
     const srcKeys = Object.keys(src);
-    console.log('schemaKeys', schemaKeys);
-    console.log('srcKeys', srcKeys);
 
     const defaultValidKeys = ['offset', 'page', 'limit', 'filter', 'orderBy'];
     const invalidExtraKeys = srcKeys.filter((srcKey) => !schemaKeys.includes(srcKey) && !defaultValidKeys.includes(srcKey));
@@ -138,7 +137,7 @@ class BaseController {
       const validationSrc = src[propName];
 
       const { schemaRule, options } = requestSchema[propName];
-      const { validate } = schemaRule;
+      const { validator, description, example } = schemaRule;
       const hasAllowedDefaultData = options.allowed.includes(validationSrc);
 
       if (options.required && !Object.prototype.hasOwnProperty.call(src, propName) && !hasAllowedDefaultData) {
@@ -150,7 +149,7 @@ class BaseController {
       }
 
       if (Object.prototype.hasOwnProperty.call(src, propName)) {
-        const tmpValidationResult = validate.validator(validationSrc);
+        const tmpValidationResult = validator(validationSrc);
         if (!['boolean', 'string'].includes(typeof tmpValidationResult)) {
           throw new AppError({
             ...errorCodes.DEV_IMPLEMENTATION,
@@ -164,6 +163,7 @@ class BaseController {
           throw new AppError({
             ...errorCodes.VALIDATION,
             message: `Invalid '${schemaTitle}.${propName}' field, ${validationResult}`,
+            meta: { example, expect: description },
             layer: this.constructor.name,
           });
         }
@@ -171,7 +171,7 @@ class BaseController {
           throw new AppError({
             ...errorCodes.VALIDATION,
             message: `Invalid '${schemaTitle}.${propName}' field`,
-
+            meta: { example, expect: description },
             layer: this.constructor.name,
           });
         }

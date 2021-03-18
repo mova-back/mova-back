@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { errorCodes } = require('../../error/errorCodes');
-const { AppError } = require('../../root/AppError');
-const { Assert: assert } = require('../../root/Assert');
+const { assert, AppError } = require('../../root');
 
 // const RefreshToken = require('../../resources/refreshToken/refreshToken.schema');
 
@@ -19,7 +18,6 @@ function jwtSign(payload, SECRET, options) {
 function jwtVerify(token, SECRET) {
   assert.string(token, { notEmpty: true });
   assert.string(SECRET, { notEmpty: true });
-  console.log(token);
 
   return new Promise((resolve, reject) => {
     jwt.verify(token, SECRET, (error, decoded) => {
