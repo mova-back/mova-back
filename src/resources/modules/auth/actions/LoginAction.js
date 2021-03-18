@@ -2,15 +2,30 @@ const ms = require('ms');
 const { AppError, CookieEntity } = require('../../../../root');
 const { errorCodes } = require('../../../../error/errorCodes');
 
-const { BaseAction } = require('../../../../root');
+const { BaseAction, RequestRule } = require('../../../../root');
 const { addRefreshSession } = require('../utils/addRefreshSession');
 const { UserModel } = require('../../../models/UserModel');
 const { RefreshSessionEntity } = require('../utils/RefreshSessionEntity');
 const { makeAccessToken } = require('../utils/makeAccessToken');
 const { checkPassword } = require('../../../../utils/security/checkPassword');
+const { AuthValidationSchema } = require('../../../schemas/AuthValidationSchema');
 const config = require('../../../../config/AppConfig');
 
 class LoginAction extends BaseAction {
+  static get accessTag() {
+    return 'auth:login';
+  }
+
+  static get validationRules() {
+    return {
+      body: {
+        password: new RequestRule(AuthValidationSchema.schema.password, { required: true }),
+        email: new RequestRule(AuthValidationSchema.schema.email, { required: true }),
+        // fingerprint: new RequestRule(AuthValidationSchema.schema.fingerprint, { required: true }),
+      },
+    };
+  }
+
   static async run(ctx) {
     let user = {};
     const refTokenExpiresInMilliseconds = new Date().getTime() + ms(config.tokenRefreshExpiresIn);
@@ -18,7 +33,6 @@ class LoginAction extends BaseAction {
 
     try {
       user = await UserModel.getByEmail(ctx.body.email);
-      console.log(user);
       await checkPassword(ctx.body.password, user.passwordHash);
     } catch (e) {
       if ([errorCodes.NOT_FOUND.code, errorCodes.INVALID_PASSWORD.code].includes(e.code)) {

@@ -1,5 +1,5 @@
 const ms = require('ms');
-const { CookieEntity, AppError, BaseAction } = require('../../../../root');
+const { CookieEntity, AppError, BaseAction, RequestRule } = require('../../../../root');
 const { errorCodes } = require('../../../../error/errorCodes');
 
 const { addRefreshSession } = require('../utils/addRefreshSession');
@@ -8,13 +8,29 @@ const { makeAccessToken } = require('../utils/makeAccessToken');
 const { RefreshSessionEntity } = require('../utils/RefreshSessionEntity');
 const { UserModel } = require('../../../models/UserModel');
 const { RefreshSessionModel } = require('../../../models/RefreshSessionModel');
+const { AuthValidationSchema } = require('../../../schemas/AuthValidationSchema');
 const config = require('../../../../config/AppConfig');
 
 class RefreshTokensAction extends BaseAction {
+  static get accessTag() {
+    return 'auth:refresh-tokens';
+  }
+
+  static get validationRules() {
+    return {
+      body: {
+        // fingerprint: new RequestRule(AuthValidationSchema.schema.fingerprint, { required: true }), // https://github.com/Valve/fingerprintjs2
+        refreshToken: new RequestRule(AuthValidationSchema.schema.refreshToken),
+      },
+      cookies: {
+        refreshToken: new RequestRule(AuthValidationSchema.schema.refreshToken),
+      },
+    };
+  }
+
   static async run(ctx) {
     // take refresh token from any possible source
     // TODO : Fix save cookies refresh token(old)
-    // const reqRefreshToken = ctx.cookies.refreshToken || ctx.body.refreshToken;
     const reqRefreshToken = ctx.body.refreshToken;
     const reqFingerprint = ctx.body.fingerprint;
 
@@ -24,9 +40,7 @@ class RefreshTokensAction extends BaseAction {
 
     const refTokenExpiresInMilliseconds = new Date().getTime() + ms(config.tokenRefreshExpiresIn);
     const refTokenExpiresInSeconds = parseInt(refTokenExpiresInMilliseconds / 1000, 10);
-
     const oldRefreshSession = await RefreshSessionModel.getByRefreshToken(reqRefreshToken);
-    console.log(oldRefreshSession);
     await RefreshSessionModel.removeToken(reqRefreshToken);
     await verifyRefreshSession(new RefreshSessionEntity(oldRefreshSession), reqFingerprint);
     const user = await UserModel.getById(oldRefreshSession.userId);
@@ -38,6 +52,9 @@ class RefreshTokensAction extends BaseAction {
       fingerprint: reqFingerprint,
       expiresIn: refTokenExpiresInMilliseconds,
     });
+
+    console.log('USER', user);
+    console.log('newRefreshSession', newRefreshSession);
 
     await addRefreshSession(newRefreshSession);
 

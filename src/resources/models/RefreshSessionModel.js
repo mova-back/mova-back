@@ -18,7 +18,6 @@ class RefreshSessionModel {
 
   static async getByRefreshToken(refreshToken) {
     assert.string(refreshToken, { notEmpty: true });
-    console.log(refreshToken);
 
     return RefreshSessionSchema.findOne({ refreshToken }).exec();
   }

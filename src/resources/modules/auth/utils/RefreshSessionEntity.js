@@ -5,7 +5,6 @@ const { RefreshSessionSchema } = require('../../../schemas/RefreshSessionSchema'
 
 class RefreshSessionEntity {
   constructor({ userId, fingerprint, ip, ua, expiresIn } = {}) {
-    console.log(userId);
     assert.mongoAutoId(userId, { required: true });
     // assert.validate(fingerprint, RefreshSessionSchema.schema.obj.fingerprint, { required: true });
     assert.validate(ip, RefreshSessionSchema.schema.obj.ip, { required: true });

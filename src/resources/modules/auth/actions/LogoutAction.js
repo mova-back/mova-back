@@ -1,8 +1,24 @@
-const { AppError, BaseAction } = require('../../../../root');
+const { AppError, BaseAction, RequestRule } = require('../../../../root');
 const { errorCodes } = require('../../../../error/errorCodes');
 const { RefreshSessionModel } = require('../../../models/RefreshSessionModel');
+const { AuthValidationSchema } = require('../../../schemas/AuthValidationSchema');
 
 class LogoutAction extends BaseAction {
+  static get accessTag() {
+    return 'auth:logout';
+  }
+
+  static get validationRules() {
+    return {
+      body: {
+        refreshToken: new RequestRule(AuthValidationSchema.schema.refreshToken),
+      },
+      cookies: {
+        refreshToken: new RequestRule(AuthValidationSchema.schema.refreshToken),
+      },
+    };
+  }
+
   static async run(ctx) {
     // take refresh token from any possible source
     // TODO : FIX cookie token

@@ -43,9 +43,9 @@ class UserModel {
   }
 
   static async getCurrentUser(id) {
-    assert.validate(id, UserModel.schema.obj.id, { required: true });
-
-    const data = await UserSchema.findById({ id });
+    // TODO : add schema id
+    // assert.validate(id, UserModel.schema.obj.id, { required: true });
+    const data = await UserSchema.findById(id).exec();
 
     // delete sensitive data from current user
     // delete data.passwordHash;
