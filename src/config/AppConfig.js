@@ -8,7 +8,7 @@ class AppConfig extends BaseConfig {
     super();
     this.nodeEnv = this.set('NODE_ENV', (v) => ['development', 'production', 'test'].includes(v), 'development');
     this.port = this.set('PORT', this.joi.number().port().required());
-    this.host = this.set('HOST', this.joi.string().required(), 'localhost');
+    this.host = this.set('HOST', this.joi.string().required());
     this.name = this.setDirect(packageJson.name, this.joi.string().required(), 'd90375-app');
     this.url = this.set('APP_URL', this.joi.string().required());
     this.sentryDsn = this.set('SENTRY_DSN', this.joi.string().required());
