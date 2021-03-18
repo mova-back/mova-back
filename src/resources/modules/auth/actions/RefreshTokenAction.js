@@ -32,6 +32,9 @@ class RefreshTokensAction extends BaseAction {
     // take refresh token from any possible source
     // TODO : Fix save cookies refresh token(old)
     const reqRefreshToken = ctx.cookies.refreshToken || ctx.body.refreshToken;
+    console.log('BAG!!!reqRefreshToken', reqRefreshToken);
+    console.log('BAG!!!ctx.cookies.refreshToken', ctx.cookies.refreshToken);
+    console.log('BAG!!!ctx.body.refreshToken', ctx.body.refreshToken);
     const reqFingerprint = ctx.body.fingerprint;
 
     if (!reqRefreshToken) {
