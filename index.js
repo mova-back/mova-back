@@ -6,6 +6,8 @@ const { Server } = require('./src/root');
 const config = require('./src/config/AppConfig');
 const controllers = require('./src/controllers');
 const middlewares = require('./src/middlewares');
+const errorMiddleware = require('./src/middlewares/errorMiddleware');
+const logger = require('./logger');
 
 mongoose.connect(config.mongooseConnectionURL, {
   useNewUrlParser: true,
@@ -43,7 +45,9 @@ connectToDB.on('connected', () => {
         host: config.host,
         controllers,
         middlewares,
+        errorMiddleware,
         cookieSecret: config.cookieSecret,
+        logger,
       });
     })
     .then((params) => {
