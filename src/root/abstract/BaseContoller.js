@@ -137,7 +137,8 @@ class BaseController {
       const validationSrc = src[propName];
 
       const { schemaRule, options } = requestSchema[propName];
-      const { validator, description, example } = schemaRule;
+      const { validate } = schemaRule;
+
       const hasAllowedDefaultData = options.allowed.includes(validationSrc);
 
       if (options.required && !Object.prototype.hasOwnProperty.call(src, propName) && !hasAllowedDefaultData) {
@@ -149,7 +150,7 @@ class BaseController {
       }
 
       if (Object.prototype.hasOwnProperty.call(src, propName)) {
-        const tmpValidationResult = validator(validationSrc);
+        const tmpValidationResult = validate.validator(validationSrc);
         if (!['boolean', 'string'].includes(typeof tmpValidationResult)) {
           throw new AppError({
             ...errorCodes.DEV_IMPLEMENTATION,
@@ -163,7 +164,6 @@ class BaseController {
           throw new AppError({
             ...errorCodes.VALIDATION,
             message: `Invalid '${schemaTitle}.${propName}' field, ${validationResult}`,
-            meta: { example, expect: description },
             layer: this.constructor.name,
           });
         }
@@ -171,7 +171,6 @@ class BaseController {
           throw new AppError({
             ...errorCodes.VALIDATION,
             message: `Invalid '${schemaTitle}.${propName}' field`,
-            meta: { example, expect: description },
             layer: this.constructor.name,
           });
         }
