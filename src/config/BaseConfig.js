@@ -11,9 +11,9 @@ class BaseConfig {
     if (process.env[env] || process.env[env] === '') {
       value = process.env[env];
     } else if (env === 'PORT') {
-      value = process.env[env] || 4400;
+      value = process.env[env];
     } else if (env === 'HOST') {
-      value = process.env[env] || 'localhost';
+      value = process.env[env];
     } else {
       if (defaultVal === undefined) {
         throw new Error(`Missing default value "${env}".`);
