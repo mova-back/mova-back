@@ -30,8 +30,8 @@ class ChangePasswordAction extends BaseAction {
     const newHash = await makePasswordHash(ctx.body.newPassword);
 
     await Promise.all([
-      RefreshSessionModel.deleteMany({ userId: currentUser.id }), // Changing password will remove all logged in refresh sessions
-      UserModel.update(currentUser.id, { passwordHash: newHash }),
+      RefreshSessionModel.removeMany(currentUser.id), // Changing password will remove all logged in refresh sessions
+      UserModel.findByIdAndUpdate(currentUser.id, { passwordHash: newHash }),
     ]);
 
     return this.result({ message: 'Password changed' });
