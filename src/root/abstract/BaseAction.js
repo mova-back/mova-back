@@ -1,6 +1,24 @@
 const { Assert: assert } = require('./Assert');
+const { RequestRule } = require('./RequestRule');
 
 class BaseAction {
+  static get baseQueryParams() {
+    return {
+      page: new RequestRule({
+        validate: {
+          validator: (v) => Number.isInteger(v) && v >= 0,
+          message: (prop) => `${prop.value} - Number; min 0;`,
+        },
+      }),
+      limit: new RequestRule({
+        validate: {
+          validator: (v) => Number.isInteger(v) && [10, 20, 30, 40, 50, 60, 70, 80, 90, 100].includes(v),
+          description: 'Number; One of: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]',
+        },
+      }),
+    };
+  }
+
   static result(result) {
     assert.object(result, { notEmpty: true });
     assert.boolean(result.success);

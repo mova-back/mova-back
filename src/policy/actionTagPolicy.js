@@ -8,8 +8,6 @@ const permissions = require('../permissions');
  * @case uses in each action class
  */
 module.exports = (accessTag, currentUser) => {
-  console.log('accessTag', accessTag);
-  console.log('currentUser', currentUser);
   assert.string(accessTag, { notEmpty: true });
   assert.object(currentUser, { required: true });
 

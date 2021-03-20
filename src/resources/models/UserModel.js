@@ -8,8 +8,10 @@ class UserModel {
       .exec();
   }
 
-  static async create(obj) {
-    return UserSchema.create(obj);
+  static async create(entity = {}) {
+    assert.object(entity, { required: true });
+
+    return UserSchema.create(entity);
   }
 
   static async findByIdAndUpdate(id, entity = {}) {

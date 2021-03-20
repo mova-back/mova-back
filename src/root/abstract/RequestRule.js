@@ -3,7 +3,6 @@ const { Assert: assert } = require('./Assert');
 class RequestRule {
   constructor(schemaRule, { required = false, allowed = [] } = {}) {
     // eslint-disable-next-line prefer-rest-params
-    console.log('@schemaRule@', schemaRule);
     assert.object(arguments[1]);
     assert.boolean(required);
     assert.array(allowed);
