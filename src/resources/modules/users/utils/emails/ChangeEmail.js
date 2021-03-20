@@ -1,7 +1,7 @@
 const { assert } = require('../../../../../root');
 
 const { UserSchema } = require('../../../../schemas/UserSchema');
-const { config } = require('../../../../../config/AppConfig');
+const config = require('../../../../../config/AppConfig');
 
 class ChangeEmail {
   constructor({ newEmail, emailConfirmToken } = {}) {

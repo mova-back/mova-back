@@ -117,6 +117,9 @@ class BaseController {
     });
     assert.object(requestSchema, { required: true });
     assert.string(schemaTitle, { required: true });
+    console.log(requestSchema);
+    console.log(src);
+    console.log(schemaTitle);
 
     const schemaKeys = Object.keys(requestSchema);
     const srcKeys = Object.keys(src);
@@ -137,6 +140,7 @@ class BaseController {
       const validationSrc = src[propName];
 
       const { schemaRule, options } = requestSchema[propName];
+      console.log('schemaRule, !@@#$', schemaRule);
       const { validate } = schemaRule;
 
       const hasAllowedDefaultData = options.allowed.includes(validationSrc);

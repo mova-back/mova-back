@@ -16,7 +16,7 @@ class ChangeEmailAction extends BaseAction {
   static get validationRules() {
     return {
       body: {
-        newEmail: new RequestRule(UserSchema.schema.obj.email, { required: true }),
+        newEmail: new RequestRule(UserSchema.schema.obj.newEmail, { required: true }),
       },
     };
   }

@@ -21,7 +21,7 @@ class ResendConfirmNewEmailTokenAction extends BaseAction {
 
     const emailConfirmToken = await makeEmailConfirmToken(user);
     await emailAgent.send(new ChangeEmail({ newEmail, emailConfirmToken }));
-    await UserModel.update(currentUser.id, { emailConfirmToken });
+    await UserModel.findByIdAndUpdate(currentUser.id, { emailConfirmToken });
 
     return this.result({ message: 'Email confirmation token was send!' });
   }
