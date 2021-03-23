@@ -1,19 +1,10 @@
 const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
-const ObjectIdSchema = Schema.ObjectId;
 
 const schema = new Schema(
   {
-    // TODO :connect to userSchema
-    _id: {
-      type: ObjectIdSchema,
-      auto: true,
-      validate: {
-        validator: (v) => typeof v === 'object',
-        message: (prop) => `${prop.value} - object`,
-      },
-    },
+    // TODO :connect to userSchema,
     wordname: {
       type: String,
       required: true,
