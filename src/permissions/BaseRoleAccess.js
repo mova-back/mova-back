@@ -14,7 +14,7 @@ class BaseRoleAccess {
       'users:send-reset-password-email': true,
       'users:reset-password': true,
 
-      'posts:all': true,
+      'words:all': true,
 
       'auth:logout': true,
       'auth:logout-all-sessions': true,

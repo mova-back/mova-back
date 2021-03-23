@@ -1,11 +1,10 @@
 const { BaseAction, RequestRule } = require('../../../../root');
 const { WordsModel } = require('../../../models/WordsModel');
-const { WordSchema } = require('../../../schemas/WordSchema');
 const { privateItemPolicy } = require('../../../../policy');
 
 class GetWordByIdAction extends BaseAction {
   static get accessTag() {
-    return 'posts:get-by-id';
+    return 'words:get-by-id';
   }
 
   static get validationRules() {

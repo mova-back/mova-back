@@ -52,21 +52,17 @@ const schema = new Schema(
     },
     rating: {},
     likes: {
-      type: Number,
-      required: true,
-      default: 0,
+      type: Array,
       validate: {
-        validator: (v) => Number.isInteger(v),
-        message: (prop) => `${prop.value} - number`,
+        validator: (v) => Array.isArray(v),
+        message: (prop) => `${prop.value} - Array`,
       },
     },
     dislikes: {
-      type: Number,
-      required: true,
-      default: 0,
+      type: Array,
       validate: {
-        validator: (v) => Number.isInteger(v),
-        message: (prop) => `${prop.value} - number`,
+        validator: (v) => Array.isArray(v),
+        message: (prop) => `${prop.value} - Array`,
       },
     },
   },

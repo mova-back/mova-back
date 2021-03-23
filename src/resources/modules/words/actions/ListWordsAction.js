@@ -3,7 +3,7 @@ const { WordsModel } = require('../../../models/WordsModel');
 
 class ListWordsAction extends BaseAction {
   static get accessTag() {
-    return 'posts:list';
+    return 'words:list';
   }
 
   static get validationRules() {

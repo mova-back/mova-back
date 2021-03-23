@@ -1,10 +1,10 @@
 const { BaseAction, RequestRule } = require('../../../../root');
-const { ownerPolicy } = require('../../../../policy');
 const { WordsModel } = require('../../../models/WordsModel');
+const { privateItemPolicy } = require('../../../../policy');
 
-class RemoveWordAction extends BaseAction {
+class AddLikeAction extends BaseAction {
   static get accessTag() {
-    return 'words:delete';
+    return 'words:add-like';
   }
 
   static get validationRules() {
@@ -25,13 +25,13 @@ class RemoveWordAction extends BaseAction {
 
   static async run(ctx) {
     const { currentUser } = ctx;
-
     const model = await WordsModel.getById(ctx.params.id);
-    await ownerPolicy(model, currentUser);
-    await WordsModel.remove(ctx.params.id);
+    await privateItemPolicy(model, currentUser);
 
-    return this.result({ message: `${ctx.params.id} was removed` });
+    const data = WordsModel.update(model.id, { likes: currentUser.id });
+
+    return this.result({ data });
   }
 }
 
-module.exports = { RemoveWordAction };
+module.exports = { AddLikeAction };

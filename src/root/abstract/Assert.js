@@ -139,6 +139,7 @@ class Assert {
   }
 
   static mongoAutoId(value, { required = false, message = '' } = {}) {
+    Assert.string(value, { required, message });
     const isValidId = MONO_AUTO_ID.test(value);
     if (!isValidId && required) Assert.fail(value, 'UUID or Number', message);
     if (value !== undefined && !isValidId) Assert.fail(value, 'UUID or Number', message);
@@ -155,7 +156,9 @@ class Assert {
 
   static uuid(value, { required = false, message = '' } = {}) {
     Assert.string(value, { required, message });
-    if (value && !UUID_REGEXP.test(value)) Assert.fail(value, 'UUID', message);
+    if (value && !UUID_REGEXP.test(value)) {
+      Assert.fail(value, 'UUID', message);
+    }
   }
 
   static url(value, { required = false, message = '' } = {}) {

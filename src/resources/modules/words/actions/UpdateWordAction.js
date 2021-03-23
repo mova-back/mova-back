@@ -6,7 +6,7 @@ const { WordsModel } = require('../../../models/WordsModel');
 
 class UpdateWordAction extends BaseAction {
   static get accessTag() {
-    return 'posts:update';
+    return 'words:update';
   }
 
   static get validationRules() {

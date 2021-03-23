@@ -4,7 +4,7 @@ const { WordSchema } = require('../../../schemas/WordSchema');
 
 class CreateWordAction extends BaseAction {
   static get accessTag() {
-    return 'posts:create';
+    return 'words:create';
   }
 
   static get validationRules() {

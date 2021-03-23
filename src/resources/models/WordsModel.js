@@ -22,7 +22,6 @@ class WordsModel {
   }
 
   static async getList({ page, limit } = {}) {
-    console.log(page, limit);
     assert.integer(page, { required: true });
     assert.integer(limit, { required: true });
 
@@ -39,23 +38,22 @@ class WordsModel {
   }
 
   static async getById(id) {
-    assert.id(id, { required: true });
+    assert.mongoAutoId(id, { required: true });
 
     const data = await WordSchema.findById(id).exec();
-    console.log('DATA', data);
     if (!data) throw this.errorEmptyResponse();
     return data;
   }
 
   static async update(id, entity = {}) {
-    assert.id(id, { required: true });
+    assert.mongoAutoId(id, { required: true });
     assert.object(entity, { required: true });
 
     return WordSchema.findByIdAndUpdate(id, entity).exec();
   }
 
   static remove(id) {
-    assert.id(id, { required: true });
+    assert.mongoAutoId(id, { required: true });
 
     return this.findByIdAndDelete(id).exec();
   }

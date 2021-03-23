@@ -12,8 +12,8 @@ class RoleAnonymousAccess {
       'auth:login': true,
       'auth:refresh-tokens': true,
 
-      'posts:list': true,
-      'posts:get-by-id': true,
+      'words:list': true,
+      'words:get-by-id': true,
     };
   }
 }
