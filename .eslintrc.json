@@ -28,7 +28,7 @@
     "camelcase": "off",
     "no-underscore-dangle": "off",
     "no-use-before-define": "off",
-    "no-console": "off",
+    "no-console": "warn",
     "class-methods-use-this": "off",
     "dot-notation": "off",
     "prefer-rest-parm": "off",

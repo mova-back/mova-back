@@ -1,8 +1,8 @@
-const { WordSchema } = require('../schemas/WordSchema');
-const { assert, AppError } = require('../../root');
+const { Assert: assert } = require('./Assert');
+const { AppError } = require('./AppError');
 const { errorCodes } = require('../../error/errorCodes');
 
-class WordsModel {
+class BaseModel {
   static errorEmptyResponse() {
     return new AppError({ ...errorCodes.NOT_FOUND, layer: 'Schema' });
   }
@@ -18,20 +18,21 @@ class WordsModel {
       });
     }
 
-    return WordSchema.create(entity);
+    return this.schema.create(entity).exec();
   }
 
   static async getList({ page, limit } = {}) {
-    console.log(page, limit);
     assert.integer(page, { required: true });
     assert.integer(limit, { required: true });
 
-    const result = await WordSchema.find()
+    const result = await this.schema
+      .find()
       .skip(page * limit)
       .limit(limit)
       .exec();
 
-    const total = await WordSchema.find()
+    const total = await this.schema
+      .find()
       .count((el) => el)
       .exec();
 
@@ -41,26 +42,10 @@ class WordsModel {
   static async getById(id) {
     assert.id(id, { required: true });
 
-    const data = await WordSchema.findById(id).exec();
-    console.log('DATA', data);
+    const data = await this.schema.findById(id).exec();
     if (!data) throw this.errorEmptyResponse();
     return data;
   }
-
-  static async update(id, entity = {}) {
-    assert.id(id, { required: true });
-    assert.object(entity, { required: true });
-
-    return WordSchema.findByIdAndUpdate(id, entity).exec();
-  }
-
-  static remove(id) {
-    assert.id(id, { required: true });
-
-    return this.findByIdAndDelete(id).exec();
-  }
 }
 
-module.exports = {
-  WordsModel,
-};
+module.exports = { BaseModel };

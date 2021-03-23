@@ -45,7 +45,7 @@ class ListUsersAction extends BaseAction {
 
   static async run(req) {
     const { query } = req;
-    const data = await UserDAO.baseGetList({ ...query });
+    const data = await UserModel.baseGetList({ ...query });
 
     return this.result({
       data: data.results,

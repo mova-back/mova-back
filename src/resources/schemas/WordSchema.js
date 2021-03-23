@@ -1,8 +1,19 @@
 const mongoose = require('mongoose');
 
-const schema = new mongoose.Schema(
+const { Schema } = mongoose;
+const ObjectIdSchema = Schema.ObjectId;
+
+const schema = new Schema(
   {
     // TODO :connect to userSchema
+    _id: {
+      type: ObjectIdSchema,
+      auto: true,
+      validate: {
+        validator: (v) => typeof v === 'object',
+        message: (prop) => `${prop.value} - object`,
+      },
+    },
     wordname: {
       type: String,
       required: true,
@@ -39,6 +50,7 @@ const schema = new mongoose.Schema(
         message: (prop) => `${prop.value} - Array`,
       },
     },
+    rating: {},
     likes: {
       type: Number,
       required: true,

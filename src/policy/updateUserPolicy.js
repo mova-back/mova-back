@@ -1,4 +1,5 @@
-const { AppError, assert } = require('../root');
+const { AppError } = require('../root/abstract/AppError');
+const { Assert: assert } = require('../root/abstract/Assert');
 const { errorCodes } = require('../error/errorCodes');
 const roles = require('../permissions/roles');
 
@@ -12,11 +13,8 @@ module.exports = (model, currentUser) => {
   assert.object(currentUser, { required: true });
 
   return new Promise((resolve, reject) => {
-    // pass superadmin
-    if (currentUser.role === roles.superadmin) return resolve();
-    // pass owner
+    if (currentUser.role === roles.admin) return resolve();
     if (currentUser.id === model.id) return resolve();
-    // else reject
     return reject(new AppError({ ...errorCodes.FORBIDDEN }));
   });
 };

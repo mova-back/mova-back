@@ -20,6 +20,7 @@ class CreateWordAction extends BaseAction {
 
   static async run(ctx) {
     const { currentUser } = ctx;
+
     const data = await WordsModel.create({ ...ctx.body, userId: currentUser.id });
     return this.result({ data });
   }

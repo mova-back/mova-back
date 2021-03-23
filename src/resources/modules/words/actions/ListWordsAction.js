@@ -16,8 +16,7 @@ class ListWordsAction extends BaseAction {
 
   static async run(ctx) {
     const { query } = ctx;
-    const data = await WordsModel.getWordsList(query);
-    console.log('data', data);
+    const data = await WordsModel.getList(query);
 
     return this.result({
       data: data.result,
