@@ -28,9 +28,10 @@ class AddLikeAction extends BaseAction {
     const model = await WordsModel.getById(ctx.params.id);
     await privateItemPolicy(model, currentUser);
 
-    const data = WordsModel.update(model.id, { likes: currentUser.id });
+    WordsModel.update(model.id, { likes: currentUser.id });
+    WordsModel.update(model.id, { $pull: { dislikes: currentUser.id } });
 
-    return this.result({ data });
+    return this.result({ message: `for User by id: ${ctx.params.id} dislike added` });
   }
 }
 

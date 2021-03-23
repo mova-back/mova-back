@@ -5,6 +5,7 @@ const { UpdateWordAction } = require('./UpdateWordAction');
 const { RemoveWordAction } = require('./RemoveWordAction');
 const { AddLikeAction } = require('./AddLikeAction');
 const { AddDislikeAction } = require('./AddDislikeAction');
+const { RemoveLikeAction } = require('./RemoveLikeAction');
 
 module.exports = {
   ListWordsAction,
@@ -14,4 +15,5 @@ module.exports = {
   RemoveWordAction,
   AddLikeAction,
   AddDislikeAction,
+  RemoveLikeAction,
 };
