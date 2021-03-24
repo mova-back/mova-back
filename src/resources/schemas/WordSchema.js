@@ -24,14 +24,14 @@ const schema = new Schema(
       required: true,
       validate: {
         validator: (v) => typeof v === 'string' && v.length >= 1 && v.length <= 250,
-        message: (prop) => `${prop.value} - string; min 2 chars; max 100 chars`,
+        message: (prop) => `${prop.value} - string; min 1 chars; max 250 chars`,
       },
     },
     extended_description: {
       type: String,
       validate: {
         validator: (v) => typeof v === 'string' && v.length >= 1 && v.length <= 250,
-        message: (prop) => `${prop.value} - string; min 2 chars; max 100 chars`,
+        message: (prop) => `${prop.value} - string; min 1 chars; max 250 chars`,
       },
     },
     tags: {
@@ -41,7 +41,21 @@ const schema = new Schema(
         message: (prop) => `${prop.value} - Array`,
       },
     },
-    rating: {},
+    usages: {
+      type: String,
+      validate: {
+        validator: (v) => typeof v === 'string' && v.length >= 5 && v.length <= 250,
+        message: (prop) => `${prop.value} - string; min 5 chars; max 250 chars`,
+      },
+    },
+    swearing: {
+      type: Boolean,
+      default: false,
+      validate: {
+        validator: (v) => typeof v === 'boolean',
+        message: (prop) => `${prop.value} - string; min 5 chars; max 250 chars`,
+      },
+    },
     likes: {
       type: Array,
       validate: {
