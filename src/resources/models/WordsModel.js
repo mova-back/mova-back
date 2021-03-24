@@ -7,7 +7,7 @@ class WordsModel {
     return new AppError({ ...errorCodes.NOT_FOUND, layer: 'Schema' });
   }
 
-  static create(entity = {}) {
+  static async create(entity = {}) {
     assert.object(entity, { required: true });
 
     if (!entity.userId) {
@@ -27,12 +27,26 @@ class WordsModel {
 
     const result = await WordSchema.find()
       .skip(page * limit)
-      .limit(limit)
-      .exec();
+      .limit(limit);
+    const total = await WordSchema.find().count((el) => el);
 
-    const total = await WordSchema.find()
-      .count((el) => el)
-      .exec();
+    return { result, total };
+  }
+
+  static async getMyWordsList(field, { page, limit } = {}) {
+    assert.array(field, { required: true });
+    assert.integer(page, { required: true });
+    assert.integer(limit, { required: true });
+
+    const result = await WordSchema.find({
+      _id: { $in: field },
+    })
+      .skip(page * limit)
+      .limit(limit);
+
+    const total = await WordSchema.find({
+      _id: { $in: field },
+    }).count((el) => el);
 
     return { result, total };
   }
@@ -40,7 +54,7 @@ class WordsModel {
   static async getById(id) {
     assert.mongoAutoId(id, { required: true });
 
-    const data = await WordSchema.findById(id).exec();
+    const data = await WordSchema.findById(id);
     if (!data) throw this.errorEmptyResponse();
     return data;
   }
@@ -49,13 +63,13 @@ class WordsModel {
     assert.mongoAutoId(id, { required: true });
     assert.object(entity, { required: true });
 
-    return WordSchema.findByIdAndUpdate(id, entity).exec();
+    return WordSchema.findByIdAndUpdate(id, entity);
   }
 
-  static remove(id) {
+  static async remove(id) {
     assert.mongoAutoId(id, { required: true });
 
-    return this.findByIdAndDelete(id).exec();
+    return this.findByIdAndDelete(id);
   }
 }
 

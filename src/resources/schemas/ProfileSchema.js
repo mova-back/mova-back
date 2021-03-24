@@ -25,6 +25,14 @@ const schema = new mongoose.Schema(
         message: (prop) => `${prop.value} - string; min 3; max 300 chars;`,
       },
     },
+    createdWords: {
+      type: Array,
+      default: [],
+      validate: {
+        validator: (v) => Array.isArray(v),
+        message: (prop) => `${prop.value} - Array`,
+      },
+    },
   },
   { timestamps: true }
 );

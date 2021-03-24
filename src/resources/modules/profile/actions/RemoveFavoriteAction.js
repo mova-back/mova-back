@@ -29,7 +29,7 @@ class RemoveFavoriteAction extends BaseAction {
     const model = await WordsModel.getById(ctx.params.id);
     await privateItemPolicy(model, currentUser);
 
-    await ProfileSchema.findOneAndUpdate({ user: currentUser.id }, { $pull: { favorites: model.id } });
+    await ProfileModel.updateEntetyByField({ user: currentUser.id }, { $pull: { favorites: model.id } });
 
     return this.result({ message: `for user ${currentUser.id} favorite word by id: ${ctx.params.id} added` });
   }

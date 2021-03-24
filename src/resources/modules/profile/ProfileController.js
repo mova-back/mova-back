@@ -8,6 +8,7 @@ class ProfilesController extends BaseController {
     router.get('/api/profile/favorites', this.actionRunner(actions.FavoriteListAction));
     router.put('/api/profile/addfavorite/:id', this.actionRunner(actions.AddFavoriteAction));
     router.put('/api/profile/removefavorite/:id', this.actionRunner(actions.RemoveFavoriteAction));
+    router.get('/api/profile/mywords', this.actionRunner(actions.MyWordsAction));
 
     return router;
   }

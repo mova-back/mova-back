@@ -27,6 +27,8 @@ class UpdateWordAction extends BaseAction {
         meaning: new RequestRule(WordSchema.schema.obj.meaning),
         extended_description: new RequestRule(WordSchema.schema.obj.meaning),
         tags: new RequestRule(WordSchema.schema.obj.tags),
+        usages: new RequestRule(WordSchema.schema.obj.usages),
+        swearing: new RequestRule(WordSchema.schema.obj.swearing),
       },
       notEmptyBody: true,
     };

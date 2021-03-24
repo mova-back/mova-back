@@ -2,6 +2,7 @@ const { BaseAction, RequestRule } = require('../../../../root');
 const { WordsModel } = require('../../../models/WordsModel');
 const { privateItemPolicy } = require('../../../../policy');
 const { ProfileSchema } = require('../../../schemas/ProfileSchema');
+const { ProfileModel } = require('../../../models/ProfileModel');
 
 class AddFavoriteAction extends BaseAction {
   static get accessTag() {
@@ -29,7 +30,7 @@ class AddFavoriteAction extends BaseAction {
     const model = await WordsModel.getById(ctx.params.id);
     await privateItemPolicy(model, currentUser);
 
-    await ProfileSchema.findOneAndUpdate({ user: currentUser.id }, { favorites: model.id });
+    await ProfileModel.updateEntetyByField({ user: currentUser.id }, { favorites: model.id });
 
     return this.result({ message: `for user ${currentUser.id} favorite word by id: ${ctx.params.id} added` });
   }

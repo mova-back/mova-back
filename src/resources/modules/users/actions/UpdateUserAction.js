@@ -10,8 +10,7 @@ class UpdateUserAction extends BaseAction {
   static get validationRules() {
     return {
       body: {
-        name: new RequestRule(UserSchema.schema.obj.name),
-        location: new RequestRule(UserSchema.schema.obj.location),
+        username: new RequestRule(UserSchema.schema.obj.name),
       },
     };
   }

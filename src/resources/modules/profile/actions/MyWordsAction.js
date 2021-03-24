@@ -1,9 +1,10 @@
 const { BaseAction } = require('../../../../root');
 const { ProfileModel } = require('../../../models/ProfileModel');
+const { WordsModel } = require('../../../models/WordsModel');
 
-class FavoriteListAction extends BaseAction {
+class MyWordsAction extends BaseAction {
   static get accessTag() {
-    return 'profiles:list';
+    return 'profiles:mywords';
   }
 
   static get validationRules() {
@@ -15,8 +16,10 @@ class FavoriteListAction extends BaseAction {
   }
 
   static async run(ctx) {
-    const { query } = ctx;
-    const data = await ProfileModel.getList('favorites', query);
+    const { currentUser, query } = ctx;
+    const profile = await ProfileModel.getByUserId(currentUser.id);
+
+    const data = await WordsModel.getMyWordsList(profile.createdWords, query);
 
     return this.result({
       data: data.result,
@@ -25,4 +28,4 @@ class FavoriteListAction extends BaseAction {
   }
 }
 
-module.exports = { FavoriteListAction };
+module.exports = { MyWordsAction };

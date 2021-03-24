@@ -47,14 +47,13 @@ class UserModel {
   static async getCurrentUser(id) {
     // TODO : add schema id
     // assert.validate(id, UserModel.schema.obj.id, { required: true });
-    const data = await UserSchema.findById(id).exec();
+    const data = await UserSchema.findById(id).populate('profile').exec();
 
-    // delete sensitive data from current user
+    // TODO : delete fields in response
+
     // delete data.passwordHash;
     // delete data.emailConfirmToken;
     // delete data.resetPasswordToken;
-
-    // TODO : ??????
 
     return data;
   }
