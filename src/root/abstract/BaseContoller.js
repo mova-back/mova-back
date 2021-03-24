@@ -151,7 +151,6 @@ class BaseController {
 
       if (Object.prototype.hasOwnProperty.call(src, propName)) {
         const tmpValidationResult = validate.validator(validationSrc);
-        console.log('TYPEOF', src);
 
         if (!['boolean', 'string'].includes(typeof tmpValidationResult)) {
           throw new AppError({
