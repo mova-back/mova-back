@@ -7,13 +7,6 @@ const rolesList = Object.values(roles);
 
 const schema = new mongoose.Schema(
   {
-    name: {
-      type: String,
-      validate: {
-        validator: (v) => typeof v === 'string' && v.length >= 3 && v.length <= 50,
-        message: (prop) => `${prop.value} - string; min 3; max 50 chars`,
-      },
-    },
     username: {
       type: String,
       required: true,
@@ -73,6 +66,7 @@ const schema = new mongoose.Schema(
         message: (prop) => `${prop.value} - string; min 3; max 300 chars;`,
       },
     },
+    profile: { type: mongoose.Schema.Types.ObjectId, ref: 'profile' },
   },
   { timestamps: true }
 );

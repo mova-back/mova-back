@@ -1,7 +1,6 @@
 const { RequestRule, BaseAction } = require('../../../../root');
 
 const { UserModel } = require('../../../models/UserModel');
-const { UserSchema } = require('../../../schemas/UserSchema');
 
 /**
  * @description return user by id
@@ -14,7 +13,15 @@ class GetUserByIdAction extends BaseAction {
   static get validationRules() {
     return {
       params: {
-        id: new RequestRule(UserSchema.schema.obj.id, { required: true }),
+        id: new RequestRule(
+          {
+            validate: {
+              validator: (v) => typeof v === 'string',
+              message: (prop) => `${prop.value} - string`,
+            },
+          },
+          { required: true }
+        ),
       },
     };
   }

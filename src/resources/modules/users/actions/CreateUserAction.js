@@ -5,6 +5,7 @@ const { UserModel } = require('../../../models/UserModel');
 const { WelcomeEmail } = require('../utils/emails/WelcomeEmail');
 const { makeEmailConfirmToken } = require('../utils/makeEmailConfirmToken');
 const { makePasswordHash } = require('../utils/makePasswordHash');
+const { ProfileModel } = require('../../../models/ProfileModel');
 
 class CreateUserAction extends BaseAction {
   static get accessTag() {
@@ -14,12 +15,10 @@ class CreateUserAction extends BaseAction {
   static get validationRules() {
     return {
       body: {
-        name: new RequestRule(UserSchema.schema.obj.name),
         username: new RequestRule(UserSchema.schema.obj.username, {
           required: true,
         }),
         email: new RequestRule(UserSchema.schema.obj.email, { required: true }),
-        location: new RequestRule(UserSchema.schema.obj.location),
         password: new RequestRule(UserSchema.schema.obj.passwordHash, {
           required: true,
         }),
@@ -33,6 +32,10 @@ class CreateUserAction extends BaseAction {
     const user = await UserModel.create({
       ...ctx.body,
       passwordHash: hash,
+    });
+
+    await ProfileModel.create({
+      user: user.id,
     });
 
     const emailConfirmToken = await makeEmailConfirmToken(user);
