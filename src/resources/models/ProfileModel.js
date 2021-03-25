@@ -45,6 +45,12 @@ class ProfileModel {
 
     return { result, total };
   }
+
+  static async findByIdAndDelete(field) {
+    assert.object(field, { required: true });
+
+    ProfileSchema.findOneAndDelete(field);
+  }
 }
 
 module.exports = {

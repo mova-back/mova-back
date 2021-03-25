@@ -1,5 +1,6 @@
 const { RequestRule, BaseAction } = require('../../../../root');
 const { UserModel } = require('../../../models/UserModel');
+const { ProfileModel } = require('../../../models/ProfileModel');
 const { UserSchema } = require('../../../schemas/UserSchema');
 
 const { updateUserPolicy } = require('../../../../policy/updateUserPolicy');
@@ -23,6 +24,7 @@ class RemoveUserAction extends BaseAction {
 
     const model = await UserModel.getById(id);
     await updateUserPolicy(model, currentUser);
+    await ProfileModel.findByIdAndDelete({ userId: id });
     await UserModel.findByIdAndDelete(id);
 
     return this.result({ message: `${id} was removed` });
