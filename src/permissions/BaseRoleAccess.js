@@ -14,7 +14,12 @@ class BaseRoleAccess {
       'users:send-reset-password-email': true,
       'users:reset-password': true,
 
-      'words:all': true,
+      'words:create': true,
+      'words:get-by-id': true,
+      'words:list': true,
+      'words:add-like': true,
+      'words:add-dislike': true,
+      'words:remove-like': true,
 
       'auth:logout': true,
 

@@ -1,5 +1,5 @@
 const actionTagPolicy = require('./actionTagPolicy');
-// const ownerPolicy = require('./ownerPolicy');
+const ownerPolicy = require('./ownerPolicy');
 const privateItemPolicy = require('./privateItemPolicy');
 const updateUserPolicy = require('./updateUserPolicy');
 // const memberPolicy = require('./memberPolicy');
@@ -8,7 +8,7 @@ const updateUserPolicy = require('./updateUserPolicy');
 
 module.exports = {
   actionTagPolicy,
-  // ownerPolicy,
+  ownerPolicy,
   privateItemPolicy,
   updateUserPolicy,
   // memberPolicy,

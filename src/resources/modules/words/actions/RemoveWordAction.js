@@ -28,6 +28,7 @@ class RemoveWordAction extends BaseAction {
 
     const model = await WordsModel.getById(ctx.params.id);
     await ownerPolicy(model, currentUser);
+
     await WordsModel.remove(ctx.params.id);
 
     return this.result({ message: `${ctx.params.id} was removed` });

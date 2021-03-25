@@ -69,7 +69,7 @@ class WordsModel {
   static async remove(id) {
     assert.mongoAutoId(id, { required: true });
 
-    return this.findByIdAndDelete(id);
+    return WordSchema.findByIdAndDelete(id);
   }
 }
 
