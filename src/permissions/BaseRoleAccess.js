@@ -17,7 +17,6 @@ class BaseRoleAccess {
       'words:all': true,
 
       'auth:logout': true,
-      'auth:logout-all-sessions': true,
 
       'profiles:all': true,
     };

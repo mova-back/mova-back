@@ -29,10 +29,13 @@ class CreateUserAction extends BaseAction {
   static async run(ctx) {
     const hash = await makePasswordHash(ctx.body.password);
     delete ctx.body.password;
+    console.log('@!!CTX@#@#', ctx.body);
     const user = await UserModel.create({
       ...ctx.body,
       passwordHash: hash,
     });
+
+    console.log('!!!USER', user);
 
     await ProfileModel.create({
       user: user.id,

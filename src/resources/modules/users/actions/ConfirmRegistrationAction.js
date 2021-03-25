@@ -5,6 +5,7 @@ const { UserModel } = require('../../../models/UserModel');
 const { UserSchema } = require('../../../schemas/UserSchema');
 const { jwtVerify } = require('../../../../utils/security/jwt');
 const config = require('../../../../config/AppConfig');
+const roles = require('../../../../permissions/roles');
 
 class ConfirmRegistrationAction extends BaseAction {
   static get accessTag() {
@@ -28,7 +29,7 @@ class ConfirmRegistrationAction extends BaseAction {
       throw new AppError({ ...errorCodes.WRONG_EMAIL_CONFIRM_TOKEN });
     }
 
-    await UserModel.findByIdAndUpdate(userId, { isConfirmedRegistration: true, emailConfirmToken: null });
+    await UserModel.findByIdAndUpdate(userId, { isConfirmedRegistration: true, emailConfirmToken: null, role: roles.user });
     console.log('User registration is confirmed', { userId, ctx: this.name });
 
     return this.result({ message: `User ${userId} registration is confirmed` });

@@ -18,7 +18,7 @@ const schema = new mongoose.Schema(
     },
     role: {
       type: String,
-      default: roles.user,
+      default: roles.anonymous,
       validate: {
         validator: (v) => typeof v === 'string' && rolesList.includes(v),
         message: (prop) => `${prop.value} is not a vaild role`,

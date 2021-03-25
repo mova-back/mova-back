@@ -1,8 +1,6 @@
 const { EmailAgent } = require('../../agents/EmailAgents');
 const config = require('../../config/AppConfig');
 
-console.log(config);
-
 class RootProvider {
   constructor() {
     this.emailAgent = new EmailAgent({

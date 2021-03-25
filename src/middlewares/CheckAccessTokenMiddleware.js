@@ -28,6 +28,7 @@ class CheckAccessTokenMiddleware extends BaseMiddleware {
       if (token) {
         return jwtVerify(token, SECRET)
           .then((tokenData) => {
+            console.log('TOKEN DATA', tokenData);
             // set actual current user
             req.currentUser = Object.freeze({
               id: tokenData.sub,
