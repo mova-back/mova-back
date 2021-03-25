@@ -10,7 +10,7 @@ class WordsModel {
   static async create(entity = {}) {
     assert.object(entity, { required: true });
 
-    if (!entity.userId) {
+    if (!entity.createdByUserId) {
       throw new AppError({
         ...errorCodes.UNPROCESSABLE_ENTITY,
         message: "Please provide in action class 'userId' field",
@@ -59,7 +59,7 @@ class WordsModel {
     return data;
   }
 
-  static async update(id, entity = {}) {
+  static async findByIdAndUpdate(id, entity = {}) {
     assert.mongoAutoId(id, { required: true });
     assert.object(entity, { required: true });
 

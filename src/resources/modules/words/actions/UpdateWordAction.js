@@ -1,8 +1,10 @@
-const { BaseAction, RequestRule } = require('../../../../root');
+const { BaseAction, RequestRule, AppError } = require('../../../../root');
 
 const { ownerPolicy } = require('../../../../policy');
 const { WordSchema } = require('../../../schemas/WordSchema');
 const { WordsModel } = require('../../../models/WordsModel');
+const { errorCodes } = require('../../../../error/errorCodes');
+const roles = require('../../../../permissions/roles');
 
 class UpdateWordAction extends BaseAction {
   static get accessTag() {
@@ -36,10 +38,14 @@ class UpdateWordAction extends BaseAction {
 
   static async run(ctx) {
     const { currentUser } = ctx;
+    const word = await WordsModel.getById(ctx.params.id);
+    await ownerPolicy(word, currentUser);
 
-    const model = await WordsModel.getById(ctx.params.id);
-    await ownerPolicy(model, currentUser);
-    const data = await WordsModel.update(ctx.params.id, ctx.body);
+    if (currentUser.role === roles.user && currentUser.id !== word.createdByUserId.toString()) {
+      throw new AppError({ ...errorCodes.FORBIDDEN, message: "Access denied, don't have permissions." });
+    }
+
+    const data = await WordsModel.findByIdAndUpdate(ctx.params.id, ctx.body);
 
     return this.result({ data });
   }

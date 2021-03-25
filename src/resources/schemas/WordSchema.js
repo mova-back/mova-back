@@ -14,11 +14,17 @@ const schema = new Schema(
         message: (prop) => `${prop.value} - string; min 2 chars; max 100 chars`,
       },
     },
-    userId: {
-      type: String,
+    createdByUserId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'users',
       required: true,
-      // TODO: populate
     },
+    favoriteByUserdIds: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'users',
+      },
+    ],
     meaning: {
       type: String,
       required: true,

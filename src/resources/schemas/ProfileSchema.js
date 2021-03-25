@@ -2,15 +2,13 @@ const mongoose = require('mongoose');
 
 const schema = new mongoose.Schema(
   {
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
-    favorites: {
-      type: Array,
-      default: [],
-      validate: {
-        validator: (v) => Array.isArray(v),
-        message: (prop) => `${prop.value} - Array`,
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
+    favoriteWords: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'words',
       },
-    },
+    ],
     name: {
       type: String,
       validate: {
@@ -25,14 +23,12 @@ const schema = new mongoose.Schema(
         message: (prop) => `${prop.value} - string; min 3; max 300 chars;`,
       },
     },
-    createdWords: {
-      type: Array,
-      default: [],
-      validate: {
-        validator: (v) => Array.isArray(v),
-        message: (prop) => `${prop.value} - Array`,
+    createdWords: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'words',
       },
-    },
+    ],
   },
   { timestamps: true }
 );

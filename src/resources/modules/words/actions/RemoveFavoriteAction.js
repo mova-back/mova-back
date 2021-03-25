@@ -1,12 +1,11 @@
 const { BaseAction, RequestRule } = require('../../../../root');
 const { WordsModel } = require('../../../models/WordsModel');
 const { privateItemPolicy } = require('../../../../policy');
-const { ProfileSchema } = require('../../../schemas/ProfileSchema');
 const { ProfileModel } = require('../../../models/ProfileModel');
 
-class AddFavoriteAction extends BaseAction {
+class RemoveFavoriteAction extends BaseAction {
   static get accessTag() {
-    return 'profiles:add-favorite';
+    return 'profiles:remove-favorite';
   }
 
   static get validationRules() {
@@ -27,13 +26,14 @@ class AddFavoriteAction extends BaseAction {
 
   static async run(ctx) {
     const { currentUser } = ctx;
-    const model = await WordsModel.getById(ctx.params.id);
-    await privateItemPolicy(model, currentUser);
+    const currentWord = await WordsModel.getById(ctx.params.id);
+    await privateItemPolicy(currentWord, currentUser);
 
-    await ProfileModel.updateEntetyByField({ user: currentUser.id }, { favorites: model.id });
+    const model = await WordsModel.findByIdAndUpdate(ctx.params.id, { $pull: { favoriteByUserdIds: currentUser.id } });
+    await ProfileModel.updateEntetyByField({ userId: currentUser.id }, { $pull: { favoriteWords: model.id } });
 
     return this.result({ message: `for user ${currentUser.id} favorite word by id: ${ctx.params.id} added` });
   }
 }
 
-module.exports = { AddFavoriteAction };
+module.exports = { RemoveFavoriteAction };

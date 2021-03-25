@@ -50,7 +50,7 @@ class LoginAction extends BaseAction {
     });
 
     await addRefreshSession(newRefreshSession);
-    console.log(newRefreshSession.refreshToken);
+
     return this.result({
       data: {
         accessToken: await makeAccessToken(user),

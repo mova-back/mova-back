@@ -4,6 +4,8 @@ const { CreateWordAction } = require('./CreateWordAction');
 const { AddLikeAction } = require('./AddLikeAction');
 const { AddDislikeAction } = require('./AddDislikeAction');
 const { RemoveLikeAction } = require('./RemoveLikeAction');
+const { AddFavoriteAction } = require('./AddFavoriteAction');
+const { RemoveFavoriteAction } = require('./RemoveFavoriteAction');
 
 const { UpdateWordAction } = require('./UpdateWordAction');
 const { RemoveWordAction } = require('./RemoveWordAction');
@@ -17,4 +19,6 @@ module.exports = {
   RemoveLikeAction,
   UpdateWordAction,
   RemoveWordAction,
+  AddFavoriteAction,
+  RemoveFavoriteAction,
 };

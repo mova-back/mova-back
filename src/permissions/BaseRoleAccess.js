@@ -20,6 +20,8 @@ class BaseRoleAccess {
       'words:add-like': true,
       'words:add-dislike': true,
       'words:remove-like': true,
+      'words:update': true,
+      'words:delete': true,
 
       'auth:logout': true,
 

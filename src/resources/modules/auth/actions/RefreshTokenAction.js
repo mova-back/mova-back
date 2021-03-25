@@ -44,7 +44,6 @@ class RefreshTokensAction extends BaseAction {
     const refTokenExpiresInMilliseconds = new Date().getTime() + ms(config.tokenRefreshExpiresIn);
     const refTokenExpiresInSeconds = parseInt(refTokenExpiresInMilliseconds / 1000, 10);
     const oldRefreshSession = await RefreshSessionModel.getByRefreshToken(reqRefreshToken);
-    console.log('oldRefreshSession', oldRefreshSession);
     await RefreshSessionModel.removeToken(reqRefreshToken);
     await verifyRefreshSession(new RefreshSessionEntity(oldRefreshSession), reqFingerprint);
     const user = await UserModel.getById(oldRefreshSession.userId);
@@ -57,10 +56,9 @@ class RefreshTokensAction extends BaseAction {
       expiresIn: refTokenExpiresInMilliseconds,
     });
 
-    console.log('USER', user);
-    console.log('newRefreshSession', newRefreshSession);
-
     await addRefreshSession(newRefreshSession);
+
+    user.profile;
 
     return this.result({
       data: {

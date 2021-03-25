@@ -28,8 +28,8 @@ class RemoveLikeAction extends BaseAction {
     const model = await WordsModel.getById(ctx.params.id);
     await privateItemPolicy(model, currentUser);
 
-    WordsModel.update(model.id, { $pull: { likes: currentUser.id } });
-    WordsModel.update(model.id, { $pull: { deslikes: currentUser.id } });
+    WordsModel.findByIdAndUpdate(model.id, { $pull: { likes: currentUser.id } });
+    WordsModel.findByIdAndUpdate(model.id, { $pull: { deslikes: currentUser.id } });
 
     return this.result({ message: `for User by id: ${ctx.params.id} like removed` });
   }

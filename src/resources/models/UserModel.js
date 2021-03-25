@@ -57,21 +57,6 @@ class UserModel {
 
     return data;
   }
-
-  // const getByRefreshToken = async (refreshToken) => {
-  //   return RefreshToken.findOne({ refreshToken }).exec();
-  // };
-
-  // const create = async (refreshToken) => {
-  //   await RefreshSchema.create(refreshToken);
-  // };
-
-  // const findJwtId = async (jwtId) => {
-  //   return RefreshToken.findOne({ jwtId }).exec();
-  // };
-
-  // const deleteRefreshToken = async (refreshToken) => {
-  //   return RefreshToken.findOneAndDelete({ refreshToken });
 }
 
 module.exports = {

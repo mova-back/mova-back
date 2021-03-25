@@ -1,7 +1,6 @@
 const { BaseAction, RequestRule } = require('../../../../root');
 const { ProfileModel } = require('../../../models/ProfileModel');
 const { WordsModel } = require('../../../models/WordsModel');
-const { ProfileSchema } = require('../../../schemas/ProfileSchema');
 const { WordSchema } = require('../../../schemas/WordSchema');
 
 class CreateWordAction extends BaseAction {
@@ -25,9 +24,9 @@ class CreateWordAction extends BaseAction {
   static async run(ctx) {
     const { currentUser } = ctx;
 
-    const word = await WordsModel.create({ ...ctx.body, userId: currentUser.id });
-    await ProfileModel.updateEntetyByField({ user: currentUser.id }, { $push: { createdWords: word.id } });
+    const word = await WordsModel.create({ ...ctx.body, createdByUserId: currentUser.id });
 
+    await ProfileModel.updateEntetyByField({ userId: currentUser.id }, { $addToSet: { createdWords: word.id } });
     return this.result({ data: word });
   }
 }

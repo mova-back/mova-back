@@ -1,8 +1,12 @@
-const { required } = require('joi');
-const { assert } = require('../../root');
+const { errorCodes } = require('../../error/errorCodes');
+const { assert, AppError } = require('../../root');
 const { ProfileSchema } = require('../schemas/ProfileSchema');
 
 class ProfileModel {
+  static errorEmptyResponse() {
+    return new AppError({ ...errorCodes.NOT_FOUND, layer: 'Schema' });
+  }
+
   static async create(entity = {}) {
     assert.object(entity, { required: true });
 
@@ -11,14 +15,18 @@ class ProfileModel {
 
   // TODO : assert integer id
   static async getByUserId(id) {
-    return ProfileSchema.findOne({ user: id }).exec();
+    return ProfileSchema.findOne({ userId: id }).exec();
   }
 
   static async updateEntetyByField(field, entity) {
     assert.object(field, { required: true });
     assert.object(entity, { required: true });
 
-    return ProfileSchema.findOneAndUpdate(field, entity);
+    const data = await ProfileSchema.findOneAndUpdate(field, entity);
+
+    if (!data) throw this.errorEmptyResponse();
+
+    return data;
   }
 
   static async getList(filter, { page, limit } = {}) {

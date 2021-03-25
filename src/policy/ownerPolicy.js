@@ -14,10 +14,10 @@ module.exports = (model, currentUser) => {
   assert.object(currentUser, { required: true });
 
   return new Promise((resolve, reject) => {
-    // pass superadmin
+    // pass admin
     if (currentUser.role === roles.admin) return resolve();
     // pass owner
-    if (currentUser.id === model.userId) return resolve();
+    if (currentUser.id === model.userId || model.createdByUserId) return resolve();
     // else reject
     return reject(new AppError({ ...errorCodes.FORBIDDEN }));
   });
