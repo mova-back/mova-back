@@ -33,6 +33,12 @@ class WordsModel {
     return { result, total };
   }
 
+  static async findAndDeleteFields(entity = {}) {
+    assert.object(entity, { required: true });
+
+    WordSchema.find({}, entity);
+  }
+
   static async getMyWordsList(field, { page, limit } = {}) {
     assert.array(field, { required: true });
     assert.integer(page, { required: true });

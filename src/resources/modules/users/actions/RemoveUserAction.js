@@ -4,6 +4,7 @@ const { ProfileModel } = require('../../../models/ProfileModel');
 const { UserSchema } = require('../../../schemas/UserSchema');
 
 const { updateUserPolicy } = require('../../../../policy/updateUserPolicy');
+const { WordsModel } = require('../../../models/WordsModel');
 
 class RemoveUserAction extends BaseAction {
   static get accessTag() {
@@ -24,6 +25,7 @@ class RemoveUserAction extends BaseAction {
 
     const model = await UserModel.getById(id);
     await updateUserPolicy(model, currentUser);
+    await WordsModel.findAndDeleteFields({ $pull: { createdByUserId: id, favoriteByUserdIds: id, likes: id, dislikes: id } });
     await ProfileModel.findByIdAndDelete({ userId: id });
     await UserModel.findByIdAndDelete(id);
 
