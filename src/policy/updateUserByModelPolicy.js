@@ -4,17 +4,22 @@ const { errorCodes } = require('../error/errorCodes');
 const roles = require('../permissions/roles');
 
 /**
- * @description model id === current user id
- * @access owner, admin
+ * @description model user id === current user id
+ * @access owner, admin, moderator
  * @case update user model
  */
 module.exports = (model, currentUser) => {
   assert.object(model, { required: true });
   assert.object(currentUser, { required: true });
 
+  let modelUserId;
+
   return new Promise((resolve, reject) => {
-    if (currentUser.role === roles.admin) return resolve();
-    if (currentUser.id === model.id) return resolve();
+    if (currentUser.role === roles.admin || roles.moderator) return resolve();
+    if (model.createdByUserId || model.userId) {
+      modelUserId = model.createdByUserId || model.userId;
+    }
+    if (currentUser.id !== modelUserId.toString()) return resolve();
     return reject(new AppError({ ...errorCodes.FORBIDDEN }));
   });
 };

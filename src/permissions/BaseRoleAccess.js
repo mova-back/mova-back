@@ -22,6 +22,7 @@ class BaseRoleAccess {
       'words:remove-like': true,
       'words:update': true,
       'words:delete': true,
+      'words:add-report': true,
 
       'auth:logout': true,
 

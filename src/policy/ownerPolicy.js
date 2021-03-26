@@ -6,7 +6,7 @@ const roles = require('../permissions/roles');
 
 /**
  * @description model userId === current user id
- * @access owner, superadmin
+ * @access owner, admin
  * @case update or delete model
  */
 module.exports = (model, currentUser) => {

@@ -6,7 +6,7 @@ const roles = require('../permissions/roles');
 /**
  * @description check access to model by id
  * @public_access any user
- * @private_access owner, superadmin
+ * @private_access owner, admin
  * @case get model by id
  * @returns {Promise} model
  */

@@ -76,6 +76,12 @@ const schema = new Schema(
         message: (prop) => `${prop.value} - Array`,
       },
     },
+    complaint: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'reports',
+      },
+    ],
   },
   { timestamps: true }
 );
