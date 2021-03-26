@@ -3,6 +3,7 @@ const { GetWordByIdAction } = require('./GetWordByIdAction');
 const { CreateWordAction } = require('./CreateWordAction');
 const { AddLikeAction } = require('./AddLikeAction');
 const { AddDislikeAction } = require('./AddDislikeAction');
+const { AddReportAction } = require('./AddReportAction');
 const { RemoveLikeAction } = require('./RemoveLikeAction');
 const { AddFavoriteAction } = require('./AddFavoriteAction');
 const { RemoveFavoriteAction } = require('./RemoveFavoriteAction');
@@ -21,4 +22,5 @@ module.exports = {
   RemoveWordAction,
   AddFavoriteAction,
   RemoveFavoriteAction,
+  AddReportAction,
 };

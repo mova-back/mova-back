@@ -6,7 +6,7 @@ const roles = require('../permissions/roles');
 /**
  * @description check access to model by id
  * @public_access any user
- * @private_access owner, admin
+ * @private_access owner, admin, moderator
  * @case get model by id
  * @returns {Promise} model
  */
@@ -15,7 +15,7 @@ module.exports = (model, currentUser) => {
   assert.object(currentUser, { required: true });
 
   return new Promise((resolve, reject) => {
-    if (currentUser.role === roles.admin) return resolve(model);
+    if (currentUser.role === roles.admin || roles.moderator) return resolve(model);
     if (currentUser.id === model.userId) return resolve(model);
     if (!model.private) return resolve(model);
     if (model.private) {

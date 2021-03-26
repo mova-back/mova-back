@@ -12,6 +12,7 @@ class WordsController extends BaseController {
     router.put('/api/word/dislike/:id', this.actionRunner(actions.AddDislikeAction));
     router.put('/api/word/removelike/:id', this.actionRunner(actions.RemoveLikeAction));
     router.put('/api/word/addfavorite/:id', this.actionRunner(actions.AddFavoriteAction));
+    router.post('/api/word/addreport:/id', this.actionRunner(actions.AddReportAction));
     router.put('/api/word/removefavorite/:id', this.actionRunner(actions.RemoveFavoriteAction));
     router.post('/api/word/addreport/:id', this.actionRunner(actions.AddReportAction));
 

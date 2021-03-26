@@ -5,8 +5,7 @@ const { errorCodes } = require('../error/errorCodes');
 const roles = require('../permissions/roles');
 
 /**
- * @description model userId === current user id
- * @access owner, admin, moderator
+ * @access admin, moderator
  * @case update or delete model
  */
 module.exports = (model, currentUser) => {
@@ -16,9 +15,6 @@ module.exports = (model, currentUser) => {
   return new Promise((resolve, reject) => {
     // pass admin
     if (currentUser.role === roles.admin || roles.moderator) return resolve();
-    // pass owner
-    if (currentUser.id === model.userId || model.createdByUserId) return resolve();
-    // else reject
     return reject(new AppError({ ...errorCodes.FORBIDDEN }));
   });
 };
