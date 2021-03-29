@@ -1,6 +1,7 @@
 const { WordSchema } = require('../schemas/WordSchema');
 const { assert, AppError } = require('../../root');
 const { errorCodes } = require('../../error/errorCodes');
+const { required } = require('joi');
 
 class WordsModel {
   static errorEmptyResponse() {
@@ -44,11 +45,13 @@ class WordsModel {
     assert.array(field, { required: true });
     assert.integer(page, { required: true });
     assert.integer(limit, { required: true });
+    assert.string(orderBy.field, { required: true });
+    assert.string(orderBy.direction, { required: true });
 
     const result = await WordSchema.find({
       _id: { $in: field },
     })
-      .sort([[`${orderBy.field}`, `${orderBy.direction}`]])
+      .sort([[`${orderBy.field.length}`, `${orderBy.direction}`]])
       .skip(page * limit)
       .limit(limit);
 
