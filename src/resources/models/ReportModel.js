@@ -1,6 +1,6 @@
 const { errorCodes } = require('../../error/errorCodes');
 const { assert, AppError } = require('../../root');
-const { ProfileSchema } = require('../schemas/ProfileSchema');
+const { ReportSchema } = require('../schemas/ReportSchema');
 
 class ReportModel {
   static errorEmptyResponse() {
@@ -10,7 +10,7 @@ class ReportModel {
   static async create(entity = {}) {
     assert.object(entity, { required: true });
 
-    return ProfileSchema.create(entity);
+    return ReportSchema.create(entity);
   }
 }
 

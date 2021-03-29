@@ -76,10 +76,10 @@ const schema = new Schema(
         message: (prop) => `${prop.value} - Array`,
       },
     },
-    complaint: [
+    complaints: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'reports',
+        ref: 'report',
       },
     ],
   },

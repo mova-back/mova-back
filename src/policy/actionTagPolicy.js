@@ -14,6 +14,8 @@ module.exports = (accessTag, currentUser) => {
   const accessTagBaseName = accessTag.split(':')[0];
   const accessTagAll = `${accessTagBaseName}:all`;
 
+  console.log('currentUser.role', currentUser.role);
+
   return new Promise((resolve, reject) => {
     // if current user role have access tag >> pass
     if (permissions[currentUser.role][accessTagAll]) return resolve();

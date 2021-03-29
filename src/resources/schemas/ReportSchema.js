@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const schema = new mongoose.Schema(
   {
-    description: {
+    message: {
       type: String,
       validate: {
         validator: (v) => typeof v === 'string' && v.length >= 1 && v.length <= 300,
@@ -11,7 +11,7 @@ const schema = new mongoose.Schema(
     },
     wordId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'words',
+      ref: 'word',
     },
     createdByUserId: {
       type: mongoose.Schema.Types.ObjectId,

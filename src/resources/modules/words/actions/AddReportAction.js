@@ -4,6 +4,7 @@ const { privateItemPolicy } = require('../../../../policy');
 const { ReportSchema } = require('../../../schemas/ReportSchema');
 const { ReportModel } = require('../../../models/ReportModel');
 const { errorCodes } = require('../../../../error/errorCodes');
+const { WordSchema } = require('../../../schemas/WordSchema');
 
 class AddReportAction extends BaseAction {
   static get accessTag() {
@@ -12,7 +13,7 @@ class AddReportAction extends BaseAction {
 
   static get validationRules() {
     return {
-      body: { description: new RequestRule(ReportSchema.schema.obj.description, { required: true }) },
+      body: { message: new RequestRule(ReportSchema.schema.obj.message, { required: true }) },
       params: {
         id: new RequestRule(
           {
@@ -32,18 +33,20 @@ class AddReportAction extends BaseAction {
     const word = await WordsModel.getById(ctx.params.id);
     await privateItemPolicy(word, currentUser);
 
-    // TODO test refs
-    if (currentUser.id === word.complaint.createdByUserId) {
-      throw new AppError({ ...errorCodes.BAD_REQUEST, message: 'user can create only one report' });
-    }
+    const reports = await ReportSchema.find({ wordId: word.id });
+    reports.forEach((report) => {
+      if (currentUser.id === report.createdByUserId.toString()) {
+        throw new AppError({ ...errorCodes.BAD_REQUEST, message: 'user can create only one report' });
+      }
+    });
 
-    const report = await ReportModel.create({
-      description: ctx.body.description,
+    const currentReport = await ReportModel.create({
+      message: ctx.body.message,
       createdByUserId: currentUser.id,
       wordId: word.id,
     });
 
-    WordsModel.findByIdAndUpdate(word.id, { $addToSet: { complaint: report.id } });
+    WordsModel.findByIdAndUpdate(word.id, { $addToSet: { complaints: currentReport.id } });
 
     return this.result({ message: `for User by id: ${ctx.params.id} complaint added` });
   }
