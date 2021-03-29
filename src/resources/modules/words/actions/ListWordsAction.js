@@ -26,6 +26,8 @@ class ListWordsAction extends BaseAction {
     } else if (currentUser.id && (query.variant === 'createdWords' || query.variant === 'favoriteWords')) {
       const profile = await ProfileModel.getByUserId(currentUser.id);
       data = await WordsModel.getListByFilter(profile[query.variant], query);
+    } else if (!currentUser.id) {
+      throw new AppError({ ...errorCodes.BAD_REQUEST, message: 'please provide token' });
     } else {
       throw new AppError({ ...errorCodes.BAD_REQUEST, message: 'incorrect variant query' });
     }
