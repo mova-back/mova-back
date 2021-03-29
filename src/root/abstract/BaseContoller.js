@@ -121,7 +121,7 @@ class BaseController {
     const schemaKeys = Object.keys(requestSchema);
     const srcKeys = Object.keys(src);
 
-    const defaultValidKeys = ['offset', 'page', 'limit', 'filter', 'orderBy', 'field', 'direction'];
+    const defaultValidKeys = ['offset', 'page', 'limit', 'filter', 'orderBy', 'variant'];
     const invalidExtraKeys = srcKeys.filter((srcKey) => !schemaKeys.includes(srcKey) && !defaultValidKeys.includes(srcKey));
     if (invalidExtraKeys.length) {
       throw new AppError({
