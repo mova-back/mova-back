@@ -26,7 +26,7 @@ class WordsModel {
     assert.integer(limit, { required: true });
 
     const result = await WordSchema.find()
-      .sort()
+      .sort([[`${orderBy.field}`, `${orderBy.direction}`]])
       .skip(page * limit)
       .limit(limit);
     const total = await WordSchema.find().count((el) => el);
@@ -40,7 +40,7 @@ class WordsModel {
     WordSchema.find({}, entity);
   }
 
-  static async getMyWordsList(field, { page, limit } = {}) {
+  static async getMyWordsList(field, { page, limit, orderBy } = {}) {
     assert.array(field, { required: true });
     assert.integer(page, { required: true });
     assert.integer(limit, { required: true });
@@ -48,6 +48,7 @@ class WordsModel {
     const result = await WordSchema.find({
       _id: { $in: field },
     })
+      .sort([[`${orderBy.field}`, `${orderBy.direction}`]])
       .skip(page * limit)
       .limit(limit);
 
