@@ -1,5 +1,4 @@
-const { default: isUUID } = require('validator/lib/isuuid');
-const { BaseAction, RequestRule } = require('../../../../root');
+const { BaseAction } = require('../../../../root');
 const { WordsModel } = require('../../../models/WordsModel');
 
 class ListWordsAction extends BaseAction {
