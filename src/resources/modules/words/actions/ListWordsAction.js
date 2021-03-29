@@ -23,9 +23,7 @@ class ListWordsAction extends BaseAction {
 
     if (query.variant === 'all') {
       data = await WordsModel.getList(query);
-    }
-
-    if (currentUser.id && (query.variant === 'createdWords' || query.variant === 'favoriteWords')) {
+    } else if (currentUser.id && (query.variant === 'createdWords' || query.variant === 'favoriteWords')) {
       const profile = await ProfileModel.getByUserId(currentUser.id);
       data = await WordsModel.getListByFilter(profile[query.variant], query);
     } else {
