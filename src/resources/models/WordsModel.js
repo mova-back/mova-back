@@ -21,11 +21,12 @@ class WordsModel {
     return WordSchema.create(entity);
   }
 
-  static async getList({ page, limit } = {}) {
+  static async getList({ page, limit, orderBy } = {}) {
     assert.integer(page, { required: true });
     assert.integer(limit, { required: true });
 
     const result = await WordSchema.find()
+      .sort()
       .skip(page * limit)
       .limit(limit);
     const total = await WordSchema.find().count((el) => el);
@@ -69,7 +70,7 @@ class WordsModel {
     assert.mongoAutoId(id, { required: true });
     assert.object(entity, { required: true });
 
-    return WordSchema.findByIdAndUpdate(id, entity);
+    return WordSchema.findByIdAndUpdate(id, entity, { new: true });
   }
 
   static async remove(id) {

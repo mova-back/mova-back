@@ -1,6 +1,6 @@
 const { AppError } = require('./AppError');
 const { Assert: assert } = require('./Assert');
-const errorCodes = require('../../error/errorCodes');
+const { errorCodes } = require('../../error/errorCodes');
 const { actionTagPolicy } = require('../../policy');
 
 class BaseController {
@@ -121,7 +121,7 @@ class BaseController {
     const schemaKeys = Object.keys(requestSchema);
     const srcKeys = Object.keys(src);
 
-    const defaultValidKeys = ['offset', 'page', 'limit', 'filter', 'orderBy'];
+    const defaultValidKeys = ['offset', 'page', 'limit', 'filter', 'orderBy', 'field', 'direction'];
     const invalidExtraKeys = srcKeys.filter((srcKey) => !schemaKeys.includes(srcKey) && !defaultValidKeys.includes(srcKey));
     if (invalidExtraKeys.length) {
       throw new AppError({
