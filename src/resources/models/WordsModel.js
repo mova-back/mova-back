@@ -40,7 +40,7 @@ class WordsModel {
     WordSchema.find({}, entity);
   }
 
-  static async getMyWordsList(field, { page, limit, orderBy } = {}) {
+  static async getListByFilter(field, { page, limit, orderBy } = {}) {
     assert.array(field, { required: true });
     assert.integer(page, { required: true });
     assert.integer(limit, { required: true });
