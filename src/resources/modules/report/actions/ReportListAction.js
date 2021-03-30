@@ -16,8 +16,7 @@ class ReportListAction extends BaseAction {
   }
 
   static async run(ctx) {
-    const { currentUser, query } = ctx;
-    console.log(query);
+    const { currentUser } = ctx;
 
     adminPolicy({}, currentUser);
 

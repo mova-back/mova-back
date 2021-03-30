@@ -25,6 +25,7 @@ class AddReportAction extends BaseAction {
           { required: true }
         ),
       },
+      notEmptyBody: true,
     };
   }
 

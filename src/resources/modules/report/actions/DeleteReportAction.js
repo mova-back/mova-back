@@ -1,4 +1,6 @@
+const { adminPolicy } = require('../../../../policy');
 const { BaseAction } = require('../../../../root');
+const { ReportSchema } = require('../../../schemas/ReportSchema');
 
 class DeleteReportAction extends BaseAction {
   static get accessTag() {
@@ -6,11 +8,27 @@ class DeleteReportAction extends BaseAction {
   }
 
   static get validationRules() {
-    return {};
+    return {
+      params: {
+        id: new RequestRule(
+          {
+            validate: {
+              validator: (v) => typeof v === 'string',
+              message: (prop) => `${prop.value} - string`,
+            },
+          },
+          { required: true }
+        ),
+      },
+    };
   }
 
   static async run(ctx) {
-    return this.result({});
+    const { currentUser } = ctx;
+    adminPolicy({}, currentUser);
+
+    await ReportSchema.findByIdAndDelete({ _id: ctx.params.id });
+    return this.result({ message: `report by ${ctx.params.id} was removed` });
   }
 }
 

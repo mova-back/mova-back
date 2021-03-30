@@ -34,13 +34,12 @@ class UpdateWordAction extends BaseAction {
   }
 
   static async run(ctx) {
-    console.log('CTX', ctx);
     const { currentUser } = ctx;
+
     const word = await WordsModel.getById(ctx.params.id);
     await updateUserByModelPolicy(word, currentUser);
 
     const data = await WordsModel.findByIdAndUpdate(ctx.params.id, ctx.body);
-    console.log(data);
 
     return this.result({ data });
   }
