@@ -1,10 +1,10 @@
 const { AppError, BaseMiddleware } = require('../root');
 const { errorCodes } = require('../error/errorCodes');
+const logger = require('../../logger');
 
 class ContentTypeMiddleware extends BaseMiddleware {
   async init() {
-    // TODO
-    console.log(`${this.constructor.name} initialized...`);
+    logger.debug(`${this.constructor.name} initialized...`);
   }
 
   handler() {

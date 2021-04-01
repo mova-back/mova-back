@@ -1,5 +1,12 @@
 require('dotenv').config();
+
+const pino = require('pino');
 const joi = require('joi');
+
+const warnLogger = pino({
+  name: 'config-env-warning',
+  ...(process.env.NODE_ENV === 'development' && { prettyPrint: { translateTime: 'SYS:standard' } }),
+});
 
 class BaseConfig {
   async init() {
@@ -19,7 +26,7 @@ class BaseConfig {
         throw new Error(`Missing default value "${env}".`);
       }
       value = defaultVal;
-      console.log(`Missing env variable: "${env}". Default value was applied: ${defaultVal}`);
+      warnLogger.warn(`Missing env variable: "${env}". Default value was applied: ${defaultVal}`);
     }
 
     if (validator && (typeof validator === 'function' || typeof validator === 'object')) {
@@ -49,7 +56,7 @@ class BaseConfig {
         throw new Error('Missing default value');
       }
       value = defaultVal;
-      console.log(`Missing direct value: "${val}". Default value was applied: ${defaultVal}`);
+      warnLogger.warn(`Missing direct value: "${val}". Default value was applied: ${defaultVal}`);
     }
 
     if (validator && (typeof validator === 'function' || typeof validator === 'object')) {

@@ -4,15 +4,17 @@ const stackTrace = require('stack-trace');
 const ErrorResponse = require('./ErrorResponse');
 const { BaseMiddleware } = require('../../root');
 const { errorCodes } = require('../../error/errorCodes');
+const logger = require('../../../logger');
 
 const notImportantCodes = [400, 401, 403, 404, 422];
 
 class DevErrorMiddleware extends BaseMiddleware {
   async init() {
-    console.log(`${this.constructor.name} initialized...`);
+    logger.debug(`${this.constructor.name} initialized...`);
   }
 
   handler() {
+    // eslint-disable-next-line no-unused-vars
     return (error, req, res, next) => {
       if (error.status === 404) {
         const errorRes = new ErrorResponse({
@@ -32,7 +34,7 @@ class DevErrorMiddleware extends BaseMiddleware {
           origin: error.origin ? { ...error.origin, message: error.origin.message } : false,
         });
 
-        console.log(errorRes.message, error);
+        logger.error(errorRes.message, error);
         res.status(errorRes.status).json(errorRes);
       }
 

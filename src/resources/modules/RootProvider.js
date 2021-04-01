@@ -1,3 +1,4 @@
+const logger = require('../../../logger');
 const { EmailAgent } = require('../../agents/EmailAgents');
 const config = require('../../config/AppConfig');
 
@@ -8,13 +9,12 @@ class RootProvider {
       domain: config.mailgunDomain,
       host: config.mailgunHost,
       from: config.from,
-      // TODO >>> logger
+      logger,
     });
   }
 
   async init() {
-    // TODO : loger debuger
-    console.log(`${this.constructor.name} initialized...`);
+    logger.debug(`${this.constructor.name} initialized...`);
   }
 }
 

@@ -1,8 +1,9 @@
+const logger = require('../../logger');
 const { BaseMiddleware } = require('../root');
 
 class CorsMiddleware extends BaseMiddleware {
   async init() {
-    console.log(`${this.constructor.name} initialized...`);
+    logger.debug(`${this.constructor.name} initialized...`);
   }
 
   handler() {

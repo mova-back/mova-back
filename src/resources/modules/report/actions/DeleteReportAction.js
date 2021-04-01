@@ -1,5 +1,5 @@
 const { adminPolicy } = require('../../../../policy');
-const { BaseAction } = require('../../../../root');
+const { BaseAction, RequestRule } = require('../../../../root');
 const { ReportSchema } = require('../../../schemas/ReportSchema');
 
 class DeleteReportAction extends BaseAction {

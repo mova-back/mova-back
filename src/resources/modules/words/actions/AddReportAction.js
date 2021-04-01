@@ -4,7 +4,6 @@ const { privateItemPolicy } = require('../../../../policy');
 const { ReportSchema } = require('../../../schemas/ReportSchema');
 const { ReportModel } = require('../../../models/ReportModel');
 const { errorCodes } = require('../../../../error/errorCodes');
-const { WordSchema } = require('../../../schemas/WordSchema');
 
 class AddReportAction extends BaseAction {
   static get accessTag() {

@@ -13,7 +13,6 @@ class ProfileModel {
     return ProfileSchema.create(entity);
   }
 
-  // TODO : assert integer id
   static async getByUserId(id) {
     return ProfileSchema.findOne({ userId: id }).exec();
   }

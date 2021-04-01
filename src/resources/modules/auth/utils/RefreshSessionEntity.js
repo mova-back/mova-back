@@ -1,6 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
 const { assert } = require('../../../../root');
-const { UserSchema } = require('../../../schemas/UserSchema');
 const { RefreshSessionSchema } = require('../../../schemas/RefreshSessionSchema');
 
 class RefreshSessionEntity {

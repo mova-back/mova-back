@@ -22,10 +22,14 @@ class BaseController {
       throw new Error(`'run' method not declared in invoked '${action.name}' action`);
     }
 
+    // eslint-disable-next-line consistent-return
     return async (req, res, next) => {
       assert.object(req, { required: true });
       assert.object(res, { required: true });
       assert.func(next, { required: true });
+
+      console.log('!!!', req.cookies);
+      console.log('!!!!!!11111', req.signedCookies);
 
       const ctx = {
         currentUser: req.currentUser,

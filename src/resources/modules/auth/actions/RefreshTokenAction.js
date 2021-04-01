@@ -31,11 +31,13 @@ class RefreshTokensAction extends BaseAction {
   static async run(ctx) {
     // take refresh token from any possible source
     // TODO : Fix save cookies refresh token(old)
+    console.log('AAAAAAAAA', ctx.cookies.refreshToken);
     const reqRefreshToken = ctx.cookies.refreshToken;
-    console.log('BAG!!!reqRefreshToken', reqRefreshToken);
-    console.log('BAG!!!ctx.cookies.refreshToken', ctx.cookies.refreshToken);
-    console.log('BAG!!!ctx.body.refreshToken', ctx.body.refreshToken);
+    // console.log('BAG!!!reqRefreshToken', reqRefreshToken);
+    // console.log('BAG!!!ctx.cookies.refreshToken', ctx.cookies.refreshToken);
+    // console.log('BAG!!!ctx.body.refreshToken', ctx.body.refreshToken);
     const reqFingerprint = ctx.body.fingerprint;
+    console.log('@@@@@@@@', reqRefreshToken);
 
     if (!reqRefreshToken) {
       throw new AppError({ ...errorCodes.VALIDATION, message: 'Refresh token not provided' });
@@ -57,8 +59,6 @@ class RefreshTokensAction extends BaseAction {
     });
 
     await addRefreshSession(newRefreshSession);
-
-    user.profile;
 
     return this.result({
       data: {

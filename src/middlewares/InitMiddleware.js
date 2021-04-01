@@ -1,9 +1,10 @@
 const { BaseMiddleware } = require('../root');
 const config = require('../config/AppConfig');
+const logger = require('../../logger');
 
 class InitMiddleware extends BaseMiddleware {
   async init() {
-    console.log(`${this.constructor.name} initialized...`);
+    logger.debug(`${this.constructor.name} initialized...`);
   }
 
   handler() {

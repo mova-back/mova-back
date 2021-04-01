@@ -1,7 +1,6 @@
 const { WordSchema } = require('../schemas/WordSchema');
 const { assert, AppError } = require('../../root');
 const { errorCodes } = require('../../error/errorCodes');
-const { required } = require('joi');
 
 class WordsModel {
   static errorEmptyResponse() {

@@ -4,7 +4,7 @@ const { UserModel } = require('../../../models/UserModel');
 const { UserSchema } = require('../../../schemas/UserSchema');
 const { jwtVerify } = require('../../../../utils/security/jwt');
 const config = require('../../../../config/AppConfig');
-// TODO : add logger
+const logger = require('../../../../../logger');
 
 class ConfirmEmailAction extends BaseAction {
   static get accessTag() {
@@ -33,7 +33,7 @@ class ConfirmEmailAction extends BaseAction {
       newEmail: null,
       emailConfirmToken: null,
     });
-    console.log('User email confirmed', { userId, newEmail, ctx: this.name });
+    logger.info('User email confirmed', { userId, newEmail, ctx: this.name });
 
     return this.result({ message: `${newEmail} confirmed` });
   }

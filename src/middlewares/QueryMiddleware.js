@@ -1,9 +1,9 @@
+const logger = require('../../logger');
 const { BaseMiddleware } = require('../root');
 
 class QueryMiddleware extends BaseMiddleware {
   async init() {
-    // TODO
-    console.log(`${this.constructor.name} initialized...`);
+    logger.debug(`${this.constructor.name} initialized...`);
   }
 
   handler() {

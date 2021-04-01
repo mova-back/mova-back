@@ -12,9 +12,8 @@ class GetCurrentUserAction extends BaseAction {
   static async run(ctx) {
     const { currentUser } = ctx;
 
-    // TODO : create models
     const profile = await ProfileSchema.findOne({ userId: currentUser.id });
-    await UserSchema.findByIdAndUpdate(currentUser.id, { $addToSet: { profile: profile.id } });
+    await UserModel.findByIdAndUpdate(currentUser.id, { $addToSet: { profile: profile.id } });
     const data = await UserSchema.findById(currentUser.id).populate('profile').exec();
 
     delete data.passwordHash;

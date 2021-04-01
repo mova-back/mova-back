@@ -8,7 +8,7 @@ class ProfilesController extends BaseController {
   }
 
   async init() {
-    console.log(`${this.constructor.name} initialized...`);
+    this.logger.debug(`${this.constructor.name} initialized...`);
   }
 }
 

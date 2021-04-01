@@ -15,8 +15,7 @@ class RootController extends BaseController {
   }
 
   async init() {
-    //TODO console.debug
-    console.log(`${this.constructor.name} initialized...`);
+    this.logger.debug(`${this.constructor.name} initialized...`);
     await RootProvider.init();
   }
 }

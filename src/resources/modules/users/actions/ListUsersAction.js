@@ -1,4 +1,4 @@
-const joi = require('@hapi/joi');
+const joi = require('joi');
 const { RequestRule, BaseAction } = require('../../../../root');
 
 const { UserModel } = require('../../../models/UserModel');
@@ -28,7 +28,7 @@ class ListUsersAction extends BaseAction {
           description: 'Object; { field: username, direction: asc || desc }',
         }),
         filter: new RequestRule({
-          validator: (v) => {
+          validator: () => {
             const result = joi.object(
               {
                 username: joi.string().min(2),

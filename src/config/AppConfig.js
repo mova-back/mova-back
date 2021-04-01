@@ -1,5 +1,6 @@
 const { BaseConfig } = require('./BaseConfig');
 const packageJson = require('../../package.json');
+const logger = require('../../logger');
 
 const expiresInRegexp = /^(\d\d?m$|\d\d?h$|\d\d?d$)/;
 
@@ -29,8 +30,7 @@ class AppConfig extends BaseConfig {
   }
 
   async init() {
-    // Todo ; to logger
-    console.log(`${this.constructor.name}: Initialization finish...`);
+    logger.debug(`${this.constructor.name}: Initialization finish...`);
   }
 }
 

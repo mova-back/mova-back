@@ -1,16 +1,17 @@
-const { BaseMiddleware } = require('../root');
+const { BaseMiddleware } = require('../root/abstract/BaseMiddleware');
 const { errorCodes } = require('../error/errorCodes');
 const { jwtVerify } = require('../utils/security/jwt');
 const SECRET = require('../config/AppConfig').tokenAccesSecret;
 const roles = require('../permissions/roles');
+const logger = require('../../logger');
 
 class CheckAccessTokenMiddleware extends BaseMiddleware {
   async init() {
-    // TODO: log
-    console.log(`${this.constructor.name} initialized...`);
+    logger.debug(`${this.constructor.name} initialized...`);
   }
 
   handler() {
+    // eslint-disable-next-line consistent-return
     return (req, res, next) => {
       const authorization = req.headers['authorization'] || req.headers['Authorization'];
       const bearer = authorization && authorization.startsWith('Bearer ') ? authorization : null;
@@ -51,6 +52,7 @@ class CheckAccessTokenMiddleware extends BaseMiddleware {
             }
           });
       }
+
       next();
     };
   }

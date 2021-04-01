@@ -6,6 +6,7 @@ const { WelcomeEmail } = require('../utils/emails/WelcomeEmail');
 const { makeEmailConfirmToken } = require('../utils/makeEmailConfirmToken');
 const { makePasswordHash } = require('../utils/makePasswordHash');
 const { ProfileModel } = require('../../../models/ProfileModel');
+const logger = require('../../../../../logger');
 
 class CreateUserAction extends BaseAction {
   static get accessTag() {
@@ -50,13 +51,10 @@ class CreateUserAction extends BaseAction {
           emailConfirmToken,
         })
       );
-      // TODO : log info
-      console.log('Registration email, delivered', { to: user.email, ...result, ctx: this.name });
+      logger.info('Registration email, delivered', { to: user.email, ...result, ctx: this.name });
     } catch (error) {
       if (error.statusCode) {
-        // log mailGun errors
-        // TODO : log error
-        console.log(error.message, error, { ctx: this.name });
+        logger.error(error.message, error, { ctx: this.name });
       } else {
         throw error;
       }

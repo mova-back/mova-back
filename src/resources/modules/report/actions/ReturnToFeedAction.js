@@ -9,7 +9,7 @@ class ReturnToFeedAction extends BaseAction {
     return {};
   }
 
-  static async run(ctx) {
+  static async run() {
     return this.result({});
   }
 }

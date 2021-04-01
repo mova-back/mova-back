@@ -2,7 +2,7 @@
  * https://documentation.mailgun.com/en/latest/api-sending.html#examples
  */
 const mailgun = require('mailgun-js');
-const { assert, AppError } = require('../root');
+const { assert, AppError, AbstractLogger } = require('../root');
 const errorCodes = require('../error/errorCodes');
 
 const emailRegEx = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -14,6 +14,7 @@ class EmailAgent {
     assert.string(options.domain, { notEmpty: true });
     assert.string(options.host, { notEmpty: true });
     assert.string(options.from);
+    // assert.instanceOf(options.logger, AbstractLogger);
 
     this[$] = {
       client: mailgun({
@@ -21,9 +22,10 @@ class EmailAgent {
         domain: options.domain,
       }),
       from: options.from || '<no-reply@mova.com>',
+      logger: options.logger,
     };
 
-    console.log(`${this.constructor.name} constructed...`);
+    this[$].logger.debug(`${this.constructor.name} constructed...`);
   }
 
   /**
@@ -50,7 +52,6 @@ class EmailAgent {
       subject: letter.subject || 'Hello',
       text: letter.text || 'Testing some Mailgun awesomness!',
     };
-    console.log(this[$].client);
 
     return new Promise((resolve, reject) => {
       this[$].client.messages().send(data, (error, response) => {
