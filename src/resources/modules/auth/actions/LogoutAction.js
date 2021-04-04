@@ -20,7 +20,6 @@ class LogoutAction extends BaseAction {
   }
 
   static async run(ctx) {
-    // take refresh token from any possible source
     const { refreshToken } = ctx.cookies;
     if (!refreshToken) {
       throw new AppError({ ...errorCodes.VALIDATION, message: 'Refresh token not provided' });

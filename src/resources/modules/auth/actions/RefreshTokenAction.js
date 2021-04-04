@@ -29,13 +29,7 @@ class RefreshTokensAction extends BaseAction {
   }
 
   static async run(ctx) {
-    // take refresh token from any possible source
-    // TODO : Fix save cookies refresh token(old)
-    console.log('AAAAAAAAA', ctx.cookies.refreshToken);
-    const reqRefreshToken = ctx.cookies.refreshToken;
-    // console.log('BAG!!!reqRefreshToken', reqRefreshToken);
-    // console.log('BAG!!!ctx.cookies.refreshToken', ctx.cookies.refreshToken);
-    // console.log('BAG!!!ctx.body.refreshToken', ctx.body.refreshToken);
+    const reqRefreshToken = ctx.cookies.refreshToken || ctx.body.refreshToken;
     const reqFingerprint = ctx.body.fingerprint;
     console.log('@@@@@@@@', reqRefreshToken);
 
@@ -46,7 +40,6 @@ class RefreshTokensAction extends BaseAction {
     const refTokenExpiresInMilliseconds = new Date().getTime() + ms(config.tokenRefreshExpiresIn);
     const refTokenExpiresInSeconds = parseInt(refTokenExpiresInMilliseconds / 1000, 10);
     const oldRefreshSession = await RefreshSessionModel.getByRefreshToken(reqRefreshToken);
-    await RefreshSessionModel.removeToken(reqRefreshToken);
     await verifyRefreshSession(new RefreshSessionEntity(oldRefreshSession), reqFingerprint);
     const user = await UserModel.getById(oldRefreshSession.userId);
 
@@ -59,6 +52,8 @@ class RefreshTokensAction extends BaseAction {
     });
 
     await addRefreshSession(newRefreshSession);
+
+    setTimeout(await RefreshSessionModel.removeToken(reqRefreshToken), 500);
 
     return this.result({
       data: {
