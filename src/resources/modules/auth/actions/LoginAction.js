@@ -21,7 +21,7 @@ class LoginAction extends BaseAction {
       body: {
         password: new RequestRule(AuthValidationSchema.schema.password, { required: true }),
         email: new RequestRule(AuthValidationSchema.schema.email, { required: true }),
-        // fingerprint: new RequestRule(AuthValidationSchema.schema.fingerprint, { required: true }),
+        fingerprint: new RequestRule(AuthValidationSchema.schema.fingerprint, { required: true }),
       },
     };
   }
@@ -60,7 +60,7 @@ class LoginAction extends BaseAction {
         new CookieEntity({
           name: 'refreshToken',
           value: newRefreshSession.refreshToken,
-          // domain: 'localhost',
+          // domain: 'movabackend.herokuapp.com',
           // path: '/auth',
           maxAge: refTokenExpiresInSeconds,
           secure: false, // temp: should be deleted

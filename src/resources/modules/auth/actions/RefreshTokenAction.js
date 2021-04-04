@@ -10,7 +10,6 @@ const { UserModel } = require('../../../models/UserModel');
 const { RefreshSessionModel } = require('../../../models/RefreshSessionModel');
 const { AuthValidationSchema } = require('../../../schemas/AuthValidationSchema');
 const config = require('../../../../config/AppConfig');
-const { async } = require('crypto-random-string');
 
 class RefreshTokensAction extends BaseAction {
   static get accessTag() {
@@ -20,7 +19,7 @@ class RefreshTokensAction extends BaseAction {
   static get validationRules() {
     return {
       body: {
-        // fingerprint: new RequestRule(AuthValidationSchema.schema.fingerprint, { required: true }), // https://github.com/Valve/fingerprintjs2
+        fingerprint: new RequestRule(AuthValidationSchema.schema.fingerprint, { required: true }),
         refreshToken: new RequestRule(AuthValidationSchema.schema.refreshToken),
       },
       cookies: {
@@ -32,7 +31,6 @@ class RefreshTokensAction extends BaseAction {
   static async run(ctx) {
     const reqRefreshToken = ctx.cookies.refreshToken || ctx.body.refreshToken;
     const reqFingerprint = ctx.body.fingerprint;
-    console.log('@@@@@@@@', reqRefreshToken);
 
     if (!reqRefreshToken) {
       throw new AppError({ ...errorCodes.VALIDATION, message: 'Refresh token not provided' });
@@ -41,10 +39,7 @@ class RefreshTokensAction extends BaseAction {
     const refTokenExpiresInMilliseconds = new Date().getTime() + ms(config.tokenRefreshExpiresIn);
     const refTokenExpiresInSeconds = parseInt(refTokenExpiresInMilliseconds / 1000, 10);
     const oldRefreshSession = await RefreshSessionModel.getByRefreshToken(reqRefreshToken);
-    setTimeout(async () => {
-      await RefreshSessionModel.removeToken(reqRefreshToken);
-    }, 5000);
-    await verifyRefreshSession(new RefreshSessionEntity(oldRefreshSession), reqFingerprint);
+    await verifyRefreshSession(new RefreshSessionEntity(oldRefreshSession), reqFingerprint, ctx.ip);
     const user = await UserModel.getById(oldRefreshSession.userId);
 
     const newRefreshSession = new RefreshSessionEntity({
@@ -56,6 +51,11 @@ class RefreshTokensAction extends BaseAction {
     });
 
     await addRefreshSession(newRefreshSession);
+
+    // debounce delete > if user refresh browser
+    setTimeout(async () => {
+      await RefreshSessionModel.removeToken(reqRefreshToken);
+    }, 5000);
 
     return this.result({
       data: {
