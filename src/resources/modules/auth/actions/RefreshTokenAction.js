@@ -10,6 +10,7 @@ const { UserModel } = require('../../../models/UserModel');
 const { RefreshSessionModel } = require('../../../models/RefreshSessionModel');
 const { AuthValidationSchema } = require('../../../schemas/AuthValidationSchema');
 const config = require('../../../../config/AppConfig');
+const { async } = require('crypto-random-string');
 
 class RefreshTokensAction extends BaseAction {
   static get accessTag() {
@@ -40,6 +41,9 @@ class RefreshTokensAction extends BaseAction {
     const refTokenExpiresInMilliseconds = new Date().getTime() + ms(config.tokenRefreshExpiresIn);
     const refTokenExpiresInSeconds = parseInt(refTokenExpiresInMilliseconds / 1000, 10);
     const oldRefreshSession = await RefreshSessionModel.getByRefreshToken(reqRefreshToken);
+    setTimeout(async () => {
+      await RefreshSessionModel.removeToken(reqRefreshToken);
+    }, 5000);
     await verifyRefreshSession(new RefreshSessionEntity(oldRefreshSession), reqFingerprint);
     const user = await UserModel.getById(oldRefreshSession.userId);
 
@@ -52,8 +56,6 @@ class RefreshTokensAction extends BaseAction {
     });
 
     await addRefreshSession(newRefreshSession);
-
-    setTimeout(await RefreshSessionModel.removeToken(reqRefreshToken), 500);
 
     return this.result({
       data: {
