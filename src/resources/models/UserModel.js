@@ -44,6 +44,19 @@ class UserModel {
     return Boolean(data);
   }
 
+  static async getList({ page, limit, orderBy } = {}) {
+    assert.integer(page, { required: true });
+    assert.integer(limit, { required: true });
+
+    const result = await UserSchema.find()
+      .sort([[`${orderBy.field}`, `${orderBy.direction}`]])
+      .skip(page * limit)
+      .limit(limit);
+    const total = await UserSchema.find().count((el) => el);
+
+    return { result, total };
+  }
+
   static async getCurrentUser(id) {
     // TODO : add schema id
     // assert.validate(id, UserModel.schema.obj.id, { required: true });

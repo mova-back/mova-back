@@ -16,28 +16,18 @@ class ListUsersAction extends BaseAction {
       query: {
         ...this.baseQueryParams,
         orderBy: new RequestRule({
-          validator: (v) => {
-            const result = joi
-              .object({
-                field: joi.string().valid('createdAt', 'username'),
-                direction: joi.string().valid('asc', 'desc'),
-              })
-              .validate(v);
-            return (result.error && result.error.message) || true;
+          validate: {
+            validator: (v) => {
+              const result = joi
+                .object({
+                  field: joi.string().valid('createdAt', 'username'),
+                  direction: joi.string().valid('asc', 'desc'),
+                })
+                .validate(v);
+              return (result.error && result.error.message) || true;
+            },
+            message: (prop) => `${prop.value} - orderBy : createAt, username`,
           },
-          description: 'Object; { field: username, direction: asc || desc }',
-        }),
-        filter: new RequestRule({
-          validator: () => {
-            const result = joi.object(
-              {
-                username: joi.string().min(2),
-              },
-              (e) => (e ? e.message : true)
-            );
-            return (result.error && result.error.message) || true;
-          },
-          description: 'String; min 2 chars;',
         }),
       },
     };
@@ -45,10 +35,10 @@ class ListUsersAction extends BaseAction {
 
   static async run(req) {
     const { query } = req;
-    const data = await UserModel.baseGetList({ ...query });
+    const data = await UserModel.getList({ ...query });
 
     return this.result({
-      data: data.results,
+      data,
       headers: {
         'X-Total-Count': data.total,
       },
