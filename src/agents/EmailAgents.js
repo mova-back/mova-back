@@ -3,7 +3,7 @@
  */
 const mailgun = require('mailgun-js');
 const { assert, AppError, AbstractLogger } = require('../root');
-const errorCodes = require('../error/errorCodes');
+const { errorCodes } = require('../error/errorCodes');
 
 const emailRegEx = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 const $ = Symbol('private scope');
@@ -14,7 +14,7 @@ class EmailAgent {
     assert.string(options.domain, { notEmpty: true });
     assert.string(options.host, { notEmpty: true });
     assert.string(options.from);
-    // assert.instanceOf(options.logger, AbstractLogger);
+    assert.instanceOf(options.logger, AbstractLogger);
 
     this[$] = {
       client: mailgun({

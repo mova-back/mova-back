@@ -42,7 +42,6 @@ class UserModel {
     assert.validate(email, UserSchema.schema.obj.email, { required: true });
 
     const data = await UserSchema.findOne({ email });
-    console.log(data);
     if (!data) throw this.errorEmptyResponse();
     return data;
   }

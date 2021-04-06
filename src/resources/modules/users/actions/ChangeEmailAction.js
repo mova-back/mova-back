@@ -1,6 +1,6 @@
 const { AppError, RequestRule, BaseAction } = require('../../../../root');
 
-const errorCodes = require('../../../../error/errorCodes');
+const { errorCodes } = require('../../../../error/errorCodes');
 
 const { ChangeEmail } = require('../utils/emails/ChangeEmail');
 const { makeEmailConfirmToken } = require('../utils/makeEmailConfirmToken');
