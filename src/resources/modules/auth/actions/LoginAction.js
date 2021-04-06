@@ -38,6 +38,7 @@ class LoginAction extends BaseAction {
       if ([errorCodes.NOT_FOUND.code, errorCodes.INVALID_PASSWORD.code].includes(e.code)) {
         throw new AppError({ ...errorCodes.INVALID_CREDENTIALS });
       }
+
       throw e;
     }
 

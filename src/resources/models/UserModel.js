@@ -1,11 +1,17 @@
 const { UserSchema } = require('../schemas/UserSchema');
-const { assert } = require('../../root');
+const { assert, AppError } = require('../../root');
+const { errorCodes } = require('../../error/errorCodes');
 
 class UserModel {
   static async getCount(id) {
     return UserSchema.find(id)
       .count((el) => el)
       .exec();
+  }
+
+  static errorEmptyResponse() {
+    console.log('ERRORR');
+    return new AppError({ ...errorCodes.NOT_FOUND, layer: 'model' });
   }
 
   static async create(entity = {}) {
@@ -34,7 +40,12 @@ class UserModel {
   }
 
   static async getByEmail(email) {
-    return UserSchema.findOne({ email }).exec();
+    assert.validate(email, UserSchema.schema.obj.email, { required: true });
+
+    const data = await UserSchema.findOne({ email });
+    console.log(data);
+    if (!data) throw this.errorEmptyResponse();
+    return data;
   }
 
   static async isEmailExist(email) {
