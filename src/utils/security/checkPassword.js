@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
-const { AppError, assert } = require('../../root');
-const errorCodes = require('../../error/errorCodes');
+const { errorCodes } = require('../../error/errorCodes');
+const { assert, AppError } = require('../../root');
 
 /**
  * @description make from req.body.password hash and compare it with existing password hash

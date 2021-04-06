@@ -10,7 +10,6 @@ class UserModel {
   }
 
   static errorEmptyResponse() {
-    console.log('ERRORR');
     return new AppError({ ...errorCodes.NOT_FOUND, layer: 'model' });
   }
 
