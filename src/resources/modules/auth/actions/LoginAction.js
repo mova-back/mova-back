@@ -31,15 +31,8 @@ class LoginAction extends BaseAction {
     const refTokenExpiresInMilliseconds = new Date().getTime() + ms(config.tokenRefreshExpiresIn);
     const refTokenExpiresInSeconds = parseInt(refTokenExpiresInMilliseconds / 1000, 10);
 
-    try {
-      user = await UserModel.getByEmail(ctx.body.email);
-      await checkPassword(ctx.body.password, user.passwordHash);
-    } catch (e) {
-      if ([errorCodes.NOT_FOUND.code, errorCodes.INVALID_PASSWORD.code].includes(e.code)) {
-        throw new AppError({ ...errorCodes.INVALID_CREDENTIALS });
-      }
-      throw e;
-    }
+    user = await UserModel.getByEmail(ctx.body.email);
+    await checkPassword(ctx.body.password, user.passwordHash);
 
     const newRefreshSession = new RefreshSessionEntity({
       userId: user.id,
