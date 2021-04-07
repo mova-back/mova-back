@@ -17,10 +17,10 @@ class WordsController extends BaseController {
 
     router.patch('/api/word/:id', this.actionRunner(actions.UpdateWordAction));
 
-    router.get('/api/word/reports', this.actionRunner(actions.ReportListAction));
+    router.get('/api/words/reports', this.actionRunner(actions.ReportListAction));
     router.post('/api/word/addreport/:id', this.actionRunner(actions.AddReportAction));
     router.delete('/api/word/:id', this.actionRunner(actions.RemoveWordAction));
-    router.put('/api/word/return/:id', this.actionRunner(actions.ReportListAction));
+    router.put('/api/word/return/:id', this.actionRunner(actions.ReturnToFeedAction));
 
     return router;
   }
