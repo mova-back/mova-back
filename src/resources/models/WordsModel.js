@@ -31,7 +31,7 @@ class WordsModel {
       result = await WordSchema.find({ complaints: { $exists: true, $ne: [] } })
         .skip(page * limit)
         .limit(limit)
-        .populate({ path: 'complaints', options: { sort: [['createdAt', `${orderBy.direction}`]] } });
+        .populate({ path: 'complaints', options: { sort: { reportedAt: `${orderBy.direction}` } } });
     }
     if (orderBy.field && orderBy.field === 'reports') {
       result = await WordSchema.find({ complaints: { $exists: true, $ne: [] } })
