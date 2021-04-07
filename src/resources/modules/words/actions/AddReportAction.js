@@ -4,6 +4,7 @@ const { privateItemPolicy } = require('../../../../policy');
 const { ReportSchema } = require('../../../schemas/ReportSchema');
 const { ReportModel } = require('../../../models/ReportModel');
 const { errorCodes } = require('../../../../error/errorCodes');
+const { WordSchema } = require('../../../schemas/WordSchema');
 
 class AddReportAction extends BaseAction {
   static get accessTag() {
@@ -46,7 +47,7 @@ class AddReportAction extends BaseAction {
       wordId: word.id,
     });
 
-    WordsModel.findByIdAndUpdate(word.id, { $addToSet: { complaints: currentReport.id } });
+    await WordsModel.findByIdAndUpdate(word.id, { $addToSet: { complaints: currentReport.id } });
 
     return this.result({ message: `for User by id: ${ctx.params.id} complaint added` });
   }

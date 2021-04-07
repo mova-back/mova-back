@@ -11,6 +11,9 @@ const { RemoveFavoriteAction } = require('./RemoveFavoriteAction');
 const { UpdateWordAction } = require('./UpdateWordAction');
 const { RemoveWordAction } = require('./RemoveWordAction');
 
+const { ReportListAction } = require('./ReportListAction');
+const { ReturnToFeedAction } = require('./ReturnToFeedAction');
+
 module.exports = {
   ListWordsAction,
   CreateWordAction,
@@ -23,4 +26,6 @@ module.exports = {
   AddFavoriteAction,
   RemoveFavoriteAction,
   AddReportAction,
+  ReportListAction,
+  ReturnToFeedAction,
 };

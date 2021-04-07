@@ -1,12 +1,10 @@
 const { BaseAction, RequestRule } = require('../../../../root');
-const { updateUserByModelPolicy } = require('../../../../policy');
 const { WordsModel } = require('../../../models/WordsModel');
-const { ProfileSchema } = require('../../../schemas/ProfileSchema');
 const { ReportSchema } = require('../../../schemas/ReportSchema');
 
-class RemoveWordAction extends BaseAction {
+class ReturnToFeedAction extends BaseAction {
   static get accessTag() {
-    return 'words:delete';
+    return 'reports:remove';
   }
 
   static get validationRules() {
@@ -26,20 +24,13 @@ class RemoveWordAction extends BaseAction {
   }
 
   static async run(ctx) {
-    const { currentUser } = ctx;
-
     const word = await WordsModel.getById(ctx.params.id);
-    await updateUserByModelPolicy(word, currentUser);
-
-    await WordsModel.remove(ctx.params.id);
-    await ProfileSchema.findOneAndUpdate({ userId: word.createdByUserId }, { $pull: { createdWords: word.id } });
-    await ProfileSchema.findOneAndUpdate({ userId: { $in: word.favoriteByUserdIds } }, { $pull: { favoriteWords: word.id } });
 
     // TODO : create module
     await ReportSchema.findOneAndDelete({ _id: { $in: word.complaints } });
 
-    return this.result({ message: `${ctx.params.id} was removed` });
+    return this.result({});
   }
 }
 
-module.exports = { RemoveWordAction };
+module.exports = { ReturnToFeedAction };

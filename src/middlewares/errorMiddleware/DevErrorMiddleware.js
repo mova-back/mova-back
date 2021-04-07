@@ -34,6 +34,7 @@ class DevErrorMiddleware extends BaseMiddleware {
           origin: error.origin ? { ...error.origin, message: error.origin.message } : false,
         });
 
+        console.log(errorRes.message);
         logger.error(errorRes.message, error);
         res.status(errorRes.status).json(errorRes);
       }

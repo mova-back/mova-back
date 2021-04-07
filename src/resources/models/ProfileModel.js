@@ -38,9 +38,7 @@ class ProfileModel {
       .limit(limit)
       .exec();
 
-    const total = await ProfileSchema.find()
-      .count((el) => el)
-      .exec();
+    const total = result.length;
 
     return { result, total };
   }

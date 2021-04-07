@@ -1,6 +1,6 @@
 const { adminPolicy } = require('../../../../policy');
 const { BaseAction } = require('../../../../root');
-const { WordSchema } = require('../../../schemas/WordSchema');
+const { WordsModel } = require('../../../models/WordsModel');
 
 class ReportListAction extends BaseAction {
   static get accessTag() {
@@ -16,16 +16,12 @@ class ReportListAction extends BaseAction {
   }
 
   static async run(ctx) {
-    const { currentUser } = ctx;
+    const { currentUser, query } = ctx;
 
     adminPolicy({}, currentUser);
 
-    // TODO : filter by count reports
-
-    // data = await WordsModel.getListByFilter(query);
-    // TODO :create model
-    const data = await WordSchema.find({ complaints: { $exists: true, $ne: [] } }).populate('complaints');
-    return this.result({ data });
+    const { result, total } = await WordsModel.getReportList(query);
+    return this.result({ data: result, headers: { 'X-Total-Count': total } });
   }
 }
 

@@ -61,7 +61,7 @@ class UserModel {
       .sort([[`${orderBy.field}`, `${orderBy.direction}`]])
       .skip(page * limit)
       .limit(limit);
-    const total = await UserSchema.find().count((el) => el);
+    const total = result.length;
 
     return { result, total };
   }

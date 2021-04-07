@@ -21,15 +21,46 @@ class WordsModel {
     return WordSchema.create(entity);
   }
 
+  static async getReportList({ page, limit, orderBy } = {}) {
+    assert.integer(page, { required: true });
+    assert.integer(limit, { required: true });
+
+    let result = {};
+
+    if (orderBy.field === 'createdAt') {
+      result = await WordSchema.find({ complaints: { $exists: true, $ne: [] } })
+        .skip(page * limit)
+        .limit(limit)
+        .populate({ path: 'complaints', options: { sort: [['createdAt', `${orderBy.direction}`]] } });
+    }
+    if (orderBy.field === 'reports') {
+      result = await WordSchema.find({ complaints: { $exists: true, $ne: [] } })
+        .sort([['complaints', `${orderBy.direction}`]])
+        .skip(page * limit)
+        .limit(limit)
+        .populate('complaints');
+    }
+    result = await WordSchema.find({ complaints: { $exists: true, $ne: [] } })
+      .skip(page * limit)
+      .limit(limit)
+      .populate('complaints');
+
+    const total = result.length;
+
+    return { result, total };
+  }
+
   static async getList({ page, limit, orderBy } = {}) {
     assert.integer(page, { required: true });
     assert.integer(limit, { required: true });
 
-    const result = await WordSchema.find()
+    // if complaints >> 5 => remove field in feed
+    const result = await WordSchema.find({ $expr: { $lt: [{ $size: '$complaints' }, 5] } })
       .sort([[`${orderBy.field}`, `${orderBy.direction}`]])
       .skip(page * limit)
       .limit(limit);
-    const total = await WordSchema.find().count((el) => el);
+
+    const total = result.length;
 
     return { result, total };
   }
@@ -54,9 +85,7 @@ class WordsModel {
       .skip(page * limit)
       .limit(limit);
 
-    const total = await WordSchema.find({
-      _id: { $in: field },
-    }).count((el) => el);
+    const total = result.length;
 
     return { result, total };
   }
