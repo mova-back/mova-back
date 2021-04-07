@@ -65,7 +65,7 @@ const errorCodes = {
     code: 'WRONG_RESET_PASSWORD_TOKEN_ERROR',
   },
   WRONG_EMAIL_CONFIRM_TOKEN: {
-    description: 'Confirm email token is not registered. Probably it already used',
+    message: 'Confirm email token is not registered. Probably it already used',
     status: 401,
     code: 'WRONG_EMAIL_CONFIRM_TOKEN_ERROR',
   },
@@ -75,9 +75,14 @@ const errorCodes = {
     code: 'PARSE_TOKEN_ERROR',
   },
   EMAIL_ALREADY_TAKEN: {
-    description: 'This email already taken, try use another',
+    message: 'This email already taken, try use another',
     status: 409,
     code: 'EMAIL_ALREADY_TAKEN_ERROR',
+  },
+  USER_ALREADY_TAKEN: {
+    message: 'This user already taken, try use another',
+    status: 409,
+    code: 'USER_ALREADY_TAKEN_ERROR',
   },
   SEND_EMAIL: { description: 'Send email error', status: 500, code: 'SEND_EMAIL_ERROR' },
   DECRYPTION: { description: 'Decryption error', status: 500, code: 'DECRYPTION_ERROR' },

@@ -1,4 +1,4 @@
-const { BaseAction, RequestRule } = require('../../../../root');
+const { BaseAction, RequestRule, AppError } = require('../../../../root');
 const { emailAgent } = require('../../RootProvider');
 const { UserSchema } = require('../../../schemas/UserSchema');
 const { UserModel } = require('../../../models/UserModel');
@@ -7,6 +7,7 @@ const { makeEmailConfirmToken } = require('../utils/makeEmailConfirmToken');
 const { makePasswordHash } = require('../utils/makePasswordHash');
 const { ProfileModel } = require('../../../models/ProfileModel');
 const logger = require('../../../../../logger');
+const { errorCodes } = require('../../../../error/errorCodes');
 
 class CreateUserAction extends BaseAction {
   static get accessTag() {
@@ -28,13 +29,25 @@ class CreateUserAction extends BaseAction {
   }
 
   static async run(ctx) {
+    let user = {};
+
     const hash = await makePasswordHash(ctx.body.password);
     delete ctx.body.password;
 
-    const user = await UserModel.create({
-      ...ctx.body,
-      passwordHash: hash,
-    });
+    try {
+      user = await UserModel.create({
+        ...ctx.body,
+        passwordHash: hash,
+      });
+    } catch (err) {
+      if (err.code && err.code === 11000 && Object.prototype.hasOwnProperty.call(err.keyValue, 'email')) {
+        throw new AppError({ ...errorCodes.EMAIL_ALREADY_TAKEN });
+      }
+      if (err.code && err.code === 11000 && Object.prototype.hasOwnProperty.call(err.keyValue, 'username')) {
+        throw new AppError({ ...errorCodes.USER_ALREADY_TAKEN });
+      }
+      throw new AppError({ ...errorCodes.SERVER });
+    }
 
     await ProfileModel.create({
       userId: user.id,
