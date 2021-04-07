@@ -27,13 +27,13 @@ class WordsModel {
 
     let result = {};
 
-    if (orderBy.field === 'reportedAt') {
+    if (orderBy.field && orderBy.field === 'reportedAt') {
       result = await WordSchema.find({ complaints: { $exists: true, $ne: [] } })
         .skip(page * limit)
         .limit(limit)
         .populate({ path: 'complaints', options: { sort: [['createdAt', `${orderBy.direction}`]] } });
     }
-    if (orderBy.field === 'reports') {
+    if (orderBy.field && orderBy.field === 'reports') {
       result = await WordSchema.find({ complaints: { $exists: true, $ne: [] } })
         .sort([['complaints', `${orderBy.direction}`]])
         .skip(page * limit)
