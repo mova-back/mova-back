@@ -27,7 +27,7 @@ class WordsModel {
 
     let result = {};
 
-    if (orderBy.field === 'createdAt') {
+    if (orderBy.field === 'reportedAt') {
       result = await WordSchema.find({ complaints: { $exists: true, $ne: [] } })
         .skip(page * limit)
         .limit(limit)
