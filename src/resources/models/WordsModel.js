@@ -27,23 +27,19 @@ class WordsModel {
 
     let result = {};
 
-    if (orderBy.field && orderBy.field === 'reportedAt') {
-      result = await WordSchema.find({ complaints: { $type: 'array', $ne: [] } })
+    if (orderBy.field && (orderBy.field === 'reportedAt' || orderBy.field === 'createdAt')) {
+      result = await WordSchema.find({ complaints: { $exists: true, $type: 'array', $ne: [] } })
         .skip(page * limit)
         .limit(limit)
         .populate({ path: 'complaints', options: { sort: { reportedAt: `${orderBy.direction}` } } });
     }
     if (orderBy.field && orderBy.field === 'reports') {
-      result = await WordSchema.find({ complaints: { $type: 'array', $ne: [] } })
+      result = await WordSchema.find({ complaints: { $exists: true, $type: 'array', $ne: [] } })
         .sort([['complaints', `${orderBy.direction}`]])
         .skip(page * limit)
         .limit(limit)
         .populate('complaints');
     }
-    result = await WordSchema.find({ complaints: { $type: 'array', $ne: [] } })
-      .skip(page * limit)
-      .limit(limit)
-      .populate('complaints');
 
     const total = result.length;
 
