@@ -28,19 +28,19 @@ class WordsModel {
     let result = {};
 
     if (orderBy.field && orderBy.field === 'reportedAt') {
-      result = await WordSchema.find({ complaints: { $exists: true, $ne: [] } })
+      result = await WordSchema.find({ complaints: { $lt: [] } })
         .skip(page * limit)
         .limit(limit)
         .populate({ path: 'complaints', options: { sort: { reportedAt: `${orderBy.direction}` } } });
     }
     if (orderBy.field && orderBy.field === 'reports') {
-      result = await WordSchema.find({ complaints: { $exists: true, $ne: [] } })
+      result = await WordSchema.find({ complaints: { $lt: [] } })
         .sort([['complaints', `${orderBy.direction}`]])
         .skip(page * limit)
         .limit(limit)
         .populate('complaints');
     }
-    result = await WordSchema.find({ complaints: { $exists: true, $ne: [] } })
+    result = await WordSchema.find({ complaints: { $lt: [] } })
       .skip(page * limit)
       .limit(limit)
       .populate('complaints');
