@@ -29,7 +29,7 @@ class ReturnToFeedAction extends BaseAction {
     // TODO : create module
     await ReportSchema.findOneAndDelete({ _id: { $in: word.complaints } });
 
-    return this.result({});
+    return this.result({ message: `Word by ${ctx.params.id} was returned` });
   }
 }
 
