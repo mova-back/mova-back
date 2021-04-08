@@ -28,9 +28,10 @@ class ReturnToFeedAction extends BaseAction {
     const word = await WordsModel.getById(ctx.params.id);
 
     // TODO : create module
-    await ReportSchema.findOneAndDelete({ _id: { $in: word.complaints } });
+    const deletedReport = await ReportSchema.findOneAndDelete({ _id: { $in: word.complaints } });
+
     // TODO: test
-    await WordSchema.findByIdAndUpdate(word.id, { $pull: { complaints: word.id } });
+    await WordSchema.findByIdAndUpdate(word.id, { $pull: { complaints: deletedReport.id } });
 
     return this.result({ message: `Word by ${ctx.params.id} was returned` });
   }
