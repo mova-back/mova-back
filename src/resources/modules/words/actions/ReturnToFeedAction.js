@@ -1,6 +1,7 @@
 const { BaseAction, RequestRule } = require('../../../../root');
 const { WordsModel } = require('../../../models/WordsModel');
 const { ReportSchema } = require('../../../schemas/ReportSchema');
+const { WordSchema } = require('../../../schemas/WordSchema');
 
 class ReturnToFeedAction extends BaseAction {
   static get accessTag() {
@@ -28,6 +29,8 @@ class ReturnToFeedAction extends BaseAction {
 
     // TODO : create module
     await ReportSchema.findOneAndDelete({ _id: { $in: word.complaints } });
+    // TODO: test
+    await WordSchema.findByIdAndUpdate(word.id, { $pull: { complaints: word.id } });
 
     return this.result({ message: `Word by ${ctx.params.id} was returned` });
   }
