@@ -16,6 +16,25 @@ class ListWordsAction extends BaseAction {
     };
   }
 
+  // TODO check validation
+  // query: {
+  //   ...this.baseQueryParams,
+  //   orderBy: new RequestRule({
+  //     validate: {
+  //       validator: (v) => {
+  //         const result = joi
+  //           .object({
+  //             field: joi.string().valid('createdAt', 'username'),
+  //             direction: joi.string().valid('asc', 'desc'),
+  //           })
+  //           .validate(v);
+  //         return (result.error && result.error.message) || true;
+  //       },
+  //       message: (prop) => `${prop.value} - orderBy : createAt, username`,
+  //     },
+  //   }),
+  // },
+
   static async run(ctx) {
     const { currentUser, query } = ctx;
 

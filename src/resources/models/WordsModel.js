@@ -21,20 +21,27 @@ class WordsModel {
     return WordSchema.create(entity);
   }
 
-  static async getReportList({ page, limit, orderBy } = {}) {
+  static async getReportList({ page, limit, search, orderBy } = {}) {
     assert.integer(page, { required: true });
     assert.integer(limit, { required: true });
+    assert.string(search, { required: true });
 
     let result = {};
+    const fieldWhere = {
+      $and: [
+        { complaints: { $exists: true, $type: 'array', $ne: [] } },
+        { wordname: { $regex: search.replace('+', '.*'), $options: 'six' } },
+      ],
+    };
 
     if (orderBy.field && (orderBy.field === 'reportedAt' || orderBy.field === 'createdAt')) {
-      result = await WordSchema.find({ complaints: { $exists: true, $type: 'array', $ne: [] } })
+      result = await WordSchema.find(fieldWhere)
         .skip(page * limit)
         .limit(limit)
         .populate({ path: 'complaints', options: { sort: { reportedAt: `${orderBy.direction}` } } });
     }
     if (orderBy.field && orderBy.field === 'reports') {
-      result = await WordSchema.find({ complaints: { $exists: true, $type: 'array', $ne: [] } })
+      result = await WordSchema.find(fieldWhere)
         .sort([['complaints', `${orderBy.direction}`]])
         .skip(page * limit)
         .limit(limit)
@@ -46,12 +53,15 @@ class WordsModel {
     return { result, total };
   }
 
-  static async getList({ page, limit, orderBy } = {}) {
+  static async getList({ page, limit, search, orderBy } = {}) {
     assert.integer(page, { required: true });
     assert.integer(limit, { required: true });
+    assert.string(search, { required: true });
 
     // if complaints >> 5 => remove field in feed
-    const result = await WordSchema.find({ $expr: { $lt: [{ $size: '$complaints' }, 5] } })
+    const result = await WordSchema.find({
+      $and: [{ $expr: { $lt: [{ $size: '$complaints' }, 5] } }, { wordname: { $regex: search.replace('+', '.*'), $options: 'six' } }],
+    })
       .sort([[`${orderBy.field}`, `${orderBy.direction}`]])
       .skip(page * limit)
       .limit(limit);

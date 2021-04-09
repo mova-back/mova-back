@@ -53,11 +53,12 @@ class UserModel {
     return Boolean(data);
   }
 
-  static async getList({ page, limit, orderBy } = {}) {
+  static async getList({ page, limit, search, orderBy } = {}) {
     assert.integer(page, { required: true });
     assert.integer(limit, { required: true });
+    assert.string(search, { required: true });
 
-    const result = await UserSchema.find()
+    const result = await UserSchema.find({ username: { $regex: search.replace('+', '.*'), $options: 'six' } })
       .sort([[`${orderBy.field}`, `${orderBy.direction}`]])
       .skip(page * limit)
       .limit(limit);
