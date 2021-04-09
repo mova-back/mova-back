@@ -1,10 +1,12 @@
 const { RequestRule, BaseAction } = require('../../../../root');
 const { UserSchema } = require('../../../schemas/UserSchema');
 const { UserModel } = require('../../../models/UserModel');
+const { adminPolicy } = require('../../../../policy');
+const { moderator } = require('../../../../permissions/roles');
 
 class UpdateUserAction extends BaseAction {
   static get accessTag() {
-    return 'users:update';
+    return 'users:promote';
   }
 
   static get validationRules() {
@@ -16,8 +18,12 @@ class UpdateUserAction extends BaseAction {
   }
 
   static async run(ctx) {
-    const { currentUser } = ctx;
-    const data = await UserModel.findByIdAndUpdate(currentUser.id, ctx.body); // user can update only itself
+    const { currentUser, params } = ctx;
+    const { id } = params;
+
+    adminPolicy(currentUser);
+
+    const data = await UserModel.findByIdAndUpdate(id, { role: moderator });
 
     return this.result({ data });
   }

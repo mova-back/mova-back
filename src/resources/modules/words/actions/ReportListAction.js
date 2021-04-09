@@ -1,4 +1,4 @@
-const { adminPolicy } = require('../../../../policy');
+const { moderatorPolicy } = require('../../../../policy');
 const { BaseAction } = require('../../../../root');
 const { WordsModel } = require('../../../models/WordsModel');
 
@@ -18,7 +18,7 @@ class ReportListAction extends BaseAction {
   static async run(ctx) {
     const { currentUser, query } = ctx;
 
-    adminPolicy({}, currentUser);
+    moderatorPolicy(currentUser);
 
     const { result, total } = await WordsModel.getReportList(query);
     return this.result({ data: result, headers: { 'X-Total-Count': total } });

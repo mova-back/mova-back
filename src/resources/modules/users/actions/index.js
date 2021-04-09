@@ -3,6 +3,7 @@ const { GetUserByIdAction } = require('./GetUserByIdAction');
 const { CreateUserAction } = require('./CreateUserAction');
 const { UpdateUserAction } = require('./UpdateUserAction');
 const { RemoveUserAction } = require('./RemoveUserAction');
+const { PromoteUserAction } = require('./PromoteUserAction');
 
 const { GetCurrentUserAction } = require('./GetCurrentUserAction');
 
@@ -22,6 +23,7 @@ module.exports = {
   CreateUserAction,
   UpdateUserAction,
   RemoveUserAction,
+  PromoteUserAction,
 
   GetCurrentUserAction,
 
