@@ -4,7 +4,7 @@ const { UserModel } = require('../../../models/UserModel');
 const { adminPolicy } = require('../../../../policy');
 const { moderator } = require('../../../../permissions/roles');
 
-class UpdateUserAction extends BaseAction {
+class PromoteUserAction extends BaseAction {
   static get accessTag() {
     return 'users:promote';
   }
@@ -13,6 +13,9 @@ class UpdateUserAction extends BaseAction {
     return {
       body: {
         username: new RequestRule(UserSchema.schema.obj.name),
+      },
+      params: {
+        id: new RequestRule(UserSchema.schema.obj.id, { required: true }),
       },
     };
   }
@@ -29,4 +32,4 @@ class UpdateUserAction extends BaseAction {
   }
 }
 
-module.exports = { UpdateUserAction };
+module.exports = { PromoteUserAction };
