@@ -38,10 +38,8 @@ class ListUsersAction extends BaseAction {
     const data = await UserModel.getList({ ...query });
 
     return this.result({
-      data,
-      headers: {
-        'X-Total-Count': data.total,
-      },
+      data: data.result,
+      headers: { 'X-Total-Count': data.total },
     });
   }
 }
