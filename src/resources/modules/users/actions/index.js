@@ -4,6 +4,7 @@ const { CreateUserAction } = require('./CreateUserAction');
 const { UpdateUserAction } = require('./UpdateUserAction');
 const { RemoveUserAction } = require('./RemoveUserAction');
 const { PromoteUserAction } = require('./PromoteUserAction');
+const { UnpromoteUserAction } = require('./UnpromoteUserAction');
 
 const { GetCurrentUserAction } = require('./GetCurrentUserAction');
 
@@ -24,6 +25,7 @@ module.exports = {
   UpdateUserAction,
   RemoveUserAction,
   PromoteUserAction,
+  UnpromoteUserAction,
 
   GetCurrentUserAction,
 

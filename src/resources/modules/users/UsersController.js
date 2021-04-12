@@ -12,6 +12,7 @@ class UsersController extends BaseController {
     router.patch('/api/user', this.actionRunner(actions.UpdateUserAction));
     router.delete('/api/user/:id', this.actionRunner(actions.RemoveUserAction));
     router.put('/api/user/promote/:id', this.actionRunner(actions.PromoteUserAction));
+    router.put('/api/user/unpromote/:id', this.actionRunner(actions.UnpromoteUserAction));
 
     router.post('/api/user/change-password', this.actionRunner(actions.ChangePasswordAction));
     router.post('/api/user/send-reset-password-email', this.actionRunner(actions.SendResetPasswordEmailAction));
