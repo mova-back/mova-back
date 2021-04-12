@@ -23,7 +23,7 @@ class UserModel {
     assert.mongoAutoId(id, { required: true });
     assert.object(entity, { required: true });
 
-    return UserSchema.findByIdAndUpdate(id, entity);
+    return UserSchema.findByIdAndUpdate(id, entity, { new: true });
   }
 
   static async deleteMany(id) {

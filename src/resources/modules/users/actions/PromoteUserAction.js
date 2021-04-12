@@ -1,5 +1,4 @@
 const { RequestRule, BaseAction } = require('../../../../root');
-const { UserSchema } = require('../../../schemas/UserSchema');
 const { UserModel } = require('../../../models/UserModel');
 const { adminPolicy } = require('../../../../policy');
 const { moderator } = require('../../../../permissions/roles');
@@ -12,7 +11,15 @@ class PromoteUserAction extends BaseAction {
   static get validationRules() {
     return {
       params: {
-        id: new RequestRule(UserSchema.schema.obj.id, { required: true }),
+        id: new RequestRule(
+          {
+            validate: {
+              validator: (v) => typeof v === 'string',
+              message: (prop) => `${prop.value} - string`,
+            },
+          },
+          { required: true }
+        ),
       },
     };
   }

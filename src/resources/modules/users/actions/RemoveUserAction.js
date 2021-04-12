@@ -1,7 +1,6 @@
 const { RequestRule, BaseAction } = require('../../../../root');
 const { UserModel } = require('../../../models/UserModel');
 const { ProfileModel } = require('../../../models/ProfileModel');
-const { UserSchema } = require('../../../schemas/UserSchema');
 
 const { updateUserPolicy } = require('../../../../policy/updateUserPolicy');
 const { WordsModel } = require('../../../models/WordsModel');
@@ -14,7 +13,15 @@ class RemoveUserAction extends BaseAction {
   static get validationRules() {
     return {
       params: {
-        id: new RequestRule(UserSchema.schema.obj.id, { required: true }),
+        id: new RequestRule(
+          {
+            validate: {
+              validator: (v) => typeof v === 'string',
+              message: (prop) => `${prop.value} - string`,
+            },
+          },
+          { required: true }
+        ),
       },
     };
   }
