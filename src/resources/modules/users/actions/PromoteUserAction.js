@@ -11,9 +11,6 @@ class PromoteUserAction extends BaseAction {
 
   static get validationRules() {
     return {
-      body: {
-        username: new RequestRule(UserSchema.schema.obj.name),
-      },
       params: {
         id: new RequestRule(UserSchema.schema.obj.id, { required: true }),
       },
