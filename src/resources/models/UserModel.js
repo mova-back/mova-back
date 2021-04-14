@@ -58,11 +58,14 @@ class UserModel {
     assert.integer(limit, { required: true });
     assert.string(search, { required: true });
 
-    const result = await UserSchema.find({ username: { $regex: search.replace('+', '.*'), $options: 'six' } })
+    const query = { username: { $regex: search.replace('+', '.*'), $options: 'six' } };
+
+    const result = await UserSchema.find(query)
       .sort([[`${orderBy.field}`, `${orderBy.direction}`]])
       .skip(page * limit)
       .limit(limit);
-    const total = result.length;
+
+    const total = await UserSchema.count(query);
 
     return { result, total };
   }

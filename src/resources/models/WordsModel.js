@@ -27,7 +27,7 @@ class WordsModel {
     assert.string(search, { required: true });
 
     let result = {};
-    const fieldWhere = {
+    const query = {
       $and: [
         { complaints: { $exists: true, $type: 'array', $ne: [] } },
         { wordname: { $regex: search.replace('+', '.*'), $options: 'six' } },
@@ -35,20 +35,20 @@ class WordsModel {
     };
 
     if (orderBy.field && (orderBy.field === 'reportedAt' || orderBy.field === 'createdAt')) {
-      result = await WordSchema.find(fieldWhere)
+      result = await WordSchema.find(query)
         .skip(page * limit)
         .limit(limit)
         .populate({ path: 'complaints', options: { sort: { reportedAt: `${orderBy.direction}` } } });
     }
     if (orderBy.field && orderBy.field === 'reports') {
-      result = await WordSchema.find(fieldWhere)
+      result = await WordSchema.find(query)
         .sort([['complaints', `${orderBy.direction}`]])
         .skip(page * limit)
         .limit(limit)
         .populate('complaints');
     }
 
-    const total = result.length;
+    const total = await WordSchema.count(query);
 
     return { result, total };
   }
@@ -59,14 +59,16 @@ class WordsModel {
     assert.string(search, { required: true });
 
     // if complaints >> 5 => remove field in feed
-    const result = await WordSchema.find({
+    const query = {
       $and: [{ $expr: { $lt: [{ $size: '$complaints' }, 5] } }, { wordname: { $regex: search.replace('+', '.*'), $options: 'six' } }],
-    })
+    };
+
+    const result = await WordSchema.find(query)
       .sort([[`${orderBy.field}`, `${orderBy.direction}`]])
       .skip(page * limit)
       .limit(limit);
 
-    const total = result.length;
+    const total = await WordSchema.count(query);
 
     return { result, total };
   }
@@ -84,14 +86,16 @@ class WordsModel {
     assert.string(orderBy.field, { required: true });
     assert.string(orderBy.direction, { required: true });
 
-    const result = await WordSchema.find({
+    const query = {
       _id: { $in: field },
-    })
+    };
+
+    const result = await WordSchema.find(query)
       .sort([[`${orderBy.field.length}`, `${orderBy.direction}`]])
       .skip(page * limit)
       .limit(limit);
 
-    const total = result.length;
+    const total = await WordSchema.count(query);
 
     return { result, total };
   }

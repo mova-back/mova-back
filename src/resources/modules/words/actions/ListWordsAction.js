@@ -51,6 +51,8 @@ class ListWordsAction extends BaseAction {
       throw new AppError({ ...errorCodes.BAD_REQUEST, message: 'incorrect variant query' });
     }
 
+    console.log('data.total', data.total);
+
     return this.result({
       data: data.result,
       headers: { 'X-Total-Count': data.total },
