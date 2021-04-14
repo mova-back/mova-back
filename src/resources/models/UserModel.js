@@ -38,11 +38,19 @@ class UserModel {
     return UserSchema.findOne({ _id: id }).exec();
   }
 
+  static async getByUsername(username) {
+    assert.validate(username, UserSchema.schema.obj.username, { required: true });
+
+    const data = await UserSchema.findOne({ username });
+    // if (!data) throw this.errorEmptyResponse();
+    return data;
+  }
+
   static async getByEmail(email) {
     assert.validate(email, UserSchema.schema.obj.email, { required: true });
 
     const data = await UserSchema.findOne({ email });
-    if (!data) throw this.errorEmptyResponse();
+    // if (!data) throw this.errorEmptyResponse();
     return data;
   }
 

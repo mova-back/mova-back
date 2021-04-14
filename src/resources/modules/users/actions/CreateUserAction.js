@@ -8,6 +8,7 @@ const { makePasswordHash } = require('../utils/makePasswordHash');
 const { ProfileModel } = require('../../../models/ProfileModel');
 const logger = require('../../../../../logger');
 const { errorCodes } = require('../../../../error/errorCodes');
+const { check } = require('prettier');
 
 class CreateUserAction extends BaseAction {
   static get accessTag() {
@@ -34,18 +35,22 @@ class CreateUserAction extends BaseAction {
     const hash = await makePasswordHash(ctx.body.password);
     delete ctx.body.password;
 
+    const checkedEmail = await UserModel.getByEmail(ctx.body.email);
+    if (checkedEmail) {
+      throw new AppError({ ...errorCodes.EMAIL_ALREADY_TAKEN });
+    }
+
+    const checkedUser = await UserModel.getByUsername(ctx.body.username);
+    if (checkedUser) {
+      throw new AppError({ ...errorCodes.USER_ALREADY_TAKEN });
+    }
+
     try {
       user = await UserModel.create({
         ...ctx.body,
         passwordHash: hash,
       });
     } catch (err) {
-      if (err.code && err.code === 11000 && Object.prototype.hasOwnProperty.call(err.keyValue, 'email')) {
-        throw new AppError({ ...errorCodes.EMAIL_ALREADY_TAKEN });
-      }
-      if (err.code && err.code === 11000 && Object.prototype.hasOwnProperty.call(err.keyValue, 'username')) {
-        throw new AppError({ ...errorCodes.USER_ALREADY_TAKEN });
-      }
       throw new AppError({ ...errorCodes.SERVER });
     }
 
