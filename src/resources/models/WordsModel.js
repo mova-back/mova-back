@@ -75,7 +75,13 @@ class WordsModel {
       const dir = orderBy.direction === 'asc' ? 1 : -1;
       result = await WordSchema.aggregate([
         { $match: query },
-        { $addFields: { score: { $avg: [{ $size: '$likes' }, { $subtract: [0, { $size: '$dislikes' }] }] } } },
+        {
+          $addFields: {
+            score: {
+              $divide: [{ $sum: [{ $size: '$likes' }, 1] }, { $sum: [{ $sum: [{ $size: '$likes' }, { $size: '$dislikes' }, 2] }] }],
+            },
+          },
+        },
         { $sort: { score: dir } },
       ]);
     }
