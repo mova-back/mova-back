@@ -59,14 +59,26 @@ class WordsModel {
     assert.string(search, { required: true });
 
     // if complaints >> 5 => remove field in feed
+
+    let result = {};
+
     const query = {
       $and: [{ $expr: { $lt: [{ $size: '$complaints' }, 5] } }, { wordname: { $regex: search.replace('+', '.*'), $options: 'six' } }],
     };
 
-    const result = await WordSchema.find(query)
+    result = await WordSchema.find(query)
       .sort([[`${orderBy.field}`, `${orderBy.direction}`]])
       .skip(page * limit)
       .limit(limit);
+
+    if (orderBy && orderBy.field === 'likes') {
+      const dir = orderBy.direction === 'asc' ? 1 : -1;
+      result = await WordSchema.aggregate([
+        { $match: query },
+        { $addFields: { score: { $avg: [{ $size: '$likes' }, { $subtract: [0, { $size: '$dislikes' }] }] } } },
+        { $sort: { score: dir } },
+      ]);
+    }
 
     const total = await WordSchema.count(query);
 
