@@ -13,7 +13,7 @@ class CreateWordAction extends BaseAction {
       body: {
         wordname: new RequestRule(WordSchema.schema.obj.wordname, { required: true }),
         meaning: new RequestRule(WordSchema.schema.obj.meaning, { required: true }),
-        extended_description: new RequestRule(WordSchema.schema.obj.meaning),
+        extended_description: new RequestRule(WordSchema.schema.obj.extended_description),
         tags: new RequestRule(WordSchema.schema.obj.tags),
         usages: new RequestRule(WordSchema.schema.obj.usages),
         swearing: new RequestRule(WordSchema.schema.obj.swearing),

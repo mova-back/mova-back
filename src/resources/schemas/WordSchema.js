@@ -4,7 +4,6 @@ const { Schema } = mongoose;
 
 const schema = new Schema(
   {
-    // TODO :connect to userSchema,
     wordname: {
       type: String,
       required: true,
@@ -14,17 +13,6 @@ const schema = new Schema(
         message: (prop) => `${prop.value} - string; min 2 chars; max 100 chars`,
       },
     },
-    createdByUserId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'users',
-      required: true,
-    },
-    favoriteByUserdIds: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'users',
-      },
-    ],
     meaning: {
       type: String,
       required: true,
@@ -36,7 +24,7 @@ const schema = new Schema(
     extended_description: {
       type: String,
       validate: {
-        validator: (v) => typeof v === 'string' && v.length >= 1 && v.length <= 250,
+        validator: (v) => typeof v === 'string' && v.length <= 250,
         message: (prop) => `${prop.value} - string; min 1 chars; max 250 chars`,
       },
     },
@@ -50,7 +38,7 @@ const schema = new Schema(
     usages: {
       type: String,
       validate: {
-        validator: (v) => typeof v === 'string' && v.length >= 5 && v.length <= 250,
+        validator: (v) => typeof v === 'string' && v.length <= 250,
         message: (prop) => `${prop.value} - string; min 5 chars; max 250 chars`,
       },
     },
@@ -80,6 +68,17 @@ const schema = new Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'report',
+      },
+    ],
+    createdByUserId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'users',
+      required: true,
+    },
+    favoriteByUserdIds: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'users',
       },
     ],
   },
