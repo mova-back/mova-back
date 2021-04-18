@@ -32,7 +32,8 @@ class PromoteUserAction extends BaseAction {
 
     adminPolicy(currentUser);
 
-    if (currentUser.role !== admin) {
+    const userToPromote = await UserModel.getById(id);
+    if (userToPromote.role === admin) {
       throw new AppError({ ...errorCodes.BAD_ROLE });
     }
 
