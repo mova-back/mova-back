@@ -36,7 +36,9 @@ const schema = new mongoose.Schema(
     },
     newEmail: {
       type: String,
-      // unique: true,
+      require: [true, 'Enter an email address.'],
+      unique: [true, 'That email address is taken.'],
+      lowercase: true,
       validate: {
         validator: (v) => isEmail(v) && v.length <= 50,
         message: (prop) => `${prop.value}-  string; email; max 50 chars`,
@@ -57,7 +59,7 @@ const schema = new mongoose.Schema(
     passwordHash: {
       type: String,
       validate: {
-        validator: (v) => typeof v === 'string' && v.length >= 8,
+        validator: (v) => typeof v === 'string' && v.length >= 6,
         message: (prop) => `${prop.value} - string; min 8 chars;`,
       },
     },

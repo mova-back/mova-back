@@ -45,19 +45,6 @@ class CreateUserAction extends BaseAction {
       throw new AppError({ ...errorCodes.USER_ALREADY_TAKEN });
     }
 
-    try {
-      user = await UserModel.create({
-        ...ctx.body,
-        passwordHash: hash,
-      });
-    } catch (err) {
-      throw new AppError({ ...errorCodes.SERVER });
-    }
-
-    await ProfileModel.create({
-      userId: user.id,
-    });
-
     const emailConfirmToken = await makeEmailConfirmToken(user);
     await UserModel.findByIdAndUpdate(user.id, { emailConfirmToken });
 
@@ -77,6 +64,19 @@ class CreateUserAction extends BaseAction {
         throw error;
       }
     }
+
+    try {
+      user = await UserModel.create({
+        ...ctx.body,
+        passwordHash: hash,
+      });
+    } catch (err) {
+      throw new AppError({ ...errorCodes.SERVER });
+    }
+
+    await ProfileModel.create({
+      userId: user.id,
+    });
 
     return this.result({ data: user });
   }
